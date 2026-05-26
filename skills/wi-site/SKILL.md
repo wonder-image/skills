@@ -1,0 +1,162 @@
+---
+name: wi-site
+description: |
+  Work inside wonder-image/new-site (the official scaffold for Wonder sites) or any project bootstrapped from it. These projects depend on wonder-image/app (Composer) for the framework core and wonder-image/lib (npm) for the JS/CSS design system. Covers both navigating the project and implementing features: pages, models, resources, repeaters, backend-editable content, translations, roles and permissions, component overrides, module integration, **and UI / styling / design-system work** (buttons, inputs, forms, modals, cards, alerts, badges, typography, images, color tokens, root variables, custom CSS / JS) where `wonder-image/lib` is the source of truth.
+
+  TRIGGER when:
+  - the repo is wonder-image/new-site, or was scaffolded from it
+  - composer.json depends on `wonder-image/app` (and is NOT itself wonder-image/app)
+  - package.json depends on `wonder-image/lib`, or `assets/lib/wonder-image/dist/` exists
+  - the layout matches the new-site structure: `custom/`, `app/`, `assets/{ASSETS_VERSION}/`, `lang/{locale}/*.json`, `vendor/wonder-image/app`
+  - editing files under `custom/view/*`, `custom/routes/*`, `custom/config/*`, `custom/function/*`, `app/Models`, `app/Resources`, `lang/`, or `assets/{ASSETS_VERSION}/*`
+  - running `php forge update --local`, `php forge start`, or `npm install` from the project root
+  - adding pages, models, resources, repeaters, `__t(...)` translations, `__r(...)` route URLs (or `__u(...)` for free paths), roles, permissions, or integrating a `wonder-image/<slug>` external module
+  - any UI / styling / design-system task that should reuse `wonder-image/lib` classes, tokens, or components (buttons, inputs, forms, modals, cards, alerts, badges, typography, images, interactive elements)
+  - touching `assets/{ASSETS_VERSION}/css/set-up/color.css`, `assets/{ASSETS_VERSION}/css/set-up/root.css`, or adding custom CSS / JS under `assets/{ASSETS_VERSION}/css/` or `assets/{ASSETS_VERSION}/js/`
+
+  SKIP when:
+  - editing files inside `vendor/wonder-image/app` — that is framework work, switch to wi-app
+  - working in the wonder-image/app repo itself (composer.json name is `wonder-image/app`) — use wi-app
+  - working in the wonder-image/lib repo (JS/CSS design-system source) — different repo
+---
+
+# Wonder Site (new-site based)
+
+## Overview
+
+Use this skill inside wonder-image/new-site or any project scaffolded from it. The repo is the runtime owner. The framework lives in `vendor/wonder-image/app` (Composer, see wi-app for changes there) and the JS/CSS design system lives under `assets/lib/wonder-image/dist/` (copied from npm `wonder-image/lib`). Treat both as upstream — never edit them in place.
+
+## Glossary
+
+Shared vocabulary across `wi-app` and `wi-site` (identical wording in both skills):
+
+- **framework** — `wonder-image/app` (Composer package, github.com/wonder-image/app). Lives at the repo root when wi-app is active; lives at `vendor/wonder-image/app/` inside a site.
+- **lib** — `wonder-image/lib` (npm package, github.com/wonder-image/lib). The JS / CSS design system. Source at `node_modules/wonder-image/src/`; compiled copy at `assets/lib/wonder-image/dist/`.
+- **scaffold** — `wonder-image/new-site` (github.com/wonder-image/new-site). The site template. The scaffold itself is also a valid site.
+- **site** — any project whose `composer.json` depends on `wonder-image/app` (i.e. installs the framework under `vendor/wonder-image/app`). Typically the scaffold or a project derived from it. **Canonical term — prefer "site" over older mixed uses like "consumer project" / "consumer app".**
+- **module** — external Composer package `wonder-image/<slug>` discovered via Composer (or filesystem fallback). Ships its own models / resources / routes via `module.json` + a `ModuleInterface` entrypoint.
+- **`custom/`** — site-only directory for project pages, components, layouts, routes, config, and helpers. Never present inside the framework.
+- **`app/Models` / `app/Resources`** — site PSR-4 roots (`App\Models\...` / `App\Resources\...`). Distinct from the framework's `class/App/Models` / `class/App/Resources` (`Wonder\App\Models\...` / `Wonder\App\Resources\...`).
+
+## When to switch to wi-app
+
+Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals are true — the work belongs in the framework, not in this site (the frontmatter SKIP block already encodes the router-side check; this is the working-time version):
+
+- the repo's `composer.json` declares `"name": "wonder-image/app"` (you are inside the framework repo, not a site).
+- the requested change lives under `vendor/wonder-image/app/`. Never patch vendor from a site. Either reshape the change to live in `custom/` / `app/Models` / `app/Resources` (stays wi-site), or open the change against the framework repo (then wi-app applies).
+- you need to add or modify a `Model` / `Resource` base class, a `FormField` helper, an element under `class/Elements/`, a theme renderer under `class/Themes/{Wonder,Bootstrap}/`, a route in `app/config/routes/*`, the module discovery flow, the bootstrap order, the permission builder registry at `app/config/app/permission.php`, or a shared user-management resource.
+- the task is "add a new form input type", "change how the framework renders inputs in Wonder vs Bootstrap", "extend the permission builder", "register a new console command source", or any work that **defines** (rather than uses) framework behavior.
+- working in `wonder-image/lib` (the JS / CSS design-system source) — that is a different repo entirely; neither wi-site nor wi-app applies.
+
+## Non-Negotiable Rules
+
+- Never edit `vendor/`, `node_modules/`, or `assets/lib/wonder-image/dist/`. The last one is regenerated by `npm install` from `wonder-image/lib`.
+- Never patch `vendor/wonder-image/app` from a site task. If the change belongs there, switch to wi-app.
+- Never run these Forge commands from this skill:
+  - `php forge config`
+  - `php forge provision`
+  - `php forge db:init`
+  - `php forge build`
+- Every user-facing string goes through `__t(...)` with entries in `lang/{locale}/*.json` (any number of JSON files: `pages.json`, `components.json`, `emails.json`, `legal.json`, plus any new ones the site needs). URLs go through **`__r(string $name, array $parameters = [])`** (preferred — builds the URL from a named route, picks up the active locale, survives route renames). Use `__u(string $path)` only when there is no named route and you must build a URL from a free path (e.g. `__u('contact')`). No hardcoded copy or language prefixes in PHP.
+- Before writing new CSS classes, JS behavior, or UI structure, inspect `wonder-image/lib` and reuse the existing design system. Full UI rulebook in `references/style-and-lib.md` — read it for any UI / styling / design-system task. The default mode is **USE the lib, do not MODIFY it**.
+- Never hardcode colors (HEX / RGB / HSL), introduce `.wi-*` (or any other) prefix-based naming, or build a parallel CSS system. Detect `{ASSETS_VERSION}` dynamically — do not assume `0.0/` or any other version.
+- Prefer external Composer modules `wonder-image/<slug>` over project-embedded module code.
+- Place PSR-4 classes under `app/Models` and `app/Resources` with namespace `App\Models` / `App\Resources`. Place project pages, components, layout overrides, routes, config, and helpers under `custom/`.
+- The canonical model / table flow is `Model::tableSchema()` + `Model::dataSchema()`. Do not invent parallel table definition systems alongside it.
+
+## Start Sequence
+
+1. Classify the task:
+   - page or component work
+   - UI / styling / design-system work
+   - model, resource, repeater, or table work
+   - backend-editable content
+   - permissions, roles, or user areas
+   - translation, locale URLs, or content text
+   - module integration
+   - setup, runtime, or local environment
+2. Read only the reference that matches the task (see Task Routing below). For copy-paste scaffolds (Model + Resource skeleton, frontend page, `pages.json` entry, `permissions.php` extension, `modules.php`), jump straight to [`references/examples.md`](references/examples.md).
+3. Decide whether the work belongs in `custom/`, `app/`, an external `wonder-image/<slug>` module, or actually in the framework (switch to wi-app).
+4. Refuse the wrong placement: no direct `vendor/` patching, no hand-edited `node_modules/` or `assets/lib/wonder-image/dist/`, no parallel user-management pages, no custom CSS inside `assets/{ASSETS_VERSION}/css/set-up/`.
+
+## Task Routing
+
+### Page or component
+Read `references/implementation-playbook.md` and `references/style-and-lib.md`. Copy-paste skeleton for a frontend page in [`references/examples.md`](references/examples.md#2-frontend-page-customviewpagesfrontendaboutphp).
+- Pages go under `custom/view/pages/{frontend,backend}/...`.
+- Component overrides mirror the framework path under `custom/view/components/{frontend,backend}/...`.
+- Reuse `\Wonder\View\View::component(...)` over manual `include`.
+- Inspect existing page components before adding new markup.
+
+### UI / styling / design system
+Read `references/style-and-lib.md` **first**. Applies to every task touching buttons, inputs, forms, modals, cards, alerts, badges, typography, images, interactive elements, color tokens, root variables, or custom CSS / JS.
+- Default mode: **USE** the lib, do not **MODIFY** it. Modifying `wonder-image/lib` requires an explicit user request.
+- Reuse existing lib classes and tokens before writing anything new. No `.wi-*` (or other) prefix-based naming. No parallel CSS system. No hardcoded colors.
+- Token files: `assets/{ASSETS_VERSION}/css/set-up/color.css` and `root.css`. Custom CSS / JS goes under `assets/{ASSETS_VERSION}/css/` and `assets/{ASSETS_VERSION}/js/` — never inside `set-up/`.
+- Detect `{ASSETS_VERSION}` from the actual `assets/` directory before reading or writing token files.
+- End every UI task with the **Required Final Report** and **Pre-Submit Checklist** in `references/style-and-lib.md`.
+
+### Model, resource, repeater, or table — site postilla
+Read `references/implementation-playbook.md` for the placement workflow, then start from the skeleton in [`references/examples.md`](references/examples.md#1-skeleton-model--resource). For the full API contract (method signatures, lifecycle, registry behavior, repeater details), read `wi-app/references/model-and-resource.md` — install wi-app alongside wi-site to have it available locally.
+
+Steps for a new site Model + Resource:
+
+1. Create the Model under `app/Models/<Name>.php`, namespace `App\Models`, extending the framework Model base.
+2. Define SQL in `Model::tableSchema()`. Define data behavior in `Model::dataSchema()`.
+3. Create the Resource under `app/Resources/<Name>Resource.php`, namespace `App\Resources`, bound to the Model.
+4. Define `formSchema()` for backend inputs, `permissionSchema()` for route gating, `navigationSchema()` for nav placement.
+5. Use `FormInput::repeater(...)` + `RepeaterColumn` for repeatable rows; `CustomPageSchema` only for non-CRUD pages.
+6. Run `composer dump-autoload`, then `php forge update --local` to apply runtime generation.
+
+The canonical flow is `Model::tableSchema()` + `Model::dataSchema()`. Do not invent parallel table-definition files alongside it.
+
+### Backend-editable content
+Read `references/implementation-playbook.md`. Prefer a real `Model` + `Resource` flow. Connect media to existing media resources. Never store editable content in static arrays or loose files.
+
+### Permissions, roles, or user areas — site postilla
+The full builder API, framework user resources, and runtime `$PERMITS` export live in **wi-app** at `wi-app/references/permissions-and-users.md`. In a site, the only place to touch is:
+
+- `custom/config/permissions.php` — extends or overrides the registry after the base file (`app/config/app/permission.php` in the framework) and the module merge have run. Copy-paste skeleton in [`references/examples.md`](references/examples.md#4-customconfigpermissionsphp--extend-the-builder-registry).
+
+Steps to add or override a site permission:
+
+1. Open `custom/config/permissions.php`.
+2. Extend the builder registry already initialized in `app/config/app/permission.php` and then merged with module permissions.
+3. Reference the resulting permission key from any project `Resource::permissionSchema()` and from navigation authority gates.
+4. Do not build parallel user-management pages — user CRUD is centralized in the shared framework resources. If a site truly needs a different user flow, that is a framework-level change → switch to wi-app.
+
+If wi-app is not yet installed locally, run `npx skills add wonder-image/skills --skill wi-app` to make the full reference available.
+
+### Translation, locale URLs, content text
+Read `references/workflows.md`. Sample `lang/it/pages.json` entry in [`references/examples.md`](references/examples.md#3-langitpagesjson).
+- Strings live in `lang/{locale}/*.json` — any number of JSON files. The site ships `pages.json`, `components.json`, `emails.json`, `legal.json` by default; new ones (e.g. `lang/{locale}/terms.json`) are picked up automatically.
+- Access translated strings via `__t("path.to.key")`.
+- Build URLs:
+  - **Prefer `__r(string $name, array $parameters = [])`** — URL from a named route. Works for every route registered in `app/config/routes/` or `custom/routes/`, including frontend pages, resource CRUD routes, and custom backend routes. Survives slug / path changes because it resolves by name.
+  - Fallback to `__u(string $path)` only when no named route exists and you must build a locale-aware URL from a free path string (e.g. `<a href="<?= __u('contact') ?>">`).
+
+### Module integration
+Read `references/project-structure.md` and `references/workflows.md`.
+- Prefer external Composer packages `wonder-image/<slug>` over embedded code.
+- Enable modules in `custom/config/modules.php` — copy-paste skeleton in [`references/examples.md`](references/examples.md#5-customconfigmodulesphp--enable-an-external-composer-module).
+
+### Setup, runtime, or local environment
+Read `references/workflows.md`. From the project root:
+- `composer install` (also runs `php forge config` via Composer scripts)
+- `npm install` (copies `wonder-image/lib` into `assets/lib/wonder-image/dist/`)
+- `php forge update --local` (applies DB and runtime generation)
+- `php forge start` (runs the local server, may fill missing `.env`)
+
+## Validation
+
+- Run `php -l` on every touched PHP file.
+- Run `composer dump-autoload` when PSR-4 classes are added, moved, or renamed.
+- For integration-sensitive changes: `php forge update --local` then `php forge start`.
+- Re-run `npm install` only when changes depend on `assets/lib/wonder-image/dist/` from `wonder-image/lib`.
+
+## Output Expectations
+
+- Name the concrete site paths changed (e.g. `custom/view/pages/frontend/about.php`, `app/Models/Project.php`, `lang/it/pages.json`).
+- State explicitly when a requested change actually belongs in the framework (→ wi-app) or in `wonder-image/lib`.
+- List translation file updates, permission/authority changes, and Forge/npm rebuild steps when relevant.
+- Refuse, with a one-line reason, any edit to `vendor/`, `node_modules/`, `assets/lib/wonder-image/dist/`, or any Forge-generated file.

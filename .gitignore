@@ -1,0 +1,5 @@
+.DS_Store
+.claude
+skills-lock.json
+node_modules/
+TODO.md
