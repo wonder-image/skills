@@ -32,6 +32,20 @@ npx skills add wonder-image/skills --skill wi-app
 npx skills add wonder-image/skills --skill wi-site
 ```
 
+### Recommended companion: `impeccable`
+
+`wi-site` knows **how** to build a Wonder site (file placement, helpers, the `wonder-image/lib` design system). [`impeccable`](https://github.com/pbakaus/impeccable) knows **how to critique the design quality** of the result — audit, polish, motion review, accessibility checks.
+
+The two skills share a single context file: **`PRODUCT.md` at the site repo root**. `wi-site` reads it as step 0 of every task (register, target users, voice, `site_type`); impeccable reads the same file natively (no extra config). Wonder sites deliberately do **not** ship a `DESIGN.md` — visual tokens live in `assets/{ASSETS_VERSION}/css/set-up/color.css` + `root.css` and impeccable degrades gracefully when `DESIGN.md` is absent.
+
+Install it alongside the Wonder skills:
+
+```bash
+npx skills add pbakaus/impeccable
+```
+
+Full schema and `site_type` semantics for `PRODUCT.md`: [`skills/wi-site/references/product-md.md`](skills/wi-site/references/product-md.md). Copy-paste template: [`skills/wi-site/references/examples.md` §6](skills/wi-site/references/examples.md#6-productmd--brand-and-project-context).
+
 Target a specific agent (defaults to interactive selection):
 
 ```bash

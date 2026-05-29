@@ -99,6 +99,8 @@ Color and root files in a Wonder site live under:
 
 The lib documents tokens as **currently external** — they live in the site, not in the lib (a future refactor may consolidate them).
 
+**Do not create a `DESIGN.md` at site root.** Visual tokens live in `assets/{ASSETS_VERSION}/css/set-up/color.css` + `root.css` and the rules in this file are the rulebook. The companion skill [`impeccable`](https://github.com/pbakaus/impeccable) accepts a `DESIGN.md` for generic projects but degrades gracefully without it — for Wonder sites it reads the real CSS plus `PRODUCT.md` (strategic context, see [`product-md.md`](product-md.md)). A second `DESIGN.md` would create a parallel token source that drifts from `color.css` / `root.css` over time; this is documented self-defense against duplication.
+
 - Base color names (`primary`, `secondary`, etc.) can be **expanded only on explicit user request**.
 - Before creating a new token, search `color.css` and `root.css` for an equivalent variable. Reuse it.
 - Never hardcode HEX / RGB / HSL in a component if a token or class covers the case.

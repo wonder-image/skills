@@ -1,0 +1,66 @@
+[
+  {
+    "query": "devo aggiungere una pagina /chi-siamo al sito nuovo (scaffoldato da wonder-image/new-site, composer.json dipende da wonder-image/app). dove metto il file? Il file va sotto custom/view/pages/{frontend, backend}/ le route vengono impostate in custom/routes/ e le traduzioni in lang/{lang}/ e poi inserite con __t()",
+    "should_trigger": true
+  },
+  {
+    "query": "sto sul sito di un cliente basato su new-site. il file lang/it/pages.json non sta caricando la nuova chiave 'about.hero.title' che ho aggiunto stamattina. ho già lanciato php forge update --local e ricaricato. composer.json del repo richiede wonder-image/app",
+    "should_trigger": true
+  },
+  {
+    "query": "ho appena creato app/Models/Project.php (namespace App\\Models) e app/Resources/ProjectResource.php nel mio sito ma /backend/projects/ ritorna 404. composer dumpautoload l'ho già lanciato dalla root del progetto",
+    "should_trigger": true
+  },
+  {
+    "query": "voglio aggiungere un ruolo 'segretaria' al backend del sito che possa solo vedere le richieste contatto e modificarne lo stato — dove lo registro? il sito è scaffoldato da new-site e ho già custom/config/permissions.php",
+    "should_trigger": true
+  },
+  {
+    "query": "ho aggiunto una sezione hero alla home, mi serve un bottone primario che linki a /contatti — in assets/lib/wonder-image/dist/ vedo .wi-btn e .wi-btn-primary. le posso usare così come sono o devo definirle nel mio CSS?",
+    "should_trigger": true
+  },
+  {
+    "query": "in custom/view/pages/frontend/home.php sto usando href='/contatti/' hardcoded, dovrei usare __r('contact') giusto? e se la route non ha un nome, come faccio? ho letto qualcosa di __u ma non sono sicuro quando usarlo",
+    "should_trigger": true
+  },
+  {
+    "query": "ho fatto composer require wonder-image/blog ma il modulo non appare nel backend. nel composer.json del modulo c'è module.json. cosa mi sfugge? sto sul mio sito new-site-based",
+    "should_trigger": true
+  },
+  {
+    "query": "vorrei cambiare il color token primario del sito da blu a viola — dove sono i token? ricordo qualcosa tipo set-up/color.css ma non so se è la versione corrente o un'altra",
+    "should_trigger": true
+  },
+  {
+    "query": "in vendor/wonder-image/app/class/App/Resources/User/BackendUserResource.php vedo che il form login ha un bug nel rendering della checkbox 'remember me'. posso patchare il file direttamente dal mio sito o devo fare diversamente?",
+    "should_trigger": true
+  },
+  {
+    "query": "il sito ha lang/it/ e lang/en/. devo aggiungere lang/de/ per il tedesco — quali file devo creare e dove registro il locale? sto su new-site",
+    "should_trigger": true
+  },
+  {
+    "query": "sto lavorando nel repo wonder-image/app (composer.json dice 'name': 'wonder-image/app'). devo aggiungere un metodo registerBackendRoutes() alla classe Resource base in class/App/Resource.php — voglio permettere ai resource di registrare route custom oltre alle CRUD generate",
+    "should_trigger": false
+  },
+  {
+    "query": "il ResourceRouteRegistrar non emette la route DELETE per la mia risorsa anche se permissionSchema().backend('delete', [...]) c'è. customBackendPages() ritorna [] vuoto. sto guardando class/App/ResourceRouteRegistrar.php nel framework wonder-image/app",
+    "should_trigger": false
+  },
+  {
+    "query": "sto aggiungendo un nuovo helper signaturePad() a FormField — il file è class/App/ResourceSchema/FormField.php nel repo wonder-image/app. devo anche mappare l'helper in FormFieldElementFactory e scrivere il renderer per Wonder e Bootstrap",
+    "should_trigger": false
+  },
+  {
+    "query": "Credentials::loadEnv() non trova più il file .env dopo che ho cambiato l'ordine di bootstrap in wonder-image.php. sto nel framework wonder-image/app, non in un sito",
+    "should_trigger": false
+  },
+  {
+    "query": "ho un'app Laravel con un UserController, voglio aggiungere validazione al form di registrazione tramite FormRequest. password almeno 12 caratteri, email unica. nessuna relazione con Wonder",
+    "should_trigger": false
+  },
+  {
+    "query": "sono nel repo wonder-image/lib (clone locale del package npm) — voglio aggiungere una nuova primitiva .wi-callout, dove metto i file SCSS e come triggero il build dei dist? Devi aggiungerli in assets/{version}/scss e creeremo",
+    "should_trigger": false
+  }
+]

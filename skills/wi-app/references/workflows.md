@@ -2,9 +2,9 @@
 
 ## Decide Where the Change Belongs
 
-- Use the core package when changing framework behavior, bootstrap, registries, route generation, console command source, shared resources, or architecture conventions.
-- Use a site when changing project-specific models, resources, config, templates, content, or enabled-module state.
-- Use an external module package when the feature is reusable and should not be embedded into the core package.
+- Use the **framework** when changing framework behavior, bootstrap, registries, route generation, console command source, shared resources, or architecture conventions.
+- Use a **site** when changing project-specific models, resources, config, templates, content, or enabled-module state.
+- Use an external **module** package when the feature is reusable and should not be embedded into the framework.
 
 ## Preferred Placement for New Work
 

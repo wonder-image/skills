@@ -1,0 +1,52 @@
+Split: 10 train, 6 test (holdout=0.4)
+
+============================================================
+Iteration 1/5
+Description: Work inside wonder-image/new-site (the official scaffold for Wonder sites) or any project bootstrapped from it. These projects depend on wonder-image/app (Composer) for the framework core and wonder-image/lib (npm) for the JS/CSS design system. Covers both navigating the project and implementing features: pages, models, resources, repeaters, backend-editable content, translations, roles and permissions, component overrides, module integration, **and UI / styling / design-system work** (buttons, inputs, forms, modals, cards, alerts, badges, typography, images, color tokens, root variables, custom CSS / JS) where `wonder-image/lib` is the source of truth.
+============================================================
+Train: 12/30 correct, precision=100% recall=0% accuracy=40% (45.1s)
+  [FAIL] rate=0/3 expected=True: aggiungere lingua tedesca lang/de/ al sito new-site
+  [FAIL] rate=0/3 expected=True: ho fatto composer require wonder-image/blog ma il modulo non
+  [FAIL] rate=0/3 expected=True: come uso wi-btn-primary in una sezione hero?
+  [FAIL] rate=0/3 expected=True: in home.php ho href='/contatti/' hardcoded, conviene usare _
+  [FAIL] rate=0/3 expected=True: aggiungi una pagina /chi-siamo al mio sito wonder
+  [FAIL] rate=0/3 expected=True: come traduco una nuova stringa in pages.json sul progetto wo
+  [PASS] rate=0/3 expected=False: nel repo wonder-image/app voglio aggiungere un metodo alla c
+  [PASS] rate=0/3 expected=False: Credentials::loadEnv non trova .env dopo che ho cambiato il 
+  [PASS] rate=0/3 expected=False: scrivimi una funzione python che parsi un CSV /tmp/sales.csv
+  [PASS] rate=0/3 expected=False: spiega come funzionano useEffect e useState in React
+Test : 6/18 correct, precision=100% recall=0% accuracy=33% (0.0s)
+  [FAIL] rate=0/3 expected=True: cambiare colore primario del sito wonder, dove sono i token?
+  [FAIL] rate=0/3 expected=True: voglio un ruolo 'segretaria' nel backend del sito wonder, do
+  [FAIL] rate=0/3 expected=True: ho creato app/Models/Project.php nel mio sito wonder-image/n
+  [FAIL] rate=0/3 expected=True: il login backend di wonder ha un bug, posso patchare vendor/
+  [PASS] rate=0/3 expected=False: voglio aggiungere un helper signaturePad() a FormField nel f
+  [PASS] rate=0/3 expected=False: il ResourceRouteRegistrar del framework non emette la route 
+
+Improving description...
+Proposed (77.7s): Use when the user is working on a **Wonder site** — a project built from `wonder-image/new-site` or whose `composer.json` depends on `wonder-image/app`. Trigger whenever the query involves: adding or editing pages/components (`custom/view/`), locale files or translations (`lang/`, `pages.json`, `__t()`), URL helpers (`__r()`, `__u()`), Wonder lib CSS classes (`wi-btn-*`, `wi-card-*`, `wi-form-*`, `wi-modal-*`), activating or debugging a `wonder-image/<slug>` Composer module, site Models/Resources in `app/`, or permissions in `custom/config/`. Applies to queries in Italian or any language. Skip when editing `vendor/wonder-image/app` internals (use wi-app instead).
+
+============================================================
+Iteration 2/5
+Description: Use when the user is working on a **Wonder site** — a project built from `wonder-image/new-site` or whose `composer.json` depends on `wonder-image/app`. Trigger whenever the query involves: adding or editing pages/components (`custom/view/`), locale files or translations (`lang/`, `pages.json`, `__t()`), URL helpers (`__r()`, `__u()`), Wonder lib CSS classes (`wi-btn-*`, `wi-card-*`, `wi-form-*`, `wi-modal-*`), activating or debugging a `wonder-image/<slug>` Composer module, site Models/Resources in `app/`, or permissions in `custom/config/`. Applies to queries in Italian or any language. Skip when editing `vendor/wonder-image/app` internals (use wi-app instead).
+============================================================
+Train: 12/30 correct, precision=100% recall=0% accuracy=40% (46.5s)
+  [FAIL] rate=0/3 expected=True: aggiungere lingua tedesca lang/de/ al sito new-site
+  [FAIL] rate=0/3 expected=True: come uso wi-btn-primary in una sezione hero?
+  [FAIL] rate=0/3 expected=True: ho fatto composer require wonder-image/blog ma il modulo non
+  [FAIL] rate=0/3 expected=True: in home.php ho href='/contatti/' hardcoded, conviene usare _
+  [FAIL] rate=0/3 expected=True: come traduco una nuova stringa in pages.json sul progetto wo
+  [FAIL] rate=0/3 expected=True: aggiungi una pagina /chi-siamo al mio sito wonder
+  [PASS] rate=0/3 expected=False: nel repo wonder-image/app voglio aggiungere un metodo alla c
+  [PASS] rate=0/3 expected=False: Credentials::loadEnv non trova .env dopo che ho cambiato il 
+  [PASS] rate=0/3 expected=False: scrivimi una funzione python che parsi un CSV /tmp/sales.csv
+  [PASS] rate=0/3 expected=False: spiega come funzionano useEffect e useState in React
+Test : 6/18 correct, precision=100% recall=0% accuracy=33% (0.0s)
+  [FAIL] rate=0/3 expected=True: cambiare colore primario del sito wonder, dove sono i token?
+  [FAIL] rate=0/3 expected=True: voglio un ruolo 'segretaria' nel backend del sito wonder, do
+  [FAIL] rate=0/3 expected=True: ho creato app/Models/Project.php nel mio sito wonder-image/n
+  [FAIL] rate=0/3 expected=True: il login backend di wonder ha un bug, posso patchare vendor/
+  [PASS] rate=0/3 expected=False: voglio aggiungere un helper signaturePad() a FormField nel f
+  [PASS] rate=0/3 expected=False: il ResourceRouteRegistrar del framework non emette la route 
+
+Improving description...

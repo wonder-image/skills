@@ -39,6 +39,7 @@ Shared vocabulary across `wi-app` and `wi-site` (identical wording in both skill
 Switch to [`wi-site`](../wi-site/SKILL.md) when **any** of these signals are true — the work belongs in a site repo, not in the framework:
 
 - the repo's `composer.json` does **not** declare `"name": "wonder-image/app"`; instead it lists `wonder-image/app` under `require` (the framework is installed as a dependency).
+- a `PRODUCT.md` exists at the repo root declaring a Wonder site (`site_type: landing` / `corporate` / `blog` / `ecom` / `rsvp`) — that file only exists on sites, never inside the framework itself.
 - `vendor/wonder-image/app/` exists at the repo root — the framework is installed under `vendor/`, so this is a site.
 - the requested change lives under `custom/`, `app/Models`, `app/Resources`, `lang/`, `assets/{ASSETS_VERSION}/`, or any path that does not exist inside the framework repo.
 - the task is "add a page", "translate strings", "register a permission key for this site", "edit color tokens", "use a `.wi-*` component / lib class", or any work that **uses** (rather than extends) the framework.
@@ -66,7 +67,7 @@ Switch to [`wi-site`](../wi-site/SKILL.md) when **any** of these signals are tru
   - `Resource::formSchema()` defines backend inputs
   - `CustomPageSchema` handles non-CRUD backend pages
   - `Repeater` handles repeatable rows and related-row sync
-- **Form inputs go through `FormField` — always.** Every input rendered in **either** the frontend Wonder theme (`class/Themes/Wonder/`, lib `.wi-*` markup) **or** the backend Bootstrap theme (`class/Themes/Bootstrap/`) must be declared via the `FormField` class hierarchy (`FormInput`, `RepeaterColumn`, `FormSchema` builder). Do not emit raw `<input>` / `<select>` / `<textarea>` HTML in pages, components, or layouts, and do not introduce ad-hoc render functions that bypass `FormField`. The single `FormField::render($theme)` path is the only sanctioned way to render an input — that is how theme switching, validation state, label/error wiring, attribute parsing, and the file/repeater/date helpers stay consistent across `formSchema()`, `CustomPageSchema`, and any custom page. If a needed input type is missing, extend `FormField` / add a helper on `FormSchema` and map it in `FormFieldElementFactory` — do not work around it with hand-rolled HTML. See [`references/model-and-resource.md`](references/model-and-resource.md#forminput--formfield-hard-rule).
+- **Form inputs go through `FormField` — always.** Every input on the frontend Wonder theme (`class/Themes/Wonder/`) and the backend Bootstrap theme (`class/Themes/Bootstrap/`) is declared via `FormInput` / `RepeaterColumn` / `FormSchema` and rendered through `FormField::render($theme)`. No raw `<input>` / `<select>` / `<textarea>` HTML, no ad-hoc render functions. Missing input types are added at the framework layer (helper on `FormField` → mapping in `FormFieldElementFactory` → renderer under each theme), not patched at the call site. Full rationale and the four-step "missing type" workflow in [`references/model-and-resource.md`](references/model-and-resource.md#forminput--formfield-hard-rule).
 - Update `docs/app/*` in the same work when you change bootstrap, architecture, routing, layout structure, or developer-facing conventions.
 
 ## Task Routing

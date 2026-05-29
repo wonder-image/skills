@@ -1,0 +1,69 @@
+Split: 10 train, 6 test (holdout=0.4)
+
+============================================================
+Iteration 1/5
+Description: Work inside wonder-image/new-site (the official scaffold for Wonder sites) or any project bootstrapped from it. These projects depend on wonder-image/app (Composer) for the framework core and wonder-image/lib (npm) for the JS/CSS design system. Covers both navigating the project and implementing features: pages, models, resources, repeaters, backend-editable content, translations, roles and permissions, component overrides, module integration, **and UI / styling / design-system work** (buttons, inputs, forms, modals, cards, alerts, badges, typography, images, color tokens, root variables, custom CSS / JS) where `wonder-image/lib` is the source of truth.
+============================================================
+Train: 15/30 correct, precision=100% recall=17% accuracy=50% (47.6s)
+  [FAIL] rate=0/3 expected=True: il sito ha lang/it/ e lang/en/. devo aggiungere lang/de/ per
+  [FAIL] rate=0/3 expected=True: in custom/view/pages/frontend/home.php sto usando href='/con
+  [FAIL] rate=1/3 expected=True: ho aggiunto una sezione hero alla home, mi serve un bottone 
+  [FAIL] rate=1/3 expected=True: ho fatto composer require wonder-image/blog ma il modulo non
+  [FAIL] rate=1/3 expected=True: sto sul sito di un cliente basato su new-site. il file lang/
+  [FAIL] rate=0/3 expected=True: devo aggiungere una pagina /chi-siamo al sito nuovo (scaffol
+  [PASS] rate=0/3 expected=False: sono nel repo wonder-image/lib (clone locale del package npm
+  [PASS] rate=0/3 expected=False: sto lavorando nel repo wonder-image/app (composer.json dice 
+  [PASS] rate=0/3 expected=False: ho un'app Laravel con un UserController, voglio aggiungere v
+  [PASS] rate=0/3 expected=False: Credentials::loadEnv() non trova più il file .env dopo che h
+Test : 4/18 correct, precision=0% recall=0% accuracy=22% (0.0s)
+  [FAIL] rate=0/3 expected=True: vorrei cambiare il color token primario del sito da blu a vi
+  [FAIL] rate=0/3 expected=True: voglio aggiungere un ruolo 'segretaria' al backend del sito 
+  [FAIL] rate=0/3 expected=True: ho appena creato app/Models/Project.php (namespace App\Model
+  [FAIL] rate=0/3 expected=True: in vendor/wonder-image/app/class/App/Resources/User/BackendU
+  [PASS] rate=1/3 expected=False: il ResourceRouteRegistrar non emette la route DELETE per la 
+  [PASS] rate=1/3 expected=False: sto aggiungendo un nuovo helper signaturePad() a FormField —
+
+Improving description...
+Proposed (60.1s): Use for any Wonder site scaffolded from wonder-image/new-site, or any project whose composer.json requires wonder-image/app. These sites share a recognizable layout: pages under custom/view/pages/, routes in custom/routes/, translations in lang/{locale}/*.json, and front-end assets under assets/{version}/. Invoke for tasks like adding frontend or backend pages, managing translation keys with __t(), building locale-aware URLs with __r() (named routes) or __u() (free paths), registering new locales (lang/de/, lang/fr/, etc.), enabling or troubleshooting wonder-image/* Composer modules, configuring permissions and roles, and UI/styling work that reuses wonder-image/lib classes or tokens from assets/lib/wonder-image/dist/. Skip when editing files inside vendor/wonder-image/app (→ wi-app) or working in the wonder-image/lib source repo.
+
+============================================================
+Iteration 2/5
+Description: Use for any Wonder site scaffolded from wonder-image/new-site, or any project whose composer.json requires wonder-image/app. These sites share a recognizable layout: pages under custom/view/pages/, routes in custom/routes/, translations in lang/{locale}/*.json, and front-end assets under assets/{version}/. Invoke for tasks like adding frontend or backend pages, managing translation keys with __t(), building locale-aware URLs with __r() (named routes) or __u() (free paths), registering new locales (lang/de/, lang/fr/, etc.), enabling or troubleshooting wonder-image/* Composer modules, configuring permissions and roles, and UI/styling work that reuses wonder-image/lib classes or tokens from assets/lib/wonder-image/dist/. Skip when editing files inside vendor/wonder-image/app (→ wi-app) or working in the wonder-image/lib source repo.
+============================================================
+Train: 13/30 correct, precision=100% recall=6% accuracy=43% (64.3s)
+  [FAIL] rate=1/3 expected=True: il sito ha lang/it/ e lang/en/. devo aggiungere lang/de/ per
+  [FAIL] rate=0/3 expected=True: ho fatto composer require wonder-image/blog ma il modulo non
+  [FAIL] rate=0/3 expected=True: in custom/view/pages/frontend/home.php sto usando href='/con
+  [FAIL] rate=0/3 expected=True: ho aggiunto una sezione hero alla home, mi serve un bottone 
+  [FAIL] rate=0/3 expected=True: devo aggiungere una pagina /chi-siamo al sito nuovo (scaffol
+  [FAIL] rate=0/3 expected=True: sto sul sito di un cliente basato su new-site. il file lang/
+  [PASS] rate=0/3 expected=False: sono nel repo wonder-image/lib (clone locale del package npm
+  [PASS] rate=0/3 expected=False: sto lavorando nel repo wonder-image/app (composer.json dice 
+  [PASS] rate=0/3 expected=False: Credentials::loadEnv() non trova più il file .env dopo che h
+  [PASS] rate=0/3 expected=False: ho un'app Laravel con un UserController, voglio aggiungere v
+Test : 6/18 correct, precision=100% recall=0% accuracy=33% (0.0s)
+  [FAIL] rate=0/3 expected=True: vorrei cambiare il color token primario del sito da blu a vi
+  [FAIL] rate=0/3 expected=True: voglio aggiungere un ruolo 'segretaria' al backend del sito 
+  [FAIL] rate=0/3 expected=True: ho appena creato app/Models/Project.php (namespace App\Model
+  [PASS] rate=0/3 expected=False: sto aggiungendo un nuovo helper signaturePad() a FormField —
+  [PASS] rate=0/3 expected=False: il ResourceRouteRegistrar non emette la route DELETE per la 
+  [FAIL] rate=0/3 expected=True: in vendor/wonder-image/app/class/App/Resources/User/BackendU
+
+Improving description...
+Traceback (most recent call last):
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/Users/andreamarinoni/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/08c771be-c24b-4964-a239-039228f9eef5/92f48486-345f-4f40-bf4d-5117e7920cc7/skills/skill-creator/scripts/run_loop.py", line 329, in <module>
+    main()
+  File "/Users/andreamarinoni/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/08c771be-c24b-4964-a239-039228f9eef5/92f48486-345f-4f40-bf4d-5117e7920cc7/skills/skill-creator/scripts/run_loop.py", line 294, in main
+    output = run_loop(
+  File "/Users/andreamarinoni/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/08c771be-c24b-4964-a239-039228f9eef5/92f48486-345f-4f40-bf4d-5117e7920cc7/skills/skill-creator/scripts/run_loop.py", line 200, in run_loop
+    new_description = improve_description(
+  File "/Users/andreamarinoni/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/08c771be-c24b-4964-a239-039228f9eef5/92f48486-345f-4f40-bf4d-5117e7920cc7/skills/skill-creator/scripts/improve_description.py", line 145, in improve_description
+    text = _call_claude(prompt, model)
+  File "/Users/andreamarinoni/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/08c771be-c24b-4964-a239-039228f9eef5/92f48486-345f-4f40-bf4d-5117e7920cc7/skills/skill-creator/scripts/improve_description.py", line 45, in _call_claude
+    raise RuntimeError(
+RuntimeError: claude -p exited 1
+stderr: 

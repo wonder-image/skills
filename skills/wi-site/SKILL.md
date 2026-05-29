@@ -66,6 +66,11 @@ Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals 
 
 ## Start Sequence
 
+0. **Read `PRODUCT.md` at the site root first.** It defines register (brand vs product), `site_type`, target users, brand personality, voice/tone, design principles. Everything you do next must be coherent with what it says — placement choices, copy, suggestions of modules, UI direction.
+
+   **If `PRODUCT.md` is missing or its required sections are empty, do NOT proceed with the user's task yet.** Run the interview procedure in [`references/product-md.md` § Compilation procedure](references/product-md.md#compilation-procedure-interview-driven): ask 2–4 focused questions at a time with `AskUserQuestion`, save answers into `PRODUCT.md` as they come, and continue interviewing until you have **at least 80% project clarity** — operationalized as: all 6 required sections filled (`Register`, `Site type`, `Target users`, `Brand personality`, `Voice / tone`, `Design principles`) plus at least one of (`Anti-references`, `Asset paths`). Only then proceed with the original task. Reason: the alternative is generic output that the user will have to fix later — the 10–15 minutes spent interviewing pay back on every subsequent decision in the session and in future sessions.
+
+   The interview is sequential and adaptive: if the user already mentioned something in passing (e.g. "abbiamo un brand di moda"), pre-fill the relevant section and ask for confirmation rather than re-asking from scratch. Full schema in [`references/product-md.md`](references/product-md.md); copy-paste template in [`references/examples.md` §6](references/examples.md#6-productmd--brand-and-project-context).
 1. Classify the task:
    - page or component work
    - UI / styling / design-system work
@@ -80,6 +85,9 @@ Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals 
 4. Refuse the wrong placement: no direct `vendor/` patching, no hand-edited `node_modules/` or `assets/lib/wonder-image/dist/`, no parallel user-management pages, no custom CSS inside `assets/{ASSETS_VERSION}/css/set-up/`.
 
 ## Task Routing
+
+### Brand, copywriting, voice, site type
+Read [`references/product-md.md`](references/product-md.md). `PRODUCT.md` at site root is the source of truth for register, target users, brand personality, voice/tone, design principles, and `site_type` (`landing` / `corporate` / `blog` / `ecom` / `rsvp`). Copy lives in `lang/{locale}/*.json` and must respect the voice declared in `PRODUCT.md`. For deep UI critique / polish / audit beyond Wonder's reuse-first placement rules, hand off to the companion skill [`impeccable`](https://github.com/pbakaus/impeccable) (`npx skills add pbakaus/impeccable` — it reads the same `PRODUCT.md` natively). Do **not** create a `DESIGN.md` — Wonder's `color.css` + `root.css` + [`style-and-lib.md`](references/style-and-lib.md) are authoritative for visual tokens.
 
 ### Page or component
 Read `references/implementation-playbook.md` and `references/style-and-lib.md`. Copy-paste skeleton for a frontend page in [`references/examples.md`](references/examples.md#2-frontend-page-customviewpagesfrontendaboutphp).

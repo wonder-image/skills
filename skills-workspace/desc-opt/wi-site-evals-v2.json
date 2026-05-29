@@ -1,0 +1,66 @@
+[
+  {
+    "query": "aggiungi una pagina /chi-siamo al mio sito wonder",
+    "should_trigger": true
+  },
+  {
+    "query": "come traduco una nuova stringa in pages.json sul progetto wonder-image",
+    "should_trigger": true
+  },
+  {
+    "query": "ho creato app/Models/Project.php nel mio sito wonder-image/new-site ma /backend/projects/ è 404",
+    "should_trigger": true
+  },
+  {
+    "query": "voglio un ruolo 'segretaria' nel backend del sito wonder, dove lo metto?",
+    "should_trigger": true
+  },
+  {
+    "query": "come uso wi-btn-primary in una sezione hero?",
+    "should_trigger": true
+  },
+  {
+    "query": "in home.php ho href='/contatti/' hardcoded, conviene usare __r() o __u()?",
+    "should_trigger": true
+  },
+  {
+    "query": "ho fatto composer require wonder-image/blog ma il modulo non si attiva",
+    "should_trigger": true
+  },
+  {
+    "query": "cambiare colore primario del sito wonder, dove sono i token?",
+    "should_trigger": true
+  },
+  {
+    "query": "il login backend di wonder ha un bug, posso patchare vendor/wonder-image/app dal mio sito?",
+    "should_trigger": true
+  },
+  {
+    "query": "aggiungere lingua tedesca lang/de/ al sito new-site",
+    "should_trigger": true
+  },
+  {
+    "query": "nel repo wonder-image/app voglio aggiungere un metodo alla classe Resource base in class/App/Resource.php",
+    "should_trigger": false
+  },
+  {
+    "query": "il ResourceRouteRegistrar del framework non emette la route DELETE, dove guardo?",
+    "should_trigger": false
+  },
+  {
+    "query": "voglio aggiungere un helper signaturePad() a FormField nel framework wonder-image/app",
+    "should_trigger": false
+  },
+  {
+    "query": "Credentials::loadEnv non trova .env dopo che ho cambiato il bootstrap di wonder-image.php nel framework",
+    "should_trigger": false
+  },
+  {
+    "query": "scrivimi una funzione python che parsi un CSV /tmp/sales.csv e raggruppi per mese",
+    "should_trigger": false
+  },
+  {
+    "query": "spiega come funzionano useEffect e useState in React",
+    "should_trigger": false
+  }
+]

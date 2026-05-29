@@ -1,5 +1,39 @@
 # Model and Resource
 
+## Contents
+
+- [Purpose](#purpose)
+- [When this reference applies](#when-this-reference-applies)
+- [How to USE, not how to MODIFY](#how-to-use-not-how-to-modify)
+- [Placement (where new classes go)](#placement-where-new-classes-go)
+- [Model — how to define one](#model--how-to-define-one)
+  - [Class skeleton](#class-skeleton)
+  - [`tableSchema()`](#tableschema)
+  - [`dataSchema()`](#dataschema)
+  - [Query helpers](#query-helpers)
+  - [Field-to-SQL conversion](#field-to-sql-conversion)
+  - [Lifecycle / persistence hooks](#lifecycle--persistence-hooks)
+  - [Minimal Model example](#minimal-model-example)
+- [Resource — how to define one](#resource--how-to-define-one)
+  - [Class skeleton](#class-skeleton-1)
+  - [`FormInput` / `FormField` hard rule](#forminput--formfield-hard-rule)
+  - [`formSchema()`](#formschema)
+  - [`permissionSchema()`](#permissionschema)
+  - [`navigationSchema()`](#navigationschema)
+  - [`tableSchema()` and `tableLayoutSchema()` (listing)](#tableschema-and-tablelayoutschema-listing)
+  - [`apiSchema()`](#apischema)
+  - [`querySchema()`](#queryschema)
+  - [Repeater fields](#repeater-fields)
+  - [Custom backend routes](#custom-backend-routes)
+  - [Lifecycle hooks](#lifecycle-hooks)
+  - [Singleton resources](#singleton-resources)
+  - [Minimal Resource example](#minimal-resource-example)
+- [`CustomPageSchema` (non-CRUD backend pages)](#custompageschema-non-crud-backend-pages)
+- [Registration and discovery](#registration-and-discovery)
+- [Generated routing](#generated-routing)
+- [Common gotchas](#common-gotchas)
+- [Cross-references](#cross-references)
+
 ## Purpose
 
 - Canonical reference for **using and extending** the `Model` and `Resource` classes provided by `wonder-image/app`.

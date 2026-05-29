@@ -1,5 +1,14 @@
 # Copy-Paste Examples for Wonder Sites
 
+## Contents
+
+- [1. Skeleton Model + Resource](#1-skeleton-model--resource)
+- [2. Frontend page (`custom/view/pages/frontend/about.php`)](#2-frontend-page-customviewpagesfrontendaboutphp)
+- [3. `lang/it/pages.json`](#3-langitpagesjson)
+- [4. `custom/config/permissions.php` — extend the builder registry](#4-customconfigpermissionsphp--extend-the-builder-registry)
+- [5. `custom/config/modules.php` — enable an external Composer module](#5-customconfigmodulesphp--enable-an-external-composer-module)
+- [6. `PRODUCT.md` — brand and project context](#6-productmd--brand-and-project-context)
+
 Reference scaffolds for the five most common starting points in a Wonder site. Patterns derived from `wonder-image/new-site` (`App\Models\Form\Form`, `App\Resources\Form\FormContactResource`, `custom/view/pages/frontend/contact.php`, `custom/config/permissions.php`, `lang/it/pages.json`). Replace the example slug (`Project`) with the real domain noun when copying.
 
 For the API contract behind these scaffolds see [`wi-app/references/model-and-resource.md`](../../wi-app/references/model-and-resource.md). For the form-input hard rule see the [`FormInput` / `FormField` hard rule](../../wi-app/references/model-and-resource.md#forminput--formfield-hard-rule).
@@ -345,3 +354,77 @@ Notes:
 - Per-module `config` is exposed via `\Wonder\App\Module\StateRepository::config('wonder-image/<slug>')`.
 - After editing this file, re-run `php forge update --local` so route / model / resource registration picks up the new state.
 - Prefer this over copy-pasting module code into `custom/` — see [`workflows.md`](workflows.md) on module integration.
+
+## 6. `PRODUCT.md` — brand and project context
+
+A single markdown file at the **root of the site repo** (same level as `composer.json`). Captures who the site is for, what it sounds like, and what kind of site it is (`site_type`). Read first by `wi-site` and by the companion skill [`impeccable`](https://github.com/pbakaus/impeccable). Full schema and the `site_type` semantics in [`product-md.md`](product-md.md).
+
+> **Don't fill this template cold.** When `PRODUCT.md` is missing or its required sections are empty, `wi-site` runs an **interview procedure** that asks 2–4 focused questions at a time and builds the file incrementally. Full procedure in [`product-md.md` § Compilation procedure](product-md.md#compilation-procedure-interview-driven). The template below is the **target shape** — what you end up with after the interview, not what you write from a blank page.
+
+Copy this skeleton into `PRODUCT.md` and fill 1–3 lines per section — if a section needs half a page, the content probably belongs in `lang/{locale}/*.json` (copy) or `assets/{ASSETS_VERSION}/css/set-up/` (visual tokens) instead.
+
+```markdown
+# PRODUCT.md
+
+## Register
+
+`brand` — design is the product (e.g. creative studio, fashion house).
+
+> Alternative: `product` — design serves the product (e.g. SaaS, ecom, tool).
+
+## Site type
+
+`corporate`
+
+> One of: `landing`, `corporate`, `blog`, `ecom`, `rsvp`.
+> See `skills/wi-site/references/product-md.md#site_type-field--semantica` for what each value implies.
+
+## Target users
+
+Coppie 25–40 anni, in Italia o italiani all'estero, che cercano un fotografo di matrimoni autoriale e non patinato.
+
+## Brand personality
+
+Caldo, autoriale, mai aulico, mai stocky, italiano contemporaneo.
+
+## Voice / tone
+
+Italiano, prima persona singolare, frasi corte, niente claim altisonanti. Nei testi legali, terza persona neutra. Mai inglesismi di marketing ("unlock", "boost", "game-changing").
+
+## Design principles
+
+1. La foto è il messaggio. Il testo arriva dopo, e solo se davvero serve.
+2. Lettura mobile-first — desktop è il secondo schermo, non il primo.
+3. Niente animazioni gratuite. Motion solo quando serve a guidare l'attenzione.
+4. Spazio bianco generoso, type scale poco aggressivo.
+
+## Anti-references
+
+- Niente photography stocky di matrimoni patinati.
+- Niente font script o handwritten.
+- Niente musica autoplay, niente parallax scroll, niente cursor-follow effects.
+
+## Asset paths
+
+- Logo SVG: `assets/{ASSETS_VERSION}/icons/logo.svg`
+- Logo PNG (fallback): `assets/{ASSETS_VERSION}/icons/logo.png`
+- Favicon: `assets/{ASSETS_VERSION}/icons/favicon.png`
+- OG image default: `assets/{ASSETS_VERSION}/images/og-default.jpg`
+
+## Constraints
+
+- Cliente non vuole un carrello pubblico. Eventuali pacchetti vanno richiesti via form contatti.
+- Pubblicazione bilingue IT + EN (per ora niente DE/FR).
+
+## Inspirations
+
+- https://example.com/studio-foo — usare per la *density* di galleria, non per la palette.
+- https://example.com/studio-bar — usare per la *voice* dei testi, non per il layout.
+```
+
+After creating `PRODUCT.md`:
+
+- No further config needed — `wi-site` and `impeccable` both look for it at the repo root.
+- Keep it short. If a section grows past ~5 lines, ask whether that content really belongs there or in copy (`lang/`) / tokens (`color.css` / `root.css`) / actual page content.
+- Update it when the brand evolves. It is a live document, not a one-shot deliverable.
+- Do **not** create a `DESIGN.md` — Wonder's `color.css` + `root.css` + [`style-and-lib.md`](style-and-lib.md) are the authoritative visual rulebook. Impeccable degrades gracefully without `DESIGN.md`.
