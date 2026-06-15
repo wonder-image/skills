@@ -108,7 +108,7 @@ final class ProjectResource extends Resource
         return [
             FormInput::key('name')->text()->required(),
             FormInput::key('description')->textarea(),
-            FormInput::key('cover')->inputFileDragDrop('image', 'classic'),
+            FormInput::key('cover')->fileDragDrop('image', 'classic'),
             FormInput::key('visible')->select([
                 'true'  => 'Visibile',
                 'false' => 'Nascosto',
@@ -145,11 +145,12 @@ final class ProjectResource extends Resource
 
     public static function navigationSchema(): NavigationSchema
     {
+        // Declares a new top-level "Contenuti" section. If another resource has
+        // already declared it, swap for `->inSection('content')`.
         return NavigationSchema::for(static::class)
-            ->section('Contenuti', 'content', 'bi-collection')
+            ->section('content', 'Contenuti', 'bi-collection', 500, ['admin', 'administrator'])
             ->title('Progetti')
-            ->order(30)
-            ->authority(['admin', 'administrator']);
+            ->order(30);
     }
 
     public static function apiSchema(): ApiSchema
@@ -320,7 +321,7 @@ Full permission builder API and the `$PERMITS` export flow live in [`wi-app/refe
 
 ## 5. `custom/config/modules.php` — enable an external Composer module
 
-`custom/config/modules.php` must return an array keyed by module slug (`wonder-image/<slug>`). `Wonder\App\Module\StateRepository` reads it; missing file = no modules enabled. Two equivalent shapes per entry:
+`custom/config/modules.php` is **optional** — the scaffold doesn't ship it. Create it only when you need to enable a module (`Wonder\App\Module\StateRepository::all()` returns `[]` when the file is missing). When you do create it, it must return an array keyed by module slug (`wonder-image/<slug>`). Two equivalent shapes per entry:
 
 ```php
 <?php

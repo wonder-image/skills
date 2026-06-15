@@ -308,7 +308,7 @@ public static function formSchema(): array
     return [
         FormInput::key('name')->text()->required(),
         FormInput::key('description')->textarea(),
-        FormInput::key('cover')->inputFileDragDrop('image', 'classic'),
+        FormInput::key('cover')->fileDragDrop('image', 'classic'),
         FormInput::key('visible')->select([
             'true'  => 'Visibile',
             'false' => 'Nascosto',
@@ -324,7 +324,7 @@ Type helpers chainable on `FormInput::key($name)` (defined on `FormField`, full 
 - text areas: `textarea(version?)` (pass a version string to opt into the rich-text editor)
 - choice: `select(options, version?)`, `radio(options, searchBar = false)`, `selectSearch(options, multiple = false, version?)`, `checkbox`, `checkTree(options, searchBar, inputType)`, `dynamicCheck(url, inputType)`, `checkBoolean(values, trueLabel?, falseLabel?)`
 - geo: `country(stateField?)`, `states`, `phonePrefix`, `googleAddress(restriction, alias?)`
-- files: `inputFile(file = 'image')`, `inputFileDragDrop(file = 'image', uploader = 'classic')`
+- files: `file(accept = 'image')`, `fileDragDrop(accept = 'image', uploader = 'classic')`. Both set the internal `helper` key (`inputFile` / `inputFileDragDrop`) read by `FormFieldElementFactory`, but the **chainable method names are `file` and `fileDragDrop`** — older `inputFile()` / `inputFileDragDrop()` no longer exist.
 - repeatable: `repeater([RepeaterColumn, ...])`
 
 Each helper sets the internal `helper` key, which `class/App/Support/FormFieldElementFactory.php` maps to a concrete `Wonder\Elements\Form\Components\*` element. Adding a new type means adding the helper here **and** the mapping there (plus renderers under `class/Themes/Wonder/` and `class/Themes/Bootstrap/`) — see the hard rule above.
@@ -360,25 +360,44 @@ The schema is consumed by `ResourceRouteRegistrar`: each emitted route is restri
 
 ### `navigationSchema()`
 
+Two scenarios — declare a new top-level section, or attach to an existing one.
+
+**Declare a new section** (one resource per section "owns" the declaration):
+
 ```php
 public static function navigationSchema(): NavigationSchema
 {
     return NavigationSchema::for(static::class)
-        ->section('Avvisi', 'notices', 'bi-megaphone')
+        ->section('notices', 'Avvisi', 'bi-megaphone', 500, ['admin', 'administrator'])
         ->title('Annunci')
-        ->order(20)
-        ->authority(['admin', 'administrator']);
+        ->order(20);
+}
+```
+
+**Attach to an existing section** (most resources do this):
+
+```php
+public static function navigationSchema(): NavigationSchema
+{
+    return NavigationSchema::for(static::class)
+        ->inSection('set-up')   // section already declared by another resource
+        ->title('Annunci')
+        ->order(20);
 }
 ```
 
 Builder methods on `NavigationSchema::for(static::class)`:
 
 - `.enabled(bool = true)` — toggle the nav entry on/off.
-- `.section(string $title, string $folder, string $icon, array $authority = [])` — group this resource under a named section (the section's title, folder slug, icon, and optional authority gate).
+- `.section(string $key, string $title, string $icon, int $order = 500, array $authority = [])` — **declare a new top-level section** under this resource. The first two args are now `$key` (slug used to reference the section) and `$title` (label shown in the menu) — order matters. `$order` is the top-level position (convention: `0` = Home, `1–999` = custom, `1000+` = core sections like Media / Set-Up); `$authority` gates visibility of the whole section.
+- `.inSection(string $key)` — attach this resource to a section already declared elsewhere. No re-validation at this stage; `BackendNavigation` checks the key after all declarations are collected. Most resources use this, not `section()`.
+- `.sectionOrder(int $order)` — explicit override of the section-level order for a **standalone resource** (no `section()`, no `inSection()`), so it can be placed precisely. Default `500`.
 - `.title(string)` — entry title, defaults to `Resource::titleLabel()`.
-- `.order(int)` — sort weight, default 100.
+- `.order(int)` — sort weight **inside** the section (subnav order), default `100`.
 - `.file(string)` — which page to link to, default `list`.
-- `.authority(array)` — authority gate on this specific entry.
+- `.authority(array)` — authority gate on this specific entry (independent of the section's authority).
+
+Reference implementations in `class/App/Resources/`: `Support/CssSingleton.php` declares the `'css'` section; `Css/CssFontResource.php` and `Css/CssColorResource.php` attach via `->inSection('css')`. `Config/CorporateDataResource.php` declares `'set-up'` with order `1020`; everything else under Set-Up uses `->inSection('set-up')`. `Home/HomeResource.php` is standalone and uses `->sectionOrder(0)` to pin Home first.
 
 ### `tableSchema()` and `tableLayoutSchema()` (listing)
 
@@ -548,7 +567,7 @@ final class ProjectResource extends Resource
         return [
             FormInput::key('name')->text()->required(),
             FormInput::key('description')->textarea(),
-            FormInput::key('cover')->inputFileDragDrop('image'),
+            FormInput::key('cover')->fileDragDrop('image'),
             FormInput::key('visible')->select([
                 'true'  => 'Visibile',
                 'false' => 'Nascosto',
@@ -605,10 +624,9 @@ final class ProjectResource extends Resource
     public static function navigationSchema(): NavigationSchema
     {
         return NavigationSchema::for(static::class)
-            ->section('Contenuti', 'content', 'bi-collection')
+            ->section('content', 'Contenuti', 'bi-collection', 500, ['admin', 'administrator'])
             ->title('Progetti')
-            ->order(30)
-            ->authority(['admin', 'administrator']);
+            ->order(30);
     }
 }
 ```
