@@ -141,7 +141,7 @@ return [
     Field::key('slug')->text()->slug(),
     Field::key('name')->text()->sanitizeFirst()->required(),
     Field::key('email')->text()->email()->required(),
-    Field::key('picture')->upload()->image(),   // file/image field; storage path comes from $folder
+    Field::key('picture')->image(),   // image field; storage path comes from $folder. Use ->file() for non-image uploads.
     Field::key('visible')->text(),
 ];
 ```
@@ -182,7 +182,9 @@ Use the `safe*` variants whenever the result is going out to a client (API or an
 - `validate(array $values, string $prefix = ''): object` — runs `Field::validate()` for every field in `dataSchema()`. Returns `{ valid: bool, response: array }`. `create()` and `update()` call it implicitly; call it directly when you need to validate before doing anything else.
 - `prepare(array $values, string $prefix = ''): object` — runs `Field::format()` for every field. Produces the final `[column => value]` array used for the actual INSERT / UPDATE.
 - Soft delete is opt-in via columns: if `$defaultCondition` is set and a `deleted` column exists (or audit columns are enabled), reads automatically exclude rows where `deleted = 'true'`. There is no `softDelete()` method on the base — set `deleted = 'true'` through `update()`.
-- File handling (image / file fields) is delegated to `Wonder\App\Support\MediaFileManager`. The `safe*` reads expand stored filenames into URLs using `$folder` and the field's `dir` schema. No need to wire this manually — just declare `Field::key('picture')->upload()->image()` and use `static::$folder` to set the upload subdirectory.
+- File handling (image / file fields) is delegated to `Wonder\App\Support\MediaFileManager`. The `safe*` reads expand stored filenames into URLs using `$folder` and the field's `dir` schema. No need to wire this manually — just declare `Field::key('picture')->image()` (or `->file()` for non-image uploads) and use `static::$folder` to set the upload subdirectory.
+
+**Field-type builder dispatch:** `Wonder\Data\UploadSchema` (imported `as Field`) resolves the *first* chained call through a `__call` map — valid field types are exactly `text`, `number`, `date`, `email`, `json`, `password`, `file`, `image`, `tin`, `vat`. There is **no `upload()` method** — `Field::key('x')->upload()` throws `Exception("Campo upload non supportato")`. For an image field use `->image()` directly (the `Image` field extends `File`, so `->dir()`, `->resize()`, `->webp()`, `->quality()` are all available); for a generic file use `->file()->dir(...)`.
 - There is **no `beforeSave` / `afterSave` hook on the Model itself**. Pre/post processing lives on the Resource (see `mutateRequestValues`, `afterStore`, `afterUpdate`, `afterDelete` below) so that the same Model can be used by multiple Resources with different behavior.
 
 ### Minimal Model example
@@ -222,7 +224,7 @@ final class Project extends Model
             Field::key('slug')->text()->slug(),
             Field::key('name')->text()->sanitizeFirst()->required(),
             Field::key('description')->text(),
-            Field::key('cover')->upload()->image(),
+            Field::key('cover')->image(),
             Field::key('visible')->text(),
         ];
     }

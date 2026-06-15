@@ -54,7 +54,7 @@ final class Project extends Model
             Field::key('slug')->text()->lower()->slug('name'),
             Field::key('name')->text()->sanitizeFirst(),
             Field::key('description')->text(),
-            Field::key('cover')->upload()->image()->dir('/projects/cover/'),
+            Field::key('cover')->image()->dir('/projects/cover/'),
             Field::key('visible')->text()->default('true'),
         ];
     }
