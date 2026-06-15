@@ -86,12 +86,13 @@ Multi-page site: home, chi-siamo, servizi, contatti, legal. È la forma di defau
 
 ### `blog`
 
-Sito orientato a contenuti editoriali. Abilitare il modulo `wonder-image/blog` in `custom/config/modules.php`.
+Sito orientato a contenuti editoriali. Abilitare il modulo `wonder-image/blog` in `custom/config/modules.php` *(quando pubblicato — al momento è una convenzione, verifica su packagist prima di prometterlo al cliente)*.
 
 - Pagine post/listing/categoria/tag: vengono dal modulo
 - Override: solo `custom/view/components/frontend/...` mirati a riconnotare la presentazione
 - Wi-site propone `wonder-image/blog` come prima cosa, non un Model `Post` custom
 - Impeccable critique pesa **leggibilità** (line length, type scale, contrast) sopra il visual flash
+- Finché il modulo non è disponibile, `wi-site` può proporre Model + Resource custom (`app/Models/Post.php` + `app/Resources/PostResource.php`) come fallback temporaneo, segnalando esplicitamente che è un'implementazione di transizione da sostituire quando il modulo arriva
 
 ### `ecom`
 
