@@ -1,0 +1,32 @@
+{
+    "servizi" : {
+        "seo" : {
+            "title" : "Services - {{society_name}}",
+            "description" : "Services offered by {{society_name}}"
+        },
+        "content" : {
+            "hero" : {
+                "title" : "Services",
+                "subtitle" : "What we do for you."
+            },
+            "services" : {
+                "title" : "Our services",
+                "subtitle" : "Three ways we can help you.",
+                "items" : {
+                    "one" : {
+                        "title" : "Consulting",
+                        "description" : "We work alongside you to analyse your needs and define the best solution."
+                    },
+                    "two" : {
+                        "title" : "Design",
+                        "description" : "We turn goals into a concrete project, cared for in every detail."
+                    },
+                    "three" : {
+                        "title" : "Support",
+                        "description" : "We support you over time with ongoing assistance and dedicated updates."
+                    }
+                }
+            }
+        }
+    }
+}
