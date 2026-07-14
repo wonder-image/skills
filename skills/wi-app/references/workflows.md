@@ -10,6 +10,10 @@
 
 - Prefer `class/App/*` PSR-4 classes for new logic.
 - Use `app/*` when you must interact with legacy runtime handlers, bootstraps, routes, or helpers that the new layer still delegates to.
+- For package APIs, put handlers in `app/http/api/*` and expose them from `app/config/routes/route.api.php`. Do not add files back under `app/api/*`.
+- Keep default providers split by responsibility:
+  - `Wonder\\App\\RuntimeDefaults` for runtime fallback values used during rendering or config bootstrap.
+  - `Wonder\\App\\SeedDefaults` for idempotent seed/bootstrap payloads used by `build/row`, setup commands, and empty singleton forms.
 - For backend forms:
   - put SQL structure in `Model::tableSchema()`
   - put data transformation and persistence rules in `Model::dataSchema()`
@@ -52,6 +56,7 @@
 - `app/config/app/table.php` still loads PHP files from `app/build/table/`; do not add new files there.
 - `SortableInput` is deprecated. Keep it only for compatibility.
 - The canonical module pattern is Composer-package based, not copy-paste under `custom/...`.
+- For module view overrides, use `php forge publish:module <slug>` from the site root. It copies the module `paths.views` tree into `custom/modules/<slug>/view/`; the module entrypoint should resolve that custom path before falling back to package views.
 
 ## Documentation Expectations
 

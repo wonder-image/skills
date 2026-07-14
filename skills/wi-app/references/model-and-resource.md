@@ -60,6 +60,81 @@ It does **not** cover modifying the base classes themselves (`class/App/Model.ph
 
 The ModelRegistry / ResourceRegistry discovery and precedence rules are documented in [`architecture.md`](architecture.md). Subclasses placed in higher-precedence locations override lower-precedence ones.
 
+## Schema extensions (reusable schema fragments)
+
+When the same domain bundle must stay aligned across multiple surfaces — for
+example:
+
+- `Model::dataSchema()`
+- `Model::tableSchema()`
+- `Resource::labelSchema()`
+- `Resource::formSchema()` or a `CustomPageSchema`
+
+— do **not** duplicate the same field keys and labels in every class. Prefer a
+dedicated schema-extension class under `class/App/Schema/Extensions/*` that
+returns fragments such as:
+
+- `labels(): array`
+- `dataSchema(): array`
+- `tableSchema(): array`
+- `formSchema(): array`
+
+Example:
+
+```php
+use Wonder\App\Schema\Extensions\AddressExtension;
+
+public static function dataSchema(): array
+{
+    return [
+        ...AddressExtension::simple(prefix: 'legal', linkKey: 'gmaps')->dataSchema(),
+    ];
+}
+
+public static function tableSchema(): array
+{
+    return [
+        ...AddressExtension::simple(prefix: 'legal', linkKey: 'gmaps')->tableSchema(),
+    ];
+}
+
+public static function labelSchema(): array
+{
+    return [
+        ...AddressExtension::simple(prefix: 'legal', linkKey: 'gmaps')->labels(),
+    ];
+}
+```
+
+Treat schema extensions as **composition helpers**, not registries:
+
+- no automatic hookup into the base `Model` / `Resource`
+- no HTML rendering
+- no direct persistence/query side effects
+- no site-specific assumptions baked into the shared fragment
+
+When useful, a schema extension may also expose a **pure row decorator** for
+`Model::decorate(array $row): array` so the same domain bundle can enrich read
+rows with derived values without repeating prefix mapping by hand.
+
+Example:
+
+```php
+public static function decorate(array $row): array
+{
+    return AddressExtension::simple(prefix: 'legal', linkKey: 'gmaps')->decorate($row);
+}
+```
+
+The same extension may also centralize reusable bundle-level constraints and
+defaults, for example:
+
+```php
+AddressExtension::simple(countryDefault: 'IT')
+    ->allowedCountries(['IT', 'DE'])
+    ->requiredFields(['country', 'province', 'city', 'street', 'number']);
+```
+
 ## Model — how to define one
 
 ### Class skeleton

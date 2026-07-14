@@ -6,6 +6,7 @@ description: |
   TRIGGER when:
   - the repo's composer.json declares `"name": "wonder-image/app"`
   - editing files under `class/App/*`, `app/config/routes/*`, `app/http/*`, `app/bootstrap/*`, `app/middleware/*`, `class/App/Module/*`, `class/Console/*`
+  - editing shared UI components under `class/Elements/Components/*` or their renderers under `class/Themes/{Wonder,Bootstrap}/Components/*`
   - modifying Model, Resource, PageSchema, Repeater, ModelRegistry, ResourceRegistry, ResourceRouteRegistrar, Credentials, or the `wonder-image.php` entrypoint
   - changing bootstrap order, `ROOT`/`.env` resolution, module discovery, generated backend/API CRUD routes, or `php forge ...` command sources
   - updating `docs/app/*` for bootstrap, architecture, routing, or layout conventions
@@ -60,6 +61,10 @@ Switch to [`wi-site`](../wi-site/SKILL.md) when **any** of these signals are tru
 - Treat `wonder-image/app` as a Composer library. The real runtime lives in the site that installs it under `vendor/wonder-image/app`.
 - Assume `php forge ...` commands are site-side commands unless you confirm otherwise. Do not expect a `forge` executable in this package root.
 - Prefer `class/App/*` for new logic. Touch legacy `app/*` only when the runtime still depends on it.
+- API handlers live under `app/http/api/*`. Do not reintroduce package handlers under `app/api/*`; call routed `/api/...` endpoints via `Path::$api`, `Path::$appApi`, and `Path::$apiDT`.
+- Keep runtime fallbacks and seed payloads separate:
+  - `Wonder\\App\\RuntimeDefaults` is for runtime defaults used while rendering or composing in-memory config.
+  - `Wonder\\App\\SeedDefaults` is for idempotent bootstrap/seed payloads consumed by `build/row`, setup commands, and seed-backed singleton forms.
 - Program in terms of future integration and extension. Prefer class and function designs that can be reused, extended, overridden, or integrated by sites and external modules instead of solving only the immediate local case.
 - Keep the architecture split clear:
   - `Model::tableSchema()` defines SQL structure
@@ -86,7 +91,7 @@ Read `references/model-and-resource.md` — section "FormInput / FormField hard 
 
 ### UI / styling inside default components or themes
 
-When the change touches a default component shipped by the framework (`class/App/Resources/.../*.php` views, the form Components under `class/Elements/Form/Components/`, the Wonder / Bootstrap renderers under `class/Themes/{Wonder,Bootstrap}/`, or any `app/view/...` page used by a site), the authoritative UI rulebook is [`wi-site/references/style-and-lib.md`](../wi-site/references/style-and-lib.md). The same reuse-first-from-`wonder-image/lib` policy applies inside `wonder-image/app`: do not invent new `.wi-*` names at framework level (that is a lib-side change), do not bake site-specific tokens into a default component, and preserve compatibility with the site's `color.css` / `root.css`. Install `wi-site` alongside `wi-app` so this reference resolves locally.
+When the change touches a default component shipped by the framework (`class/App/Resources/.../*.php` views, the non-form Components under `class/Elements/Components/`, the form Components under `class/Elements/Form/Components/`, the Wonder / Bootstrap renderers under `class/Themes/{Wonder,Bootstrap}/`, or any `app/view/...` page used by a site), the authoritative UI rulebook is [`wi-site/references/style-and-lib.md`](../wi-site/references/style-and-lib.md). The same reuse-first-from-`wonder-image/lib` policy applies inside `wonder-image/app`: do not invent new `.wi-*` names at framework level (that is a lib-side change), do not bake site-specific tokens into a default component, and preserve compatibility with the site's `color.css` / `root.css`. This includes shared action primitives like `Button`, `Badge`, `ButtonGroup`, and `Dropdown`. For link-like attributes on shared components, prefer the common concern `class/Elements/Concerns/HasLinkAttributes.php` and persist `href`, `target`, `rel`, `title`, `onclick`, `download` in `attributes` so theme renderers stay thin. Install `wi-site` alongside `wi-app` so this reference resolves locally.
 
 ### Permissions, roles, or user management
 

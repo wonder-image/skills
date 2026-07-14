@@ -59,6 +59,7 @@
   - `app/config/routes/route.frontend.php`
   - `app/config/routes/route.backend.php`
   - `app/config/routes/route.api.php`
+- Canonical package API handlers live under `app/http/api/*`; the old `app/api/*` tree has been removed and must not be recreated.
 - `ResourceRouteRegistrar` generates backend and API CRUD routes from each registered resource.
 - `Resource::path()` or model folder drives the backend path; the slugified path drives route names and API segments.
 - Custom resource pages and permissions alter which routes are emitted.
@@ -72,6 +73,7 @@
 - `Module\\Discovery` merges bundled, Composer, vendor filesystem, and local module sources.
 - Composer discovery must remain compatible with both `vendor/composer/installed.php` and `installed.json`, plus filesystem fallback for `vendor/wonder-image/*/module.json`.
 - `Module\\Registry` validates manifests, enforces dependencies, exposes module model/resource/lang/route paths, and merges permissions.
+- `php forge publish:module <slug>` publishes a module's `paths.views` tree into the site at `custom/modules/<slug>/view/`. Runtime override support still depends on the module resolving that custom path before falling back to its package view path.
 
 ## Files to Avoid or Treat as Generated
 
