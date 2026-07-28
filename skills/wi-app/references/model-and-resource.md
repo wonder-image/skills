@@ -485,6 +485,9 @@ The Resource listing has two complementary schemas:
   - `.title(bool|string $enabled = true, ?string $text = null)` — page title block (`title('Lista X')` is the common form).
   - `.results(bool = true)` — toggle the result-count line.
   - `.buttonAdd(bool|string $enabled = true, ?string $label = null)` — top-right "Add" CTA.
+  - `.buttonCustom(Button|Dropdown|string $button)` / `.buttonsCustom(array)` — add typed header actions next to the "Add" CTA; prefer `Wonder\Elements\Components\Button` or `Dropdown`.
+  - Use `Button::post($action, $label)->confirm(...)` for POST header actions. `Button::to($action, $label)->type('post')` is equivalent and both render a sanitized `<form method="post">` around the submit button.
+  - `.buttonCustomHtml(string $html)` — explicit trusted-HTML escape hatch only when no Element can represent the markup; sanitize every dynamic value before composing it.
   - `.filters(bool $search = true, bool $limit = true)` — search box and per-page limit selector.
   - `.searchFields(array)` — columns the search box queries.
   - `.customFilters(array)` — extra filters (typically built from `FormInput` so they go through the same `FormField` render path).

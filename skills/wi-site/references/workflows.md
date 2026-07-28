@@ -10,6 +10,12 @@ Verified against `wonder-image/new-site` (https://github.com/wonder-image/new-si
   - `php forge update --local`
   - `php forge start`
 - `composer install` also triggers `php forge config` through Composer scripts.
+- `php forge credentials` is the explicit local recovery command for
+  Bitwarden `dev-shared`: it asks/saves `BWS_ACCESS_TOKEN` when missing and
+  fills only empty `.env` values by default (`--force` replaces local
+  overrides; `--refresh-token` replaces a revoked token). Run it only when
+  the user explicitly requests credential recovery; it writes secrets and is
+  not a routine validation command.
 - `npm install` copies the Wonder frontend library into `assets/lib/wonder-image/dist/` from the npm package `wonder-image` (source: `node_modules/wonder-image/`).
 - `php forge update --local` applies DB and runtime generation steps.
 - `php forge start` runs the local server and may fill missing `.env` values during local setup.

@@ -1,23 +1,15 @@
 ---
 name: wi-site
 description: |
-  Work inside wonder-image/new-site (the official scaffold for Wonder sites) or any project bootstrapped from it. These projects depend on wonder-image/app (Composer) for the framework core and wonder-image/lib (npm) for the JS/CSS design system. Covers both navigating the project and implementing features: pages, models, resources, repeaters, backend-editable content, translations, roles and permissions, component overrides, module integration, **and UI / styling / design-system work** (buttons, inputs, forms, modals, cards, alerts, badges, typography, images, color tokens, root variables, custom CSS / JS) where `wonder-image/lib` is the source of truth.
-
-  TRIGGER when:
-  - the repo is wonder-image/new-site, or was scaffolded from it
-  - composer.json depends on `wonder-image/app` (and is NOT itself wonder-image/app)
-  - package.json depends on `wonder-image/lib`, or `assets/lib/wonder-image/dist/` exists
-  - the layout matches the new-site structure: `custom/`, `app/`, `assets/{ASSETS_VERSION}/`, `lang/{locale}/*.json`, `vendor/wonder-image/app`
-  - editing files under `custom/view/*`, `custom/routes/*`, `custom/config/*`, `custom/function/*`, `app/Models`, `app/Resources`, `lang/`, or `assets/{ASSETS_VERSION}/*`
-  - running `php forge update --local`, `php forge start`, or `npm install` from the project root
-  - adding pages, models, resources, repeaters, `__t(...)` translations, `__r(...)` route URLs (or `__u(...)` for free paths), roles, permissions, or integrating a `wonder-image/<slug>` external module
-  - any UI / styling / design-system task that should reuse `wonder-image/lib` classes, tokens, or components (buttons, inputs, forms, modals, cards, alerts, badges, typography, images, interactive elements)
-  - touching `assets/{ASSETS_VERSION}/css/set-up/color.css`, `assets/{ASSETS_VERSION}/css/set-up/root.css`, or adding custom CSS / JS under `assets/{ASSETS_VERSION}/css/` or `assets/{ASSETS_VERSION}/js/`
-
-  SKIP when:
-  - editing files inside `vendor/wonder-image/app` — that is framework work, switch to wi-app
-  - working in the wonder-image/app repo itself (composer.json name is `wonder-image/app`) — use wi-app
-  - working in the wonder-image/lib repo (JS/CSS design-system source) — different repo
+  Work inside wonder-image/new-site or any site scaffolded from it. Use when
+  composer.json depends on `wonder-image/app` but is not the framework package,
+  or when work touches `custom/`, `app/Models`, `app/Resources`, `lang/`,
+  `assets/{ASSETS_VERSION}/`, `PRODUCT.md`, `php forge credentials`,
+  `php forge update --local`, `php forge start`, or npm setup. Covers pages,
+  models, resources, repeaters, editable content, translations, routes, roles,
+  permissions, external modules, component overrides, and UI/styling that must
+  reuse `wonder-image/lib`. Do not use for the `wonder-image/app` core, direct
+  edits under `vendor/wonder-image/app`, or the `wonder-image/lib` source.
 ---
 
 # Wonder Site (new-site based)
@@ -54,6 +46,7 @@ Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals 
 - Never patch `vendor/wonder-image/app` from a site task. If the change belongs there, switch to wi-app.
 - Never run these Forge commands from this skill:
   - `php forge config`
+  - `php forge credentials`
   - `php forge provision`
   - `php forge db:init`
   - `php forge build`
@@ -152,6 +145,7 @@ Read `references/project-structure.md` and `references/workflows.md`.
 Read `references/workflows.md`. From the project root:
 - `composer install` (also runs `php forge config` via Composer scripts)
 - `npm install` (copies `wonder-image/lib` into `assets/lib/wonder-image/dist/`)
+- `php forge credentials` (only when the user explicitly requests Bitwarden `dev-shared` recovery; writes secrets into `.env`)
 - `php forge update --local` (applies DB and runtime generation)
 - `php forge start` (runs the local server, may fill missing `.env`)
 

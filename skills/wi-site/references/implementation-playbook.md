@@ -93,6 +93,7 @@ For the full Model / Resource API contract see `wi-app/references/model-and-reso
   - `php forge start`
 - Forbidden from this skill:
   - `php forge config`
+  - `php forge credentials`
   - `php forge provision`
   - `php forge db:init`
   - `php forge build`
