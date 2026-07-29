@@ -6,7 +6,7 @@ description: |
   TRIGGER when:
   - the repo's composer.json declares `"name": "wonder-image/app"`
   - editing files under `class/App/*`, `app/config/routes/*`, `app/http/*`, `app/bootstrap/*`, `app/middleware/*`, `class/App/Module/*`, `class/Console/*`
-  - editing shared UI components under `class/Elements/Components/*` or their renderers under `class/Themes/{Wonder,Bootstrap}/Components/*`
+  - editing shared UI components under `class/Elements/Components/*`, media under `class/Elements/Media/*`, or their renderers under `class/Themes/{Wonder,Bootstrap}/*`
   - modifying Model, Resource, PageSchema, Repeater, ModelRegistry, ResourceRegistry, ResourceRouteRegistrar, Credentials, or the `wonder-image.php` entrypoint
   - changing bootstrap order, `ROOT`/`.env` resolution, module discovery, generated backend/API CRUD routes, or `php forge ...` command sources
   - updating `docs/app/*` for bootstrap, architecture, routing, or layout conventions
@@ -91,7 +91,7 @@ Read `references/model-and-resource.md` — section "FormInput / FormField hard 
 
 ### UI / styling inside default components or themes
 
-When the change touches a default component shipped by the framework (`class/App/Resources/.../*.php` views, the non-form Components under `class/Elements/Components/`, the form Components under `class/Elements/Form/Components/`, the Wonder / Bootstrap renderers under `class/Themes/{Wonder,Bootstrap}/`, or any `app/view/...` page used by a site), the authoritative UI rulebook is [`wi-site/references/style-and-lib.md`](../wi-site/references/style-and-lib.md). The same reuse-first-from-`wonder-image/lib` policy applies inside `wonder-image/app`: do not invent new `.wi-*` names at framework level (that is a lib-side change), do not bake site-specific tokens into a default component, and preserve compatibility with the site's `color.css` / `root.css`. This includes shared action primitives like `Button`, `Badge`, `ButtonGroup`, and `Dropdown`. For link-like attributes on shared components, prefer the common concern `class/Elements/Concerns/HasLinkAttributes.php` and persist `href`, `target`, `rel`, `title`, `onclick`, `download` in `attributes` so theme renderers stay thin. Install `wi-site` alongside `wi-app` so this reference resolves locally.
+When the change touches a default component shipped by the framework (`class/App/Resources/.../*.php` views, the non-form Components under `class/Elements/Components/`, Media under `class/Elements/Media/`, the form Components under `class/Elements/Form/Components/`, the Wonder / Bootstrap renderers under `class/Themes/{Wonder,Bootstrap}/`, or any `app/view/...` page used by a site), the authoritative UI rulebook is [`wi-site/references/style-and-lib.md`](../wi-site/references/style-and-lib.md). The same reuse-first-from-`wonder-image/lib` policy applies inside `wonder-image/app`: do not invent new `.wi-*` names at framework level (that is a lib-side change), do not bake site-specific tokens into a default component, and preserve compatibility with the site's `color.css` / `root.css`. This includes shared action primitives like `Button`, `Badge`, `ButtonGroup`, and `Dropdown`. For link-like attributes on shared components, prefer the common concern `class/Elements/Concerns/HasLinkAttributes.php` and persist `href`, `target`, `rel`, `title`, `onclick`, `download` in `attributes` so theme renderers stay thin. Install `wi-site` alongside `wi-app` so this reference resolves locally.
 
 ### Permissions, roles, or user management
 
