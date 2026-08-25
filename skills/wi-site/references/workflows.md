@@ -26,8 +26,8 @@ Verified against `wonder-image/new-site` (https://github.com/wonder-image/new-si
 - Keep the framework roles explicit (full API in `wi-app/references/model-and-resource.md`):
   - `Model::tableSchema()` defines SQL structure (typically via `static::sqlColumnsFromDataSchema([...])`)
   - `Model::dataSchema()` defines data treatment and persistence behavior
-  - `Resource::formSchema()` defines backend inputs (via `FormInput::key(...)`)
-  - `FormInput::repeater([RepeaterColumn::key(...)])` handles repeatable rows
+  - `Resource::formSchema()` defines backend inputs (via `FormField::key(...)`)
+  - `FormField::repeater([RepeaterColumn::key(...)])` handles repeatable rows
 - If the backend page is not standard CRUD, prefer `CustomPageSchema` (extend `Wonder\App\PageSchema\CustomPageSchema`).
 - One file per Model / Resource — do not collapse multiple tables into a single file.
 

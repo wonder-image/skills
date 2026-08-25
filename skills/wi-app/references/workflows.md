@@ -19,9 +19,9 @@
   - put data transformation and persistence rules in `Model::dataSchema()`
   - put backend inputs in `Resource::formSchema()`
 - Use `CustomPageSchema` for non-CRUD backend pages.
-- Use `FormInput::repeater()`, `RepeaterColumn`, and `Wonder\App\Support\Repeater` for repeatable rows.
+- Use `FormField::repeater()`, `RepeaterColumn`, and `Wonder\App\Support\Repeater` for repeatable rows.
 - `TableSync` orders imports from foreign keys declared in `Model::tableSchema()`: referenced synchronized tables are populated before dependent tables, while independent tables retain their configured order.
-- **All form inputs go through `FormField`**, on the frontend Wonder theme and the backend Bootstrap theme alike. Declare with `FormInput::key(...)` / `RepeaterColumn::key(...)` / `FormSchema::for(...)`; render with `FormField::render($theme)`. Never emit raw `<input>` / `<select>` / `<textarea>` HTML and never wrap input rendering in custom functions that bypass the schema. Missing input types are added at the framework layer (`FormField` helper + `FormFieldElementFactory` mapping + Wonder/Bootstrap renderer under `class/Themes/*`), not patched into the call site. Full rule in [`model-and-resource.md`](model-and-resource.md#forminput--formfield-hard-rule).
+- **All form inputs go through the `FormField` hierarchy**, on the frontend Wonder theme and the backend Bootstrap theme alike. Declare with `FormField::key(...)` / `RepeaterColumn::key(...)` (or directly with a typed `Inputs\Input*`); render through `Input::render($theme)`. Never emit raw `<input>` / `<select>` / `<textarea>` HTML and never wrap input rendering in custom functions that bypass the schema. Missing input types are added at the framework layer (typed input with `element()` + `FormField` helper + Wonder/Bootstrap renderer under `class/Themes/*`), not patched into the call site. Full rule in [`model-and-resource.md`](model-and-resource.md#formfield-hard-rule).
 
 ## High-Risk Areas
 

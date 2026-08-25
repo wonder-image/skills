@@ -11,7 +11,7 @@
 
 Reference scaffolds for the five most common starting points in a Wonder site. Patterns derived from `wonder-image/new-site` (`App\Models\Form\Form`, `App\Resources\Form\FormContactResource`, `custom/view/pages/frontend/contact.php`, `custom/config/permissions.php`, `lang/it/pages.json`). Replace the example slug (`Project`) with the real domain noun when copying.
 
-For the API contract behind these scaffolds see [`wi-app/references/model-and-resource.md`](../../wi-app/references/model-and-resource.md). For the form-input hard rule see the [`FormInput` / `FormField` hard rule](../../wi-app/references/model-and-resource.md#forminput--formfield-hard-rule).
+For the API contract behind these scaffolds see [`wi-app/references/model-and-resource.md`](../../wi-app/references/model-and-resource.md). For the form-input hard rule see the [`FormField` hard rule](../../wi-app/references/model-and-resource.md#formfield-hard-rule).
 
 ## 1. Skeleton Model + Resource
 
@@ -70,7 +70,7 @@ namespace App\Resources;
 
 use Wonder\App\Resource;
 use Wonder\App\ResourceSchema\ApiSchema;
-use Wonder\App\ResourceSchema\FormInput;
+use Wonder\App\ResourceSchema\FormField;
 use Wonder\App\ResourceSchema\NavigationSchema;
 use Wonder\App\ResourceSchema\PermissionSchema;
 use Wonder\App\ResourceSchema\TableColumn;
@@ -106,10 +106,10 @@ final class ProjectResource extends Resource
     public static function formSchema(): array
     {
         return [
-            FormInput::key('name')->text()->required(),
-            FormInput::key('description')->textarea(),
-            FormInput::key('cover')->fileDragDrop('image', 'classic'),
-            FormInput::key('visible')->select([
+            FormField::key('name')->text()->required(),
+            FormField::key('description')->textarea(),
+            FormField::key('cover')->fileDragDrop('image', 'classic'),
+            FormField::key('visible')->select([
                 'true'  => 'Visibile',
                 'false' => 'Nascosto',
             ])->value('true')->required(),
@@ -168,7 +168,7 @@ composer dump-autoload
 php forge update --local
 ```
 
-`ResourceRouteRegistrar` will emit `/backend/projects/...` CRUD routes and `/api/projects/...` API routes automatically. `formSchema()` flows through the [`FormField` hard rule](../../wi-app/references/model-and-resource.md#forminput--formfield-hard-rule) — never replace it with raw HTML inputs.
+`ResourceRouteRegistrar` will emit `/backend/projects/...` CRUD routes and `/api/projects/...` API routes automatically. `formSchema()` flows through the [`FormField` hard rule](../../wi-app/references/model-and-resource.md#formfield-hard-rule) — never replace it with raw HTML inputs.
 
 ## 2. Frontend page (`custom/view/pages/frontend/about.php`)
 

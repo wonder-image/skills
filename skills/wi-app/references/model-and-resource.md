@@ -16,7 +16,7 @@
   - [Minimal Model example](#minimal-model-example)
 - [Resource — how to define one](#resource--how-to-define-one)
   - [Class skeleton](#class-skeleton-1)
-  - [`FormInput` / `FormField` hard rule](#forminput--formfield-hard-rule)
+  - [`FormField` hard rule](#formfield-hard-rule)
   - [`formSchema()`](#formschema)
   - [`permissionSchema()`](#permissionschema)
   - [`navigationSchema()`](#navigationschema)
@@ -319,7 +319,7 @@ namespace App\Resources;
 
 use Wonder\App\Resource;
 use Wonder\App\ResourceSchema\ApiSchema;
-use Wonder\App\ResourceSchema\FormInput;
+use Wonder\App\ResourceSchema\FormField;
 use Wonder\App\ResourceSchema\NavigationSchema;
 use Wonder\App\ResourceSchema\PermissionSchema;
 use Wonder\App\ResourceSchema\TableColumn;
@@ -350,43 +350,43 @@ Override the static helpers `path()`, `icon()`, `slug()` only when the value is 
 
 `labelSchema(): array` and `textSchema(): array` are the canonical places to keep all human-readable labels and short noun forms used by the backend (`label`, `plural_label`, etc.). Form fields without an explicit `label()` automatically pick up the matching key from `labelSchema()`.
 
-### `FormInput` / `FormField` hard rule
+### `FormField` hard rule
 
 Every form input — in **both** the frontend Wonder theme and the backend Bootstrap theme — must be declared through the `FormField` class hierarchy. There is exactly one sanctioned path:
 
-- **Declaration**: `FormInput::key($name)->...` (or `RepeaterColumn::key($name)->...` inside a repeater row, or the `FormSchema::for(...)` builder when you need grouping / sidebar fields).
-- **Render**: `FormField::render($theme)`, which dispatches through `class/App/Support/FormFieldElementFactory.php` to a `Wonder\Elements\Form\Components\*` element, which the theme resolver in `class/Themes/Resolver.php` renders with either `class/Themes/Wonder/...` (frontend, `wi-*` markup) or `class/Themes/Bootstrap/...` (backend, `form-floating` / Bootstrap markup).
+- **Declaration**: `FormField::key($name)->...`, or `RepeaterColumn::key($name)->...` inside a repeater row. Code that deliberately wants the typed API may start directly from `Inputs\InputFoo::key($name)`.
+- **Render**: the selected typed `Input` builds its `Wonder\Elements\Form\Components\*` object in `element()`, `Input::compile()` hydrates it, and `Input::render($theme)` delegates to `class/Themes/Resolver.php` for either `class/Themes/Wonder/...` (frontend, `wi-*` markup) or `class/Themes/Bootstrap/...` (backend, `form-floating` / Bootstrap markup). `FormField` is the facade that morphs into that typed input before rendering.
 
 **Do not:**
 
 - write raw HTML inputs (`<input>`, `<select>`, `<textarea>`, `<input type="file">`, etc.) in pages, components, layouts, or partials — neither under `class/App/*` nor in a site's `custom/view/*`. This bypasses theme dispatch, label/error wiring, attribute parsing, value normalization, and the file / repeater / date helpers.
 - introduce free functions or page helpers (`render_input(...)`, `text_field(...)`, etc.) that emit HTML directly. The only function-style helper allowed is the chainable builder API on `FormField` itself.
-- inline a bespoke component in a page just to "skip the schema". If the page is non-CRUD, model it as a `CustomPageSchema` so its inputs still go through `FormInput`.
-- hand-pick markup for one theme only. The same `FormInput` declaration must work for the Wonder theme on the frontend **and** the Bootstrap theme on the backend.
+- inline a bespoke component in a page just to "skip the schema". If the page is non-CRUD, model it as a `CustomPageSchema` so its inputs still go through `FormField`.
+- hand-pick markup for one theme only. The same `FormField` declaration must work for the Wonder theme on the frontend **and** the Bootstrap theme on the backend.
 
 **If an input type is missing**, the fix is at the framework layer, not at the call site:
 
-1. add the chainable helper on `FormField` (and/or expose it on `FormSchema`),
-2. map the helper key in `FormFieldElementFactory::make()` to an existing or new `Wonder\Elements\Form\Components\*` element,
-3. add the matching renderer under `class/Themes/Wonder/` and `class/Themes/Bootstrap/` so both themes are covered,
-4. then declare the field with `FormInput::key(...)->newHelper(...)` as usual.
+1. add a typed class under `class/App/ResourceSchema/Inputs/` and implement `element()` so it builds an existing or new `Wonder\Elements\Form\Components\*` object,
+2. add the chainable helper on `FormField`; add the helper to `FormField::HELPERS` only when the legacy `new FormField($name, $helper)` escape hatch must support it,
+3. add the matching renderer under `class/Themes/Wonder/` and `class/Themes/Bootstrap/` when the Element is new, so both themes are covered,
+4. then declare the field with `FormField::key(...)->newHelper(...)` as usual.
 
-Reference implementations: every `*Resource::formSchema()` under `class/App/Resources/`, the contact-style example in [`CustomPageSchema`](#custompageschema-non-crud-backend-pages) below, and the renderer table in `FormFieldElementFactory` (lines mapping `text`, `select`, `inputFileDragDrop`, `inputRepeater`, etc.).
+Reference implementations: every `*Resource::formSchema()` under `class/App/Resources/`, the contact-style example in [`CustomPageSchema`](#custompageschema-non-crud-backend-pages) below, and the typed classes under `class/App/ResourceSchema/Inputs/`.
 
 ### `formSchema()`
 
 `public static function formSchema(): array`
 
-Returns the list of inputs rendered by the backend form. Each entry is a `FormInput` (which extends `FormField`):
+Returns the list of inputs rendered by the backend form. Each entry is declared through `FormField` and becomes the selected typed `Inputs\Input*`:
 
 ```php
 public static function formSchema(): array
 {
     return [
-        FormInput::key('name')->text()->required(),
-        FormInput::key('description')->textarea(),
-        FormInput::key('cover')->fileDragDrop('image', 'classic'),
-        FormInput::key('visible')->select([
+        FormField::key('name')->text()->required(),
+        FormField::key('description')->textarea(),
+        FormField::key('cover')->fileDragDrop('image', 'classic'),
+        FormField::key('visible')->select([
             'true'  => 'Visibile',
             'false' => 'Nascosto',
         ])->value('true')->required(),
@@ -394,23 +394,21 @@ public static function formSchema(): array
 }
 ```
 
-Type helpers chainable on `FormInput::key($name)` (defined on `FormField`, full list in `class/App/ResourceSchema/FormField.php`):
+Type helpers chainable on `FormField::key($name)` (full list in `class/App/ResourceSchema/FormField.php`):
 
 - text inputs: `text`, `textGenerator(callback?, buttonLabel?)`, `hidden`, `email`, `tel`, `phone`, `url`, `number`, `price`, `percentige`, `password`, `color`
 - date/time: `textDate`, `textDatetime`, `dateInput(min?, max?)`, `dateRange(min?, max?)`, `timeInput(step = 900)`
 - text areas: `textarea(version?)` (pass a version string to opt into the rich-text editor)
 - choice: `select(options, version?)`, `radio(options, searchBar = false)`, `selectSearch(options, multiple = false, version?)`, `checkbox`, `checkTree(options, searchBar, inputType)`, `dynamicCheck(url, inputType)`, `checkBoolean(values, trueLabel?, falseLabel?)`
 - geo: `country(stateField?)`, `states`, `phonePrefix`, `googleAddress(restriction, alias?)`
-- files: `file(accept = 'image')`, `fileDragDrop(accept = 'image', uploader = 'classic')`. Both set the internal `helper` key (`inputFile` / `inputFileDragDrop`) read by `FormFieldElementFactory`, but the **chainable method names are `file` and `fileDragDrop`** — older `inputFile()` / `inputFileDragDrop()` no longer exist.
+- files: `file(accept = 'image')`, `fileDragDrop(accept = 'image', uploader = 'classic')`. Their internal identity keys remain `inputFile` / `inputFileDragDrop`, but the **chainable method names are `file` and `fileDragDrop`** — older `inputFile()` / `inputFileDragDrop()` no longer exist.
 - repeatable: `repeater([RepeaterColumn, ...])`
 
-Each helper sets the internal `helper` key, which `class/App/Support/FormFieldElementFactory.php` maps to a concrete `Wonder\Elements\Form\Components\*` element. Adding a new type means adding the helper here **and** the mapping there (plus renderers under `class/Themes/Wonder/` and `class/Themes/Bootstrap/`) — see the hard rule above.
+Each helper morphs the facade into the corresponding typed `Inputs\Input*`. The typed class owns construction of its concrete `Wonder\Elements\Form\Components\*` object; the internal `helper` key remains only for introspection by `Resource`, repeater handling, and external modules. See the hard rule above for adding a type.
 
 Common chainable modifiers from `FormField`: `.label(string)`, `.value(mixed)`, `.required()`, `.disabled()`, `.readonly()`, `.multiple()`, `.attribute(string)` (parsed by `AttributeString`), `.options(array)`, `.searchBar(bool)`, `.columnSpan(int)`, `.error(string)`, `.prepare(string|array, mixed)`, `.context(string|array, mixed)`, `.nested(bool)`, `.old()`, `.file(type)`, `.uploader(name)`, `.dateMin(?string)`, `.dateMax(?string)`, `.timeStep(?int)`, `.maxSize(int)`, `.maxFile(int)`, `.extensions(array)`, `.storeAs(string)`, `.inputName(string)`, `.version(?string)`, `.relation(object)` (used by `repeater` for `RepeaterRelation`).
 
 For layouts, override `formLayoutSchema(): ?Form` and compose Cards / Containers around `static::getInput('field_name')`. See `class/App/Resources/Css/CssAlertResource.php` for a full layout example.
-
-Sidebar fields use the same builder via `FormSchema::for(...)->sidebarField($field)` or `->sidebarFields([...])`.
 
 ### `permissionSchema()`
 
@@ -490,7 +488,7 @@ The Resource listing has two complementary schemas:
   - `.buttonCustomHtml(string $html)` — explicit trusted-HTML escape hatch only when no Element can represent the markup; sanitize every dynamic value before composing it.
   - `.filters(bool $search = true, bool $limit = true)` — search box and per-page limit selector.
   - `.searchFields(array)` — columns the search box queries.
-  - `.customFilters(array)` — extra filters (typically built from `FormInput` so they go through the same `FormField` render path).
+  - `.customFilters(array)` — extra filters (typically built from `FormField` so they use the canonical render path).
 
 Defaults (set in the constructor): title enabled, results enabled, button-add enabled, search + limit enabled. Override only what differs from those defaults.
 
@@ -528,10 +526,10 @@ Override when the listing needs computed filters, dynamic limits, or sort logic 
 
 ### Repeater fields
 
-A repeater field on the parent resource is declared on its `FormInput` and configured with one or more `RepeaterColumn` definitions:
+A repeater field on the parent resource is declared on its `FormField` and configured with one or more `RepeaterColumn` definitions:
 
 ```php
-FormInput::key('allowed_domains')
+FormField::key('allowed_domains')
     ->repeater([
         RepeaterColumn::key('allowed_domains')
             ->text()
@@ -545,10 +543,10 @@ FormInput::key('allowed_domains')
 
 `RepeaterColumn` extends `FormField`, so the full input builder API is available inside a row (text, select, file, etc.).
 
-Repeater rows can either be **inline JSON on the parent record** (no relation needed) or **rows stored in a related table**. For the related-table case, attach a `RepeaterRelation` **on the parent `FormInput`** (the one that owns the `->repeater([...])` call), via the public `->relation(...)` method on `FormField`. The relation lands in the field's context under `relation`, where `Resource::repeaterRelations()` reads it:
+Repeater rows can either be **inline JSON on the parent record** (no relation needed) or **rows stored in a related table**. For the related-table case, attach a `RepeaterRelation` **on the parent `FormField`** (the one that owns the `->repeater([...])` call), via the public `->relation(...)` method on `FormField`. The relation lands in the field's context under `relation`, where `Resource::repeaterRelations()` reads it:
 
 ```php
-FormInput::key('steps')
+FormField::key('steps')
     ->repeater([
         RepeaterColumn::key('title')->text()->required(),
         RepeaterColumn::key('position')->number()->columnSpan(2),
@@ -562,7 +560,7 @@ FormInput::key('steps')
     );
 ```
 
-`->relation(...)` lives on `FormField` (so it works on `FormInput` and `RepeaterColumn` alike), but the resource layer reads it **only from the top-level repeater field** in `formSchema()` — attaching it to a child `RepeaterColumn` is a no-op for the sync helpers.
+`->relation(...)` lives on `FormField`, so it is available on `RepeaterColumn` too, but the resource layer reads it **only from the top-level repeater field** in `formSchema()` — attaching it to a child `RepeaterColumn` is a no-op for the sync helpers.
 
 `RepeaterRelation` accepts either a bare table + key pair or a full `->resource($resourceClass)` binding that derives the table, prepare schema, and folder from the related resource. The parent resource's static helpers `syncRepeaterRelations($parentId, $post, $files, $action, $context)`, `appendRepeaterRelationsToItem($item)`, `appendRepeaterRelationsToCollection($items)`, and `hydrateRepeaterFormValues($values, $parentId, $post, $files)` handle the read / write cycle. Override `prepareRepeaterRelationRow($inputName, $payload, $row, $existingRow, $action, $context)` to mutate row payloads before they hit the related table.
 
@@ -605,7 +603,7 @@ namespace App\Resources;
 
 use Wonder\App\Resource;
 use Wonder\App\ResourceSchema\ApiSchema;
-use Wonder\App\ResourceSchema\FormInput;
+use Wonder\App\ResourceSchema\FormField;
 use Wonder\App\ResourceSchema\NavigationSchema;
 use Wonder\App\ResourceSchema\PageSchema;
 use Wonder\App\ResourceSchema\PermissionSchema;
@@ -645,10 +643,10 @@ final class ProjectResource extends Resource
     public static function formSchema(): array
     {
         return [
-            FormInput::key('name')->text()->required(),
-            FormInput::key('description')->textarea(),
-            FormInput::key('cover')->fileDragDrop('image'),
-            FormInput::key('visible')->select([
+            FormField::key('name')->text()->required(),
+            FormField::key('description')->textarea(),
+            FormField::key('cover')->fileDragDrop('image'),
+            FormField::key('visible')->select([
                 'true'  => 'Visibile',
                 'false' => 'Nascosto',
             ])->value('true')->required(),
@@ -728,7 +726,7 @@ Minimal subclass:
 namespace App\PageSchema;
 
 use Wonder\App\PageSchema\CustomPageSchema;
-use Wonder\App\ResourceSchema\FormInput;
+use Wonder\App\ResourceSchema\FormField;
 
 final class ContactPageSchema extends CustomPageSchema
 {
@@ -744,9 +742,9 @@ final class ContactPageSchema extends CustomPageSchema
     public static function contactFormSchema(): array
     {
         return static::applyLabelSchema([
-            'name'    => FormInput::key('name')->text()->required(),
-            'email'   => FormInput::key('email')->email()->required(),
-            'message' => FormInput::key('message')->textarea()->required(),
+            'name'    => FormField::key('name')->text()->required(),
+            'email'   => FormField::key('email')->email()->required(),
+            'message' => FormField::key('message')->textarea()->required(),
         ]);
     }
 }

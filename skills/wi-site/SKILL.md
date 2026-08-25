@@ -106,7 +106,7 @@ Steps for a new site Model + Resource:
 2. Define SQL in `Model::tableSchema()`. Define data behavior in `Model::dataSchema()`.
 3. Create the Resource under `app/Resources/<Name>Resource.php`, namespace `App\Resources`, bound to the Model.
 4. Define `formSchema()` for backend inputs, `permissionSchema()` for route gating, `navigationSchema()` for nav placement.
-5. Use `FormInput::repeater(...)` + `RepeaterColumn` for repeatable rows; `CustomPageSchema` only for non-CRUD pages.
+5. Use `FormField::repeater(...)` + `RepeaterColumn` for repeatable rows; `CustomPageSchema` only for non-CRUD pages.
 6. Run `composer dump-autoload`, then `php forge update --local` to apply runtime generation.
 
 The canonical flow is `Model::tableSchema()` + `Model::dataSchema()`. Do not invent parallel table-definition files alongside it.

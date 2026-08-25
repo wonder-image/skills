@@ -72,7 +72,7 @@ Switch to [`wi-site`](../wi-site/SKILL.md) when **any** of these signals are tru
   - `Resource::formSchema()` defines backend inputs
   - `CustomPageSchema` handles non-CRUD backend pages
   - `Repeater` handles repeatable rows and related-row sync
-- **Form inputs go through `FormField` — always.** Every input on the frontend Wonder theme (`class/Themes/Wonder/`) and the backend Bootstrap theme (`class/Themes/Bootstrap/`) is declared via `FormInput` / `RepeaterColumn` / `FormSchema` and rendered through `FormField::render($theme)`. No raw `<input>` / `<select>` / `<textarea>` HTML, no ad-hoc render functions. Missing input types are added at the framework layer (helper on `FormField` → mapping in `FormFieldElementFactory` → renderer under each theme), not patched at the call site. Full rationale and the four-step "missing type" workflow in [`references/model-and-resource.md`](references/model-and-resource.md#forminput--formfield-hard-rule).
+- **Form inputs go through the `FormField` hierarchy — always.** Every input on the frontend Wonder theme (`class/Themes/Wonder/`) and the backend Bootstrap theme (`class/Themes/Bootstrap/`) is declared via `FormField` / `RepeaterColumn` (or directly through a typed `Inputs\Input*`) and rendered through `Input::render($theme)`. No raw `<input>` / `<select>` / `<textarea>` HTML, no ad-hoc render functions. Missing input types are added at the framework layer (typed `Inputs\Input*` with `element()` → helper on `FormField` → renderer under each theme), not patched at the call site. Full rationale and the four-step "missing type" workflow in [`references/model-and-resource.md`](references/model-and-resource.md#formfield-hard-rule).
 - Update `docs/app/*` in the same work when you change bootstrap, architecture, routing, layout structure, or developer-facing conventions.
 
 ## Task Routing
@@ -87,7 +87,7 @@ Read `references/model-and-resource.md` first for the Model / Resource extension
 
 ### Form inputs (frontend Wonder or backend Bootstrap)
 
-Read `references/model-and-resource.md` — section "FormInput / FormField hard rule". Every input on either theme is declared via `FormInput::key(...)` / `RepeaterColumn::key(...)` / `FormSchema` and rendered through `FormField::render($theme)`. New input types are added by extending `FormField` and registering the element in `class/App/Support/FormFieldElementFactory.php`, plus a renderer under `class/Themes/Wonder/` and `class/Themes/Bootstrap/` — not by emitting bespoke HTML at the call site.
+Read `references/model-and-resource.md` — section "FormField hard rule". Every input on either theme is declared via `FormField::key(...)` / `RepeaterColumn::key(...)` or directly through a typed `Inputs\Input*`, then rendered through `Input::render($theme)`. New input types are added under `class/App/ResourceSchema/Inputs/`, implement their own `element()`, expose a helper on `FormField`, and use renderers under `class/Themes/Wonder/` and `class/Themes/Bootstrap/` — not bespoke HTML at the call site.
 
 ### UI / styling inside default components or themes
 

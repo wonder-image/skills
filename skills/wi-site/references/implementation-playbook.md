@@ -66,7 +66,7 @@ For the full Model / Resource API contract see `wi-app/references/model-and-reso
 2. Define SQL in `Model::tableSchema()`. Prefer `static::sqlColumnsFromDataSchema([...])` to derive columns from the data schema.
 3. Define data preparation in `Model::dataSchema()` using `UploadSchema as Field` declarations (`Field::key('name')->text()->required()`, etc.).
 4. Create the project `Resource` under `app/Resources/<Name>Resource.php` (namespace `App\Resources`), bound via `public static string $model = \App\Models\<Name>::class;`.
-5. Define backend inputs in `Resource::formSchema()` with `FormInput::key(...)`.
+5. Define backend inputs in `Resource::formSchema()` with `FormField::key(...)`.
 6. Define route permissions in `permissionSchema()` (`PermissionSchema::for(static::class)->backendCrud([...])->apiCrud([...])`).
 7. Define nav placement in `navigationSchema()`.
 8. Run `composer dump-autoload`, then `php forge update --local`.
