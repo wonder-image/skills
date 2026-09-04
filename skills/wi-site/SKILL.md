@@ -84,6 +84,7 @@ Read [`references/product-md.md`](references/product-md.md). `PRODUCT.md` at sit
 
 ### Page or component
 Read `references/implementation-playbook.md` and `references/style-and-lib.md`. Copy-paste skeleton for a frontend page in [`references/examples.md`](references/examples.md#2-frontend-page-customviewpagesfrontendaboutphp).
+- For a reusable header driven by one recursive navigation tree, read [`references/header-navigation.md`](references/header-navigation.md). It defines the `classic` / `mega` contract, `list` default, optional `card` presentation, action links, appearance options, desktop hover behavior, and the mobile cascade.
 - Pages go under `custom/view/pages/{frontend,backend}/...`.
 - Component overrides mirror the framework path under `custom/view/components/{frontend,backend}/...`.
 - Reuse `\Wonder\View\View::component(...)` over manual `include`.
