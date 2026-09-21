@@ -461,18 +461,48 @@ public static function navigationSchema(): NavigationSchema
 }
 ```
 
+**Optionally group related entries inside a section**. The group owner declares
+its metadata; peers reference its key:
+
+```php
+public static function navigationSchema(): NavigationSchema
+{
+    return NavigationSchema::for(static::class)
+        ->inSection('dev')
+        ->group('diagnostics', 'Log e diagnostica', 40)
+        ->title('Errori')
+        ->order(10);
+}
+
+public static function navigationSchema(): NavigationSchema
+{
+    return NavigationSchema::for(static::class)
+        ->inSection('dev')
+        ->inGroup('diagnostics')
+        ->title('Email')
+        ->order(20);
+}
+```
+
+The supported hierarchy is `section -> optional group -> resource`. Groups are
+headings without a URL. Keep frequent entries directly in the section instead
+of forcing every resource into a group. Repeated declarations of the same
+group must have identical metadata.
+
 Builder methods on `NavigationSchema::for(static::class)`:
 
 - `.enabled(bool = true)` — toggle the nav entry on/off.
 - `.section(string $key, string $title, string $icon, int $order = 500, array $authority = [])` — **declare a new top-level section** under this resource. The first two args are now `$key` (slug used to reference the section) and `$title` (label shown in the menu) — order matters. `$order` is the top-level position (convention: `0` = Home, `1–999` = custom, `1000+` = core sections like Media / Set-Up); `$authority` gates visibility of the whole section.
 - `.inSection(string $key)` — attach this resource to a section already declared elsewhere. No re-validation at this stage; `BackendNavigation` checks the key after all declarations are collected. Most resources use this, not `section()`.
+- `.group(string $key, string $title, int $order = 100, array $authority = [])` — declare a group in the current section and attach this resource to it. Identical repeated declarations are idempotent; conflicting metadata fails during navigation build.
+- `.inGroup(string $key)` — attach this resource to a group declared by another resource in the same section. A missing declaration fails explicitly during navigation build.
 - `.sectionOrder(int $order)` — explicit override of the section-level order for a **standalone resource** (no `section()`, no `inSection()`), so it can be placed precisely. Default `500`.
 - `.title(string)` — entry title, defaults to `Resource::titleLabel()`.
 - `.order(int)` — sort weight **inside** the section (subnav order), default `100`.
 - `.file(string)` — which page to link to, default `list`.
 - `.authority(array)` — authority gate on this specific entry (independent of the section's authority).
 
-Reference implementations in `class/App/Resources/`: `Support/CssSingleton.php` declares the `'css'` section; `Css/CssFontResource.php` and `Css/CssColorResource.php` attach via `->inSection('css')`. `Config/CorporateDataResource.php` declares `'set-up'` with order `1020`; everything else under Set-Up uses `->inSection('set-up')`. `Home/HomeResource.php` is standalone and uses `->sectionOrder(0)` to pin Home first.
+Reference implementations in `class/App/Resources/`: `Scheduler/DashboardResource.php` declares the `'dev'` section; scheduler, diagnostics, API/services, and style resources demonstrate optional groups within it. `Config/SocietyLocationResource.php` declares `'set-up'` with order `1020`; operational setup pages attach via `->inSection('set-up')`. `Home/HomeResource.php` is standalone and uses `->sectionOrder(0)` to pin Home first.
 
 ### `tableSchema()` and `tableLayoutSchema()` (listing)
 
