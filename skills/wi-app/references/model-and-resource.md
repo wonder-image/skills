@@ -805,6 +805,15 @@ When a resource declares an action in `customBackendPages()`, the registrar skip
 
 ## Common gotchas
 
+- Backend `fileDragDrop()` requires aligned framework and lib assets to
+  preserve existing files without re-uploading them when saving or reordering.
+  Standard resource/repeater persistence handles the sibling
+  `<field>__wi_files` JSON manifest automatically. Custom handlers calling
+  `uploadFiles()` must pass the record's stored filenames as argument four and
+  the manifest as argument five, including an empty list for explicit removal.
+  Until adapted, set `data-wi-file-references="false"` on the input to retain
+  legacy multipart submission. Do not strip manifest fields before persistence.
+
 - Run `composer dump-autoload` whenever you add, move, or rename a Model / Resource. Otherwise the registry will not pick it up.
 - Keep namespace and directory in sync with the PSR-4 root declared in the owning `composer.json`. A mismatch silently breaks discovery.
 - Schema methods are static and called by the registrar lazily — do not assume the resource is "constructed". `static::class`, `static::path()`, `static::modelClass()` are the only safe references.
