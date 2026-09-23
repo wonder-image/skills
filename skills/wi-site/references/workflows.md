@@ -2,7 +2,13 @@
 
 Verified against `wonder-image/new-site` (https://github.com/wonder-image/new-site.git).
 
-## Setup and Local Runtime
+## New project startup
+
+Use the complete domain with dots replaced by hyphens as the project folder: `wonderimage.it` becomes `wonderimage-it`. Define `NOME_PROGETTO="wonderimage-it"` once, then run `composer create-project wonder-image/new-site:dev-main "$NOME_PROGETTO"`, `cd "$NOME_PROGETTO"`, `composer update`, `git init`, `git remote add origin "https://github.com/wonder-image/${NOME_PROGETTO}.git"`, `php forge provision`, `php forge db:init`, `php forge update --local`, `php forge start`, in that order. The scaffold includes composer.lock: create-project installs locked dependencies; the explicit composer update refreshes them. Both invoke `forge config`. After startup run `git add .`, `git commit -m "Initial commit"`, `git push -u origin HEAD` from the project directory (another terminal if the PHP server is running), then GitHub Desktop > Add > Add existing repository. Set origin before provision so it selects the wonder-image organization instead of the authenticated personal account. If origin exists, inspect it and use git remote set-url only when incorrect. Provision creates the remote repository when missing; Desktop Publish repository or gh repo create are alternatives only when it does not yet exist.
+
+`APP_DOMAIN=wonderimage.it` is distinct from Herd's `APP_URL=https://wonderimage.test`. Config preserves an existing APP_URL during Composer updates; `forge start` repairs a stale local URL. Config runs `npm install wonder-image` and `npm install`, which can update the JS dependency and lockfile. It does not explicitly upgrade the npm executable, but may install Node (including npm) via Homebrew if missing. This documents the user setup workflow; it does not authorize running provisioning during routine validation.
+
+## Existing project runtime
 
 - Run from the site project root:
   - `composer install`

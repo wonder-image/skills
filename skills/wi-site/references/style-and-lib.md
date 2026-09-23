@@ -109,6 +109,10 @@ The lib documents tokens as **currently external** — they live in the site, no
 
 ## Custom CSS / JS Placement
 
+### Deferred media
+
+Use the framework's `Iframe::deferred()` and `deferredButton(Button)` for on-demand iframes, or `Wonder\Elements\Media\Deferred::make($elementOrTrustedHtml)` for other server-rendered widgets. Pass `mode('visible')` on the generic wrapper or `deferred('visible')` on Iframe only when viewport activation is intended. The shared `DeferredContent` loader and `wi-deferred` structural CSS belong to wonder-image/lib, in both head bundles; never copy this loader or an ad-hoc deferred PHP wrapper into a site/module. Customize through the ordinary Button Element and translate its label. Reserve space through ratio or `fill()` inside a sized positioned parent, not JS measurement of cross-origin documents. Deploy the updated app and lib together. See the framework `docs/app/elementi/deferred-media.md` and lib `docs/deferred-content.md` for the contract.
+
 When custom CSS or JS is genuinely needed (after lib reuse has been ruled out):
 
 - Custom CSS files → `assets/{ASSETS_VERSION}/css/`
@@ -117,6 +121,8 @@ When custom CSS or JS is genuinely needed (after lib reuse has been ruled out):
 Do **not** place custom files inside `assets/{ASSETS_VERSION}/css/set-up/` — that directory holds the design-system token files (`color.css`, `root.css`).
 
 ## Working on `wonder-image/app` Default Components
+
+Use `e()` for escaped HTML text and attributes. For text content with line breaks, use `e_br(?string)`: it renders newlines and bare `<br>` variants, escapes other HTML, and treats null as empty text. Never use `e_br()` in attributes. The shared implementation is `Wonder\Support\Html\Entity::encodeWithLineBreaks()`, also used by the Alert renderers in both themes.
 
 When editing default components shipped by the framework (inside `wonder-image/app` itself):
 
@@ -137,6 +143,10 @@ After completing UI work, report explicitly:
 - **Residual risks** (visual regression on other pages, dark-mode untested, responsive behavior not verified, etc.).
 
 ## Pre-Submit Checklist
+
+Use Button::lightbox($urlOrUrls, type: 'iframe') for modal external content, or omit type to detect images by extension and treat other URLs as iframes. For extensionless image endpoints pass type: 'image'. Reuse the shared renderer instead of per-site Fancybox handlers. See app/docs/app/elementi/button-lightbox.md.
+
+Use Swiper::priority() for the initial hero only, imageSizes() for main images and thumbsImageSizes() for thumbnails. Gallery derives responsive sizes from columns; override with imageSizes() for narrower containers. Image::displaySizes(string) sets HTML sizes, while sizes(array) lists generated variants. Do not introduce property-specific gallery renderer wrappers. See app/docs/app/elementi/responsive-media.md.
 
 Before declaring UI work done, every item must be true:
 
