@@ -508,7 +508,7 @@ Reference implementations in `class/App/Resources/`: `Scheduler/DashboardResourc
 
 The Resource listing has two complementary schemas:
 
-- `public static function tableSchema(): array` — columns rendered in the listing table. Each entry is a `TableColumn` (extends `Wonder\Sql\TableSchema\Column`). Common builder methods: `TableColumn::key($name)->text()`, `->badge()`, `->image()`, `->button()`, `->link('edit'|'view')`, `->function($fn, ...$args)`, `->actions(['edit','delete'])`, `->size('little'|'medium'|'large')`, `->align('start'|'center'|'end')`, `->columnSpan(int)`.
+- `public static function tableSchema(): array` — columns rendered in the listing table. Each entry is a `TableColumn` (extends `Wonder\Elements\Table\Column`). Common builder methods: `TableColumn::key($name)->text()`, `->badge()`, `->image()`, `->button()`, `->link('edit'|'view')`, `->function($fn, ...$args)`, `->actions(['edit','delete'])`, `->size('little'|'medium'|'large')`, `->align('start'|'center'|'end')`, `->columnSpan(int)`. In `actions()` a map value can be an array describing a custom row-menu entry: `label` (a string, or an array keyed by the value of the column named like the entry), `href` with `{column}` placeholders (HTML-escaped, not URL-encoded), `target`, `filter.row` (show only on rows whose columns match a value or a list).
 - `public static function tableLayoutSchema(): TableLayoutSchema` — chrome around the table. Builder methods on `TableLayoutSchema::for(static::class)`:
   - `.title(bool|string $enabled = true, ?string $text = null)` — page title block (`title('Lista X')` is the common form).
   - `.results(bool = true)` — toggle the result-count line.
@@ -517,8 +517,10 @@ The Resource listing has two complementary schemas:
   - Use `Button::post($action, $label)->confirm(...)` for POST header actions. `Button::to($action, $label)->type('post')` is equivalent and both render a sanitized `<form method="post">` around the submit button.
   - `.buttonCustomHtml(string $html)` — explicit trusted-HTML escape hatch only when no Element can represent the markup; sanitize every dynamic value before composing it.
   - `.filters(bool $search = true, bool $limit = true)` — search box and per-page limit selector.
-  - `.searchFields(array)` — columns the search box queries.
-  - `.customFilters(array)` — extra filters (typically built from `FormField` so they use the canonical render path).
+  - `.searchFields(array)` — where the search box looks: plain columns, `table.column` (resolved through the Model's foreign key), or relation descriptors (`table`, `local_key`, `foreign_key` defaulting to `id`, `columns`, nested `relations` to walk several tables). Every word must match somewhere; descriptors are validated against the DB. `select()` aliases are never searched.
+  - `.select(string $sql)` — computed columns with aliases (`(SELECT ...) AS qty_total`); the renderer prepends `table`.*. Aliases are for display and sorting only: never in WHERE, filters, counts or search. Keep aliases distinct from real column names.
+  - `.filterCustom($label, $column, $options, $input = 'select', ...)` / `.filterRadio(...)` — filters on one column (`=`, `IN`, `LIKE` for `multiple` columns); values are escaped.
+  - `.filterQuery($label, $key, $options, Closure $where, $input = 'select', ...)` — filter with its own SQL: the closure receives only values present among the options (tree children included) and returns the condition; `$key` only names the GET parameter.
 
 Defaults (set in the constructor): title enabled, results enabled, button-add enabled, search + limit enabled. Override only what differs from those defaults.
 
