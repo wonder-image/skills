@@ -400,6 +400,7 @@ Type helpers chainable on `FormField::key($name)` (full list in `class/App/Resou
 - date/time: `textDate`, `textDatetime`, `dateInput(min?, max?)`, `dateRange(min?, max?)`, `timeInput(step = 900)`
 - text areas: `textarea(version?)` (pass a version string to opt into the rich-text editor)
 - choice: `select(options, version?)`, `radio(options, searchBar = false)`, `selectSearch(options, multiple = false, version?)`, `checkbox`, `checkTree(options, searchBar, inputType)`, `dynamicCheck(url, inputType)`, `checkBoolean(values, trueLabel?, falseLabel?)`
+  - `checkTree` posts from a sibling `[data-wi-tree-values]` container, never from inputs inside the jstree nodes (jstree drops them on collapse and rebuilds them from server HTML on redraw); the lib's `setJsTreeValues()` keeps them equal to `get_checked()`. See `docs/app/concetti/form/form-field.md` → "I valori di un albero".
 - geo: `country(stateField?)`, `states`, `phonePrefix`, `googleAddress(restriction, alias?)`
 - files: `file(accept = 'image')`, `fileDragDrop(accept = 'image', uploader = 'classic')`. Their internal identity keys remain `inputFile` / `inputFileDragDrop`, but the **chainable method names are `file` and `fileDragDrop`** — older `inputFile()` / `inputFileDragDrop()` no longer exist.
 - repeatable: `repeater([RepeaterColumn, ...])`
