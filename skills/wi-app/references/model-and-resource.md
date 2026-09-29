@@ -252,6 +252,22 @@ Use the `safe*` variants whenever the result is going out to a client (API or an
 
 `Model::sqlColumnsFromDataSchema(array|string|null $only = null)` runs the conversion across all data fields, optionally restricted to a subset. This is the recommended way to keep SQL and data definitions in sync. Manual `Column::key(...)` declarations are only needed for columns that are not in `dataSchema()`.
 
+Numeric data fields carry their SQL scale and precision through this conversion:
+
+```php
+Field::key('price')->number();                                  // DECIMAL(10,2)
+Field::key('weight')->number()->decimals(3);                   // DECIMAL(10,3)
+Field::key('quantity')->number()->precision(12)->decimals(3);  // DECIMAL(12,3)
+Field::key('pieces')->number()->integer();                     // DECIMAL(10)
+```
+
+`decimal($scale)` aliases `decimals($scale)`, and `integer()` aliases
+`decimal(0)`. Precision is total digits, not integer digits: increasing the
+scale without increasing `precision()` reduces integer capacity. On existing
+tables, `forge update --local` emits `ALTER TABLE ... MODIFY COLUMN`; widen
+precision as needed before applying the update and remember that widening a
+column cannot recover decimals already rounded by the previous schema.
+
 ### Lifecycle / persistence hooks
 
 - `validate(array $values, string $prefix = ''): object` — runs `Field::validate()` for every field in `dataSchema()`. Returns `{ valid: bool, response: array }`. `create()` and `update()` call it implicitly; call it directly when you need to validate before doing anything else.
