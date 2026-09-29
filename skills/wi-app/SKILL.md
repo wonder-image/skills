@@ -73,6 +73,7 @@ Switch to [`wi-site`](../wi-site/SKILL.md) when **any** of these signals are tru
   - `CustomPageSchema` handles non-CRUD backend pages
   - `Repeater` handles repeatable rows and related-row sync
 - **Form inputs go through the `FormField` hierarchy — always.** Every input on the frontend Wonder theme (`class/Themes/Wonder/`) and the backend Bootstrap theme (`class/Themes/Bootstrap/`) is declared via `FormField` / `RepeaterColumn` (or directly through a typed `Inputs\Input*`) and rendered through `Input::render($theme)`. No raw `<input>` / `<select>` / `<textarea>` HTML, no ad-hoc render functions. Missing input types are added at the framework layer (typed `Inputs\Input*` with `element()` → helper on `FormField` → renderer under each theme), not patched at the call site. Full rationale and the four-step "missing type" workflow in [`references/model-and-resource.md`](references/model-and-resource.md#formfield-hard-rule).
+- Wonder date renderers describe `DatePicker`, `DateRange`, `DateTimeRange`, and `SelectDate` with escaped `data-wi-*` attributes only. Their jQuery UI initialization belongs to `wonder-image/lib/src/build/frontend/js/form/input.js` through `setInput()`; never interpolate field values or bounds into renderer-owned inline scripts.
 - Update `docs/app/*` in the same work when you change bootstrap, architecture, routing, layout structure, or developer-facing conventions.
 
 ## Task Routing
