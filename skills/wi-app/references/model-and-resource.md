@@ -368,10 +368,30 @@ Every form input — in **both** the frontend Wonder theme and the backend Boots
 
 1. add a typed class under `class/App/ResourceSchema/Inputs/` and implement `element()` so it builds an existing or new `Wonder\Elements\Form\Components\*` object,
 2. add the chainable helper on `FormField`; add the helper to `FormField::HELPERS` only when the legacy `new FormField($name, $helper)` escape hatch must support it,
-3. add the matching renderer under `class/Themes/Wonder/` and `class/Themes/Bootstrap/` when the Element is new, so both themes are covered,
+3. add the matching renderer under `class/Themes/Wonder/` and `class/Themes/Bootstrap/` when the Element is new, so both themes are covered, writing the field tag as in [Renderer attributes](#renderer-attributes),
 4. then declare the field with `FormField::key(...)->newHelper(...)` as usual.
 
 Reference implementations: every `*Resource::formSchema()` under `class/App/Resources/`, the contact-style example in [`CustomPageSchema`](#custompageschema-non-crud-backend-pages) below, and the typed classes under `class/App/ResourceSchema/Inputs/`.
+
+#### Renderer attributes
+
+A field renderer writes the theme attributes on the tag by hand (`class`, `data-wi-check`, `placeholder`, …) and then the field ones, which come from `attr()`, `class()`, `addClass()` and the type modifiers. The browser keeps the first of two equal keys, so a field class written after the theme `class` is lost. Write the tag through the two helpers of `Themes\Form\AbstractFieldRenderer`, in new and existing renderers alike:
+
+```php
+$class = $this->fieldClass('form-control');                             // theme classes first, then the field ones, deduplicated and escaped
+$attributes = $this->fieldAttributes(['data-wi-check', 'placeholder']); // field attributes with a leading space, or ''; skips `class` and the listed keys
+
+return <<<HTML
+<input type="text" class="{$class}" placeholder="" data-wi-check="true"{$attributes}>
+HTML;
+```
+
+- List all and only the keys the renderer writes on that same tag, so the theme value stays the only one.
+- Skip a conditional key only when it is written: `$checked === '' ? ['data-wi-check'] : ['data-wi-check', 'checked']`.
+- When the renderer retouches the attributes first (drops `required`, adds a default), pass the same array as second argument to both helpers.
+- Never append a raw `renderAttributes()` of the field attributes after hardcoded ones. `Repeater` and deprecated `SortableInput` still predate this.
+
+Full rules in the framework docs: `docs/app/concetti/form/theme-system.md` → "Attributi del campo".
 
 ### `formSchema()`
 
