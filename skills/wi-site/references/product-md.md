@@ -8,7 +8,6 @@
 - [`site_type` field — semantica](#site_type-field--semantica)
 - [The DESIGN.md policy](#the-designmd-policy)
 - [How wi-site uses it](#how-wi-site-uses-it)
-- [How impeccable uses it](#how-impeccable-uses-it)
 - [Compilation procedure (interview-driven)](#compilation-procedure-interview-driven)
 - [Template](#template)
 
@@ -18,7 +17,7 @@ Un sito Wonder è "come" — placement dei file, helper, design system già defi
 
 Senza `PRODUCT.md` un assistant può solo seguire le convenzioni Wonder. Con `PRODUCT.md`, l'output diventa coerente con il brand e con la natura del progetto (una landing di conversione vs un sito corporate vs un blog vs un ecom si scrivono e si presentano in modo diverso).
 
-`PRODUCT.md` è la convenzione che `wi-site` legge come primo step e che la skill esterna [impeccable](https://github.com/pbakaus/impeccable) consuma nativamente.
+`PRODUCT.md` è la convenzione che `wi-site` legge come primo step.
 
 ## Where it lives
 
@@ -35,7 +34,7 @@ my-wonder-site/
 └── assets/
 ```
 
-Una sola istanza per sito. Non si crea sotto `custom/config/` o `docs/` — impeccable cerca prima a cwd e wi-site segue la stessa convenzione per evitare configurazione extra.
+Una sola istanza per sito. Non si crea sotto `custom/config/` o `docs/`: `wi-site` la cerca alla root per evitare configurazione extra.
 
 ## Schema
 
@@ -43,7 +42,7 @@ Una sola istanza per sito. Non si crea sotto `custom/config/` o `docs/` — impe
 
 ### Sezioni richieste
 
-- **Register** — una sola parola: `brand` (il design ESPRIME il prodotto, es. studio creativo, agenzia di moda) o `product` (il design SERVE il prodotto, es. SaaS, ecom, tool). Vocabolario di impeccable.
+- **Register** — una sola parola: `brand` (il design ESPRIME il prodotto, es. studio creativo, agenzia di moda) o `product` (il design SERVE il prodotto, es. SaaS, ecom, tool).
 - **Site type** — uno dei 5 valori in [`site_type` field — semantica](#site_type-field--semantica).
 - **Target users** — chi userà il sito, in una frase. *"Coppie 25–40 anni che cercano un fotografo per matrimoni in Toscana."*
 - **Brand personality** — 3–5 aggettivi. *"Caldo, autoriale, raffinato, mai aulico, mai stocky."*
@@ -73,7 +72,7 @@ Single-page o very-few-page focus. Hero + sezioni narrative + multi-CTA verso un
 - Pagine: tutte in `custom/view/pages/frontend/`
 - Moduli Composer: nessuno (di solito)
 - Wi-site evita di proporre Resource backend o CRUD se non strettamente necessari
-- Impeccable critique pesa la **conversione** sopra la profondità informativa
+- `wi-site` privilegia la **conversione** rispetto alla profondità informativa
 
 ### `corporate`
 
@@ -91,7 +90,7 @@ Sito orientato a contenuti editoriali. Abilitare il modulo `wonder-image/blog` i
 - Pagine post/listing/categoria/tag: vengono dal modulo
 - Override: solo `custom/view/components/frontend/...` mirati a riconnotare la presentazione
 - Wi-site propone `wonder-image/blog` come prima cosa, non un Model `Post` custom
-- Impeccable critique pesa **leggibilità** (line length, type scale, contrast) sopra il visual flash
+- `wi-site` privilegia la **leggibilità** (line length, type scale, contrast) rispetto al visual flash
 - Finché il modulo non è disponibile, `wi-site` può proporre Model + Resource custom (`app/Models/Post.php` + `app/Resources/PostResource.php`) come fallback temporaneo, segnalando esplicitamente che è un'implementazione di transizione da sostituire quando il modulo arriva
 
 ### `ecom`
@@ -101,7 +100,7 @@ Catalogo + carrello + checkout. Abilitare il modulo `wonder-image/ecom` (quando 
 - Pagine prodotto/listing/cart/checkout: dal modulo
 - Override: solo per riconnotare la presentazione
 - Wi-site propone `wonder-image/ecom`, non un Model `Product` custom
-- Impeccable critique pesa **trust signals**, **friction-checkout**, **gallery quality** sopra l'editorial
+- `wi-site` privilegia **trust signals**, **friction-checkout** e **gallery quality** rispetto all'editorial
 
 ### `rsvp`
 
@@ -125,8 +124,6 @@ Se il progetto è davvero ibrido (un blog *dentro* un sito corporate, una landin
 
 Questi sono la **single source of truth**. `DESIGN.md` creerebbe una seconda sorgente con rischio di drift — impossibile mantenere coerente nel tempo.
 
-Impeccable degrada gracefully quando `DESIGN.md` manca: usa solo `PRODUCT.md` per il contesto strategico e legge i CSS reali per il visivo. Confermato dalla doc di impeccable — `DESIGN.md` è "optional, strongly encouraged" per progetti generici; per Wonder sites è **deliberatamente assente**.
-
 ## How wi-site uses it
 
 Il primo step di `wi-site` su qualsiasi task di un sito Wonder è: leggere `PRODUCT.md` a root. Tutto quello che segue — placement, copy, scelte di stile, suggerimenti di moduli — deve essere coerente con quanto dichiarato lì.
@@ -138,18 +135,6 @@ Il `site_type` in particolare cambia il workflow:
 - Una richiesta "aggiungi una pagina /shop" su `site_type: corporate` senza modulo ecom → wi-site chiede se è il momento di passare a `site_type: ecom` + modulo `wonder-image/ecom`.
 
 Quando `PRODUCT.md` manca, wi-site lavora comunque — segue solo le convenzioni Wonder generiche. Suggerisce di crearlo come primo step su qualsiasi sito nuovo.
-
-## How impeccable uses it
-
-[Impeccable](https://github.com/pbakaus/impeccable) (`npx skills add pbakaus/impeccable`) è la skill complementare per critique / polish / audit UI profondo. Il suo loader cerca `PRODUCT.md` nell'ordine: env `IMPECCABLE_CONTEXT_DIR`, cwd, `.agents/context/`, `docs/`. Per Wonder sites la convenzione è cwd (root del repo) — nessuna config extra.
-
-Impeccable legge `PRODUCT.md` per:
-
-- Capire register e brand personality (decisioni di density, motion, typography weight)
-- Capire target users (vocabolario delle critique)
-- Modulare il critique sul `site_type` (es. su una landing pesa di più la conversione; su un blog la leggibilità)
-
-Quando `DESIGN.md` non esiste (situazione attesa nei Wonder sites), impeccable usa solo `PRODUCT.md` + lettura diretta dei CSS reali del progetto. Niente errori, niente warning.
 
 ## Compilation procedure (interview-driven)
 

@@ -358,7 +358,7 @@ Notes:
 
 ## 6. `PRODUCT.md` — brand and project context
 
-A single markdown file at the **root of the site repo** (same level as `composer.json`). Captures who the site is for, what it sounds like, and what kind of site it is (`site_type`). Read first by `wi-site` and by the companion skill [`impeccable`](https://github.com/pbakaus/impeccable). Full schema and the `site_type` semantics in [`product-md.md`](product-md.md).
+A single markdown file at the **root of the site repo** (same level as `composer.json`). Captures who the site is for, what it sounds like, and what kind of site it is (`site_type`). `wi-site` reads it first. Full schema and the `site_type` semantics in [`product-md.md`](product-md.md).
 
 > **Don't fill this template cold.** When `PRODUCT.md` is missing or its required sections are empty, `wi-site` runs an **interview procedure** that asks 2–4 focused questions at a time and builds the file incrementally. Full procedure in [`product-md.md` § Compilation procedure](product-md.md#compilation-procedure-interview-driven). The template below is the **target shape** — what you end up with after the interview, not what you write from a blank page.
 
@@ -425,7 +425,7 @@ Italiano, prima persona singolare, frasi corte, niente claim altisonanti. Nei te
 
 After creating `PRODUCT.md`:
 
-- No further config needed — `wi-site` and `impeccable` both look for it at the repo root.
+- No further config needed — `wi-site` looks for it at the repo root.
 - Keep it short. If a section grows past ~5 lines, ask whether that content really belongs there or in copy (`lang/`) / tokens (`color.css` / `root.css`) / actual page content.
 - Update it when the brand evolves. It is a live document, not a one-shot deliverable.
-- Do **not** create a `DESIGN.md` — Wonder's `color.css` + `root.css` + [`style-and-lib.md`](style-and-lib.md) are the authoritative visual rulebook. Impeccable degrades gracefully without `DESIGN.md`.
+- Do **not** create a `DESIGN.md` — Wonder's `color.css` + `root.css` + [`style-and-lib.md`](style-and-lib.md) are the authoritative visual rulebook.

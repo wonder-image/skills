@@ -80,7 +80,7 @@ Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals 
 ## Task Routing
 
 ### Brand, copywriting, voice, site type
-Read [`references/product-md.md`](references/product-md.md). `PRODUCT.md` at site root is the source of truth for register, target users, brand personality, voice/tone, design principles, and `site_type` (`landing` / `corporate` / `blog` / `ecom` / `rsvp`). Copy lives in `lang/{locale}/*.json` and must respect the voice declared in `PRODUCT.md`. For deep UI critique / polish / audit beyond Wonder's reuse-first placement rules, hand off to the companion skill [`impeccable`](https://github.com/pbakaus/impeccable) (`npx skills add pbakaus/impeccable` — it reads the same `PRODUCT.md` natively). Do **not** create a `DESIGN.md` — Wonder's `color.css` + `root.css` + [`style-and-lib.md`](references/style-and-lib.md) are authoritative for visual tokens.
+Read [`references/product-md.md`](references/product-md.md). `PRODUCT.md` at site root is the source of truth for register, target users, brand personality, voice/tone, design principles, and `site_type` (`landing` / `corporate` / `blog` / `ecom` / `rsvp`). Copy lives in `lang/{locale}/*.json` and must respect the voice declared in `PRODUCT.md`. Do **not** create a `DESIGN.md` — Wonder's `color.css` + `root.css` + [`style-and-lib.md`](references/style-and-lib.md) are authoritative for visual tokens.
 
 ### Page or component
 Read `references/implementation-playbook.md` and `references/style-and-lib.md`. Copy-paste skeleton for a frontend page in [`references/examples.md`](references/examples.md#2-frontend-page-customviewpagesfrontendaboutphp).
