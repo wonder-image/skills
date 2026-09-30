@@ -18,6 +18,7 @@
   - [Class skeleton](#class-skeleton-1)
   - [`FormField` hard rule](#formfield-hard-rule)
   - [`formSchema()`](#formschema)
+  - [Backend save bar](#backend-save-bar)
   - [`permissionSchema()`](#permissionschema)
   - [`navigationSchema()`](#navigationschema)
   - [`tableSchema()` and `tableLayoutSchema()` (listing)](#tableschema-and-tablelayoutschema-listing)
@@ -447,6 +448,18 @@ Common chainable modifiers from `FormField`: `.label(string)`, `.value(mixed)`, 
 
 For layouts, override `formLayoutSchema(): ?Form` and compose Cards / Containers around `static::getInput('field_name')`. See `class/App/Resources/Css/CssAlertResource.php` for a full layout example.
 
+### Backend save bar
+
+Every Resource form is tracked by the backend save bar with nothing to declare: `resource/form.php` prints `data-wi-save-bar` on the `<form>` (layout and legacy branch) unless the form is fully locked, and `data-wi-save-bar-dirty` when it re-renders a failed save (`FORM_ERRORS`). The lib copies the form's submit buttons into a fixed island when they scroll away and warns before leaving with unsaved changes.
+
+- A `Submit` named `upload` in `formLayoutSchema()` replaces the footer Save (`ResourceFormLayoutRenderer::hasSubmit()`). It counts inside Container, Card and `expanded(true)` Accordion; not inside Modal, QuickCreate or components with `visibleWhen()` / `hiddenWhen()`.
+- A view that calls `ResourceFormLayoutRenderer::render()` itself passes `'attributes' => ['data-wi-save-bar' => $saveBar, 'data-wi-save-bar-dirty' => $saveBar && !empty($FORM_ERRORS)]`, with `$saveBar = empty($READONLY) || !empty($READONLY_EDITABLE)`. `AttributeString::render()` prints `true` as a bare attribute and omits `false` / `null`; the option ignores `id`, `method`, `enctype`, `action`, `onsubmit` and `class`, which the renderer sets. Never print `data-wi-save-bar-dirty=""`: presence alone marks the form dirty.
+- A password that is not the user's login credential declares `->autocomplete('new-password')` (see `SecurityResource`), otherwise the browser autofills it and the form looks modified. `data-wi-save-bar-ignore` is only for the account's own confirmation password.
+- Never put `Button::post()` inside a Resource form: the browser drops the nested `<form>`.
+- Scripts call `wiSaveBar?.reset(form)` before `form.submit()` and in AJAX success callbacks. `wiSaveBar?.absorb(el)` is only for writes the user did not make (init fills, AJAX prefill), on the narrowest container, never on the whole form.
+
+Full contract: `docs/app/concetti/form/save-bar.md`.
+
 ### `permissionSchema()`
 
 ```php
@@ -822,6 +835,8 @@ final class ContactPageSchema extends CustomPageSchema
 `applyLabelSchema()` walks the returned schema and applies the label from `labelSchema()` to every field that does not already declare one. See `class/App/PageSchema/AccountPageSchema.php` and `class/App/PageSchema/CorporateDataPageSchema.php` for full examples.
 
 Routes for a custom page schema are wired manually in the project's route files (custom backend route + handler). The schema only defines the form inputs and labels — it does not register routes by itself.
+
+A hand-written backend `<form>` that saves a record opts into the save bar with a literal `data-wi-save-bar` attribute, plus an inline `data-wi-save-bar-dirty` when the page re-renders unsaved values after a failed POST. For `user()` flows the signal is `user()->written` (`false` when nothing was written), never the ALERT code. See [Backend save bar](#backend-save-bar).
 
 ## Registration and discovery
 
