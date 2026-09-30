@@ -456,7 +456,7 @@ Every Resource form is tracked by the backend save bar with nothing to declare: 
 - A view that calls `ResourceFormLayoutRenderer::render()` itself passes `'attributes' => ['data-wi-save-bar' => $saveBar, 'data-wi-save-bar-dirty' => $saveBar && !empty($FORM_ERRORS)]`, with `$saveBar = empty($READONLY) || !empty($READONLY_EDITABLE)`. `AttributeString::render()` prints `true` as a bare attribute and omits `false` / `null`; the option ignores `id`, `method`, `enctype`, `action`, `onsubmit` and `class`, which the renderer sets. Never print `data-wi-save-bar-dirty=""`: presence alone marks the form dirty.
 - A password that is not the user's login credential declares `->autocomplete('new-password')` (see `SecurityResource`), otherwise the browser autofills it and the form looks modified. `data-wi-save-bar-ignore` is only for the account's own confirmation password.
 - Never put `Button::post()` inside a Resource form: the browser drops the nested `<form>`.
-- Scripts call `wiSaveBar?.reset(form)` before `form.submit()` and in AJAX success callbacks. `wiSaveBar?.absorb(el)` is only for writes the user did not make (init fills, AJAX prefill), on the narrowest container, never on the whole form.
+- Scripts call `window.wiSaveBar?.reset(form)` before `form.submit()` and in AJAX success callbacks. `window.wiSaveBar?.absorb(el)` is only for writes the user did not make (init fills, AJAX prefill), on the narrowest container, never on the whole form.
 
 Full contract: `docs/app/concetti/form/save-bar.md`.
 
