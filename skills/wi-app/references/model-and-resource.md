@@ -457,6 +457,7 @@ Every Resource form is tracked by the backend save bar with nothing to declare: 
 - A password that is not the user's login credential declares `->autocomplete('new-password')` (see `SecurityResource`), otherwise the browser autofills it and the form looks modified. `data-wi-save-bar-ignore` is only for the account's own confirmation password.
 - Never put `Button::post()` inside a Resource form: the browser drops the nested `<form>`.
 - Scripts call `window.wiSaveBar?.reset(form)` before `form.submit()` and in AJAX success callbacks. `window.wiSaveBar?.absorb(el)` is only for writes the user did not make (init fills, AJAX prefill), on the narrowest container, never on the whole form.
+- The back chevron of `layout/backend/form.php` carries `data-wi-save-bar-cancel`: the lib turns it into the island's "Annulla" button. A hand-written form with a back link can mark it the same way.
 
 Full contract: `docs/app/concetti/form/save-bar.md`.
 

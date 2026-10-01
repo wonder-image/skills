@@ -25,7 +25,7 @@ Use the complete domain with dots replaced by hyphens as the project folder: `wo
 - `npm install` copies the Wonder frontend library into `assets/lib/wonder-image/dist/` from the npm package `wonder-image` (source: `node_modules/wonder-image/`).
 - `php forge update --local` applies DB and runtime generation steps.
 - `php forge start` runs the local server and may fill missing `.env` values during local setup.
-- Updating the lib to a new alpha (the backend save bar needs `wonder-image` `2.1.2-alpha.17`): if `package.json` already allows it (`^2.1.2-alpha.*`), `composer update` is enough because `forge config` runs `npm install`; outside the range (`^2.1.1-alpha.*`, `^2.0.x`, `^2.1.0`) run `npm install wonder-image@^2.1.2-alpha.17` and commit `package.json` and `package-lock.json`, because CI uses `npm ci`.
+- Updating the lib to a new alpha (the backend save bar needs `wonder-image` `2.1.2-alpha.19`): if `package.json` already allows it (`^2.1.2-alpha.*`), `composer update` is enough because `forge config` runs `npm install`; outside the range (`^2.1.1-alpha.*`, `^2.0.x`, `^2.1.0`) run `npm install wonder-image@^2.1.2-alpha.19` and commit `package.json` and `package-lock.json`, because CI uses `npm ci`.
 
 ## CRUD and Backend Conventions
 
