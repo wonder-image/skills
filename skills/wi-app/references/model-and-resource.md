@@ -565,7 +565,7 @@ The Resource listing has two complementary schemas:
   - `.results(bool = true)` — toggle the result-count line.
   - `.buttonAdd(bool|string $enabled = true, ?string $label = null)` — top-right "Add" CTA.
   - `.buttonCustom(Button|Dropdown|string $button)` / `.buttonsCustom(array)` — add typed header actions next to the "Add" CTA; prefer `Wonder\Elements\Components\Button` or `Dropdown`.
-  - Use `Button::post($action, $label)->confirm(...)` for POST header actions. `Button::to($action, $label)->type('post')` is equivalent and both render a sanitized `<form method="post">` (CSRF field included) around the submit button; `confirm()` emits the lib `data-wi-confirm*` attributes on that form.
+  - Use `Button::post($action, $label)->confirm(...)` for POST header actions. `Button::to($action, $label)->type('post')` is equivalent and both render a sanitized `<form method="post">` (CSRF field included) around the submit button; `confirm()` emits the lib `data-wi-confirm*` attributes on that form; `hidden(['id' => 7])` adds hidden fields to it.
   - `.buttonCustomHtml(string $html)` — explicit trusted-HTML escape hatch only when no Element can represent the markup; sanitize every dynamic value before composing it.
   - `.filters(bool $search = true, bool $limit = true)` — search box and per-page limit selector.
   - `.searchFields(array)` — where the search box looks: plain columns, `table.column` (resolved through the Model's foreign key), or relation descriptors (`table`, `local_key`, `foreign_key` defaulting to `id`, `columns`, nested `relations` to walk several tables). Every word must match somewhere; descriptors are validated against the DB. `select()` aliases are never searched.
