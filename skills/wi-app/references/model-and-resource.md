@@ -455,7 +455,7 @@ Every Resource form is tracked by the backend save bar with nothing to declare: 
 - A `Submit` named `upload` in `formLayoutSchema()` replaces the footer Save (`ResourceFormLayoutRenderer::hasSubmit()`). It counts inside Container, Card and `expanded(true)` Accordion; not inside Modal, QuickCreate or components with `visibleWhen()` / `hiddenWhen()`.
 - A view that calls `ResourceFormLayoutRenderer::render()` itself passes `'attributes' => ['data-wi-save-bar' => $saveBar, 'data-wi-save-bar-dirty' => $saveBar && !empty($FORM_ERRORS)]`, with `$saveBar = empty($READONLY) || !empty($READONLY_EDITABLE)`. `AttributeString::render()` prints `true` as a bare attribute and omits `false` / `null`; the option ignores `id`, `method`, `enctype`, `action`, `onsubmit` and `class`, which the renderer sets. Never print `data-wi-save-bar-dirty=""`: presence alone marks the form dirty.
 - A password that is not the user's login credential declares `->autocomplete('new-password')` (see `SecurityResource`), otherwise the browser autofills it and the form looks modified. `data-wi-save-bar-ignore` is only for the account's own confirmation password.
-- Never put `Button::post()` inside a Resource form: the browser drops the nested `<form>`.
+- Never put `Button::post()`, a POST `Dropdown` item or a `Modal` with `form()` inside a Resource form: the browser drops the nested `<form>` (a `Modal` with `form()` in `formLayoutSchema()` throws `LogicException`).
 - Scripts call `window.wiSaveBar?.reset(form)` before `form.submit()` and in AJAX success callbacks. `window.wiSaveBar?.absorb(el)` is only for writes the user did not make (init fills, AJAX prefill), on the narrowest container, never on the whole form.
 - The back chevron of `layout/backend/form.php` carries `data-wi-save-bar-cancel`: the lib turns it into the island's "Annulla" button. A hand-written form with a back link can mark it the same way.
 
@@ -565,7 +565,7 @@ The Resource listing has two complementary schemas:
   - `.results(bool = true)` — toggle the result-count line.
   - `.buttonAdd(bool|string $enabled = true, ?string $label = null)` — top-right "Add" CTA.
   - `.buttonCustom(Button|Dropdown|string $button)` / `.buttonsCustom(array)` — add typed header actions next to the "Add" CTA; prefer `Wonder\Elements\Components\Button` or `Dropdown`.
-  - Use `Button::post($action, $label)->confirm(...)` for POST header actions. `Button::to($action, $label)->type('post')` is equivalent and both render a sanitized `<form method="post">` around the submit button.
+  - Use `Button::post($action, $label)->confirm(...)` for POST header actions. `Button::to($action, $label)->type('post')` is equivalent and both render a sanitized `<form method="post">` (CSRF field included) around the submit button; `confirm()` emits the lib `data-wi-confirm*` attributes on that form.
   - `.buttonCustomHtml(string $html)` — explicit trusted-HTML escape hatch only when no Element can represent the markup; sanitize every dynamic value before composing it.
   - `.filters(bool $search = true, bool $limit = true)` — search box and per-page limit selector.
   - `.searchFields(array)` — where the search box looks: plain columns, `table.column` (resolved through the Model's foreign key), or relation descriptors (`table`, `local_key`, `foreign_key` defaulting to `id`, `columns`, nested `relations` to walk several tables). Every word must match somewhere; descriptors are validated against the DB. `select()` aliases are never searched.
