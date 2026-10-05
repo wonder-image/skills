@@ -10,6 +10,10 @@ Use the complete domain with dots replaced by hyphens as the project folder: `wo
 
 The framework version lives only in `composer.json` `"version"`; `Wonder\App\Version::get()` resolves `APP_VERSION` at bootstrap (package manifest, then `InstalledVersions`, then `dev`) and `Version::label()` appends `dev-main@<hash>` for branch installs. Never hardcode a version in `wonder-image.php`. Release from the package root on a clean, pushed `main` with `composer release -- X.Y.Z` (script `bin/release.php`, gitignored and local-only; pre-release: `X.Y.Z-alpha|beta|rc.N`; also `patch|minor|major`, `--dry-run`, `--no-github`). It bumps composer.json, commits `Release X.Y.Z`, tags `vX.Y.Z`, pushes, and runs `gh release create`. Tags must be `vX.Y.Z` (not `v.X.Y.Z`) and match composer.json at that commit, or Packagist skips them. Releasing publishes to GitHub/Packagist: only run it when the user asks.
 
+## Minimum lib version
+
+The minimum `wonder-image/lib` (npm) version required by the framework lives only in `Wonder\App\LibVersion::MINIMUM`. Raise it in the same change that makes a renderer or layout depend on new lib JS/CSS (a new `data-wi-*` contract, a new `wi.*` API), after that lib version is published. `php forge update` (CLI, with or without `--local`; not the API trigger) compares it with the site's `node_modules/wonder-image/package.json` and stops before `UpdateRunner` with the command to run (`npm install 'wonder-image@^X'`: explicit constraint, because the bare package name resolves the `latest` dist-tag, which may be older than a pre-release). An undeterminable version (no `node_modules`) never blocks.
+
 ## Decide Where the Change Belongs
 
 - Use the **framework** when changing framework behavior, bootstrap, registries, route generation, console command source, shared resources, or architecture conventions.
