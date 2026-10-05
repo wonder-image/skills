@@ -25,6 +25,7 @@ Use the complete domain with dots replaced by hyphens as the project folder: `wo
 - `npm install` copies the Wonder frontend library into `assets/lib/wonder-image/dist/` from the npm package `wonder-image` (source: `node_modules/wonder-image/`).
 - `php forge update --local` applies DB and runtime generation steps.
 - `php forge start` runs the local server and may fill missing `.env` values during local setup.
+- Updating the lib to a new alpha (the backend save bar needs `wonder-image` `2.1.2-alpha.19`): if `package.json` already allows it (`^2.1.2-alpha.*`), `composer update` is enough because `forge config` runs `npm install`; outside the range (`^2.1.1-alpha.*`, `^2.0.x`, `^2.1.0`) run `npm install wonder-image@^2.1.2-alpha.19` and commit `package.json` and `package-lock.json`, because CI uses `npm ci`.
 
 ## CRUD and Backend Conventions
 
@@ -36,6 +37,8 @@ Use the complete domain with dots replaced by hyphens as the project folder: `wo
   - `FormField::repeater([RepeaterColumn::key(...)])` handles repeatable rows
 - If the backend page is not standard CRUD, prefer `CustomPageSchema` (extend `Wonder\App\PageSchema\CustomPageSchema`).
 - One file per Model / Resource — do not collapse multiple tables into a single file.
+- Backend save bar: Resource forms are tracked automatically (contract in `wi-app/references/model-and-resource.md` → "Backend save bar"). A hand-written `<form>` in the site or in a copy-paste module opts in with a literal `data-wi-save-bar` attribute; remove any old `preventFormSubmit(form)` call when you add it.
+- Module view overrides in `custom/modules/<slug>/view/`: delete an override identical to the package view; a customized one gets the save bar attributes by hand, or only that file is republished with `php forge publish:module immobili pages/backend/immobili/form.php --force`. Never run `--force` on the whole tree: it overwrites customized views.
 
 ## Views, Components, and Frontend
 
@@ -45,6 +48,7 @@ Use the complete domain with dots replaced by hyphens as the project folder: `wo
   - Component overrides → `custom/view/components/{frontend,backend}/...` (mirror the framework component path)
   - Layout overrides → `custom/view/layout/frontend/...`
 - Preserve the `{frontend,backend}` split — do not reintroduce flat or legacy ad hoc folders.
+- A full override of `custom/view/components/backend/layout/header.php` must subtract `var(--wi-save-bar-reserve, 0px)` from the page container `min-height`, like the framework header; otherwise backend pages get up to 96px of extra scroll.
 
 ## Translation and URL Rules
 
