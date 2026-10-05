@@ -12,7 +12,7 @@ The framework version lives only in `composer.json` `"version"`; `Wonder\App\Ver
 
 ## Minimum lib version
 
-The minimum `wonder-image/lib` (npm) version required by the framework lives only in `Wonder\App\LibVersion::MINIMUM`. Raise it in the same change that makes a renderer or layout depend on new lib JS/CSS (a new `data-wi-*` contract, a new `wi.*` API), after that lib version is published. `php forge update` (CLI, with or without `--local`; not the API trigger) compares it with the site's `node_modules/wonder-image/package.json` and stops before `UpdateRunner` with the command to run (`npm install 'wonder-image@^X'`: explicit constraint, because the bare package name resolves the `latest` dist-tag, which may be older than a pre-release). An undeterminable version (no `node_modules`) never blocks.
+The minimum `wonder-image/lib` (npm) version required by the framework lives only in `extra.wonder.lib` of the framework `composer.json` (e.g. `^2.1.2-alpha.23`; only the minimum counts), read by `Wonder\App\LibVersion`. Raise it in the same change that makes a renderer or layout depend on new lib JS/CSS (a new `data-wi-*` contract, a new `wi.*` API), after that lib version is published. `php forge update` (CLI, with or without `--local`; not the API trigger) compares it with the site's `node_modules/wonder-image/package.json` and stops before `UpdateRunner` with the command to run (`npm install 'wonder-image@^X'`: explicit constraint, because the bare package name resolves the `latest` dist-tag, which may be older than a pre-release). An undeterminable version (no `node_modules`, or a deploy that strips the package `composer.json`) never blocks.
 
 ## Decide Where the Change Belongs
 
