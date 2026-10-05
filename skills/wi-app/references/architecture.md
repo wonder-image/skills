@@ -27,6 +27,16 @@
 
 ## Architecture Split
 
+- Reusable frontend auth is opt-in through `Wonder\Auth\Frontend\AuthRoutes`
+  and `AuthProfile`. Configure fields, server validation, explicit persistence
+  whitelists, federation policy and idempotent business hooks on the profile;
+  configure authority/email-verification permissions through the existing
+  builder. `AccountPanel` shares navigation/layout and personal-data extension
+  hooks without owning contact/payment storage. Use the active page theme,
+  page-level alerts outside forms and private SEO defaults. The shared
+  body-start emits only internal user id and success-only auth events to GTM.
+  Core guide: `docs/app/concetti/utenti/auth-frontend.md`.
+
 - Legacy runtime still exists under `app/`.
 - New architecture lives mostly under `class/App/*`.
 - Prefer the newer class-based architecture for new work, but inspect both sides when following a real runtime flow.
@@ -56,6 +66,39 @@
 - Restrict `titleSize()` and `descriptionSize()` to the lib typography presets (`title-big`, `title`, `subtitle`, `text`, `text-small`). Escape simple descriptions by default; use `components()` for structured content and propagate the explicitly requested theme to those child Elements.
 
 ## Model and Resource Roles
+
+- Generic `App/Resources/Contacts/{ContactResource,ContactAddressResource}`
+  are app-only admin panels on shared tables, with CSRF and no API/delete.
+  `Resource::isTableFallback()` keeps table lookups on existing module/site
+  panels; generic contact navigation hides when a richer table panel exists.
+  Shipping labels are optional; account dialogs use layout `page_modals`
+  after main, never inside form/content columns. The route dispatcher preloads
+  core translations before site lang.php route lookups translate metadata.
+
+- Wonder selects keep a native fallback until lib enhancement. Reuse geo
+  FormFields with `data-wi-select-search`: labels activate the visible button,
+  searching/filtering and keyboard selection belong to lib, not PHP views.
+  Esc closes the select before a surrounding modal; frontend modal layer 1100
+  covers site headers at 101. No forced view theme or parallel select widget.
+
+- Shared account contacts are available from `Wonder\App\Models\Contacts\Contact`
+  and `ContactAddress`, and provider IDs from `Models\System\ExternalReference`.
+  No gestionale installation is needed; SQL names are `contacts`,
+  `contact_addresses`, `external_references`. Forge update atomically renames
+  legacy `gst_*` names before schema alignment, preserving IDs and FKs;
+  conflicting old/new tables stop the update without deleting data. Gestionale
+  retains compatible model namespaces and extends Contact with commercial
+  fields; integrations should import core models for generic account data.
+  `Wonder\Auth\Frontend\ContactAccount::link()` links an account without
+  requiring fiscal data. `AccountAddressForm::fields()` explicitly applies
+  extension labels and defaults; `layout()` composes existing Containers.
+  Billing cells use `visibleWhen('type', 'business')`. Country/state FormFields
+  require the aligned lib bundle supporting native selects and `/api/states/`;
+  an empty state must not implicitly select the first province.
+  Complete account address saves use `AccountAddressValidation` before model
+  writes, without requiring billing during signup. `AccountAddressModal`
+  composes `Modal::frontend()` and the shared address form; keep CSRF,
+  contact ownership, page-only alerts and non-JS routes in the controller.
 
 - `class/App/Model.php` owns table metadata, data schema, query helpers, and field-to-SQL conversion.
 - `class/App/Resource.php` owns backend/API module behavior, form fields, query schema, permission schema, navigation schema, and repeater relation handling.
@@ -89,6 +132,14 @@
 - Custom resource pages and permissions alter which routes are emitted.
 
 ## Module System
+
+Shared dialogs use `Modal::make(...)->id($id)->frontend()` for Wonder opt-in
+with Cancel then Save in `Modal::footer()`. External submit buttons use the
+native `form` attribute matching the body form id; do not duplicate forms.
+Use `Button::opensModal($id)` for theme-aware declarative opening. Keep hrefs
+as no-JS fallbacks; no per-view onclick or forced rendering themes. Submit,
+reset and lightbox buttons cannot also trigger modals. Lib preserves legacy
+modal() while handling focus trapping, Esc, return focus and closed inert fields.
 
 - Canonical modules are standalone Composer packages named `wonder-image/<slug>`.
 - The standard namespace base is `Wonder\\Plugin\\<StudlySlug>\\`.

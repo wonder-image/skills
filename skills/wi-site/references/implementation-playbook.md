@@ -16,6 +16,16 @@ Verified against `wonder-image/new-site` (https://github.com/wonder-image/new-si
 
 ## New Page Workflow
 
+For frontend authentication, reuse `Wonder\Auth\Frontend\AuthProfile` and
+opt-in `AuthRoutes`, not a site copy of the auth controller. Extend fields,
+server validation, explicit write whitelists, federation policy and idempotent
+business hooks together; configure email-verification permissions separately.
+`AccountPanel` provides shared navigation/layout and personal-data hooks;
+contact storage and payments stay provider/module-owned. Ecommerce exposes
+`auth.profile`, `account.panel` and `account.navigation` in its configuration.
+Use `auth.*` / `account.*` translation overrides, active-page form themes and
+page-level alerts outside forms. Core guide: `docs/app/concetti/utenti/auth-frontend.md`.
+
 1. Inspect existing page and section components that already express the target style.
 2. Reuse or override components before creating new ad hoc markup.
 3. Create the page under `custom/view/pages/{frontend,backend}/...`.
