@@ -9,6 +9,7 @@ description: |
   - editing shared UI components under `class/Elements/Components/*`, media under `class/Elements/Media/*`, or their renderers under `class/Themes/{Wonder,Bootstrap}/*`
   - modifying Model, Resource, PageSchema, Repeater, ModelRegistry, ResourceRegistry, ResourceRouteRegistrar, Credentials, or the `wonder-image.php` entrypoint
   - changing bootstrap order, `ROOT`/`.env` resolution, module discovery, generated backend/API CRUD routes, or `php forge ...` command sources
+  - editing `docs/components/*`, `class/Docs/*` or `bin/docs.php` (the component catalogue)
   - updating `docs/app/*` for bootstrap, architecture, routing, or layout conventions
 
   SKIP when:
@@ -77,6 +78,7 @@ Switch to [`wi-site`](../wi-site/SKILL.md) when **any** of these signals are tru
 - **`<wi-card>` is retired.** Do not add new `<wi-card>` tags and do not call `wiCard()` / `wiCardLink()` in new code: use `Card` in app, which renders a `<div class="card">`. When you edit a page that contains one, replace it. Do not add an option to `Card` to change its tag. Leave `createCard()` and the `wi-card` CSS rule in the lib: existing pages still depend on them until they are migrated.
 - The session CSRF token belongs to `Wonder\Http\Csrf` (`token()`, `field()`, `verify()`; field `_csrf`, header `X-WI-CSRF`, `<meta name="wi-csrf">` in the base layouts). `Form` renderers of both themes, `Button::post()`, POST `Dropdown` items, `Modal::form()` and the Resource form page emit the field on their own through `Csrf::fieldFor()`, never for GET and never without an active session; hand-written `<form>` tags add `Csrf::field()` themselves. Verification is still opt-in: call `Csrf::verify()` in the handler, do not wire it into `RouteDispatcher`. `AuthSession` delegates to `Csrf`; do not add new per-feature tokens (`scheduler_csrf` and `_contact_csrf` are legacy, `Impersonation` keeps its scoped token). See `docs/app/concetti/form/csrf.md`.
 - Confirmations on shared components use the lib contract `data-wi-confirm*` (`wi.confirm`), never `window.confirm` or hand-written `onclick`: `Button::confirm($message, title:, ok:, variant:)` and Dropdown items with `confirm`, `confirm_title`, `confirm_ok`, `confirm_variant`. POST actions go on the `<form>` (`Themes\Concerns\RendersPostForm`, which also prints the CSRF field), the rest on the tag. A `Dropdown` item with `'method' => 'post'` is a per-item CSRF form; `action()` is a `<button type="button">` without href. `Modal::form($action, $method, $hidden)` wraps body and footer in a CSRF form with Cancel then Save (`cancel()`, `submit()`; a manual `footer()` replaces them) and must be rendered outside any form (it throws `LogicException` inside a Resource layout); rendered standalone in Bootstrap, `columns()` / `columnSpan()` lay out its fields as in a Resource layout. Date inputs read a slashed value as `d/m/Y`. Inner parts get one public method each (`Modal::dialogClass()`..`footerClass()`, `Dropdown::toggleClass()`, `menuClass()`, `itemClass()`) built on `HasPartAttributes` / `RendersPartAttributes`; classes append to the theme ones in a single `class` attribute. See `docs/app/concetti/componenti/README.md`.
+- A new component or public component API is not complete without its card in `docs/components/<category>/<slug>.php`; `php tests/Docs/CatalogRenderTest.php` must pass. Theme availability is computed by `ThemeSupport`, never written by hand. See `references/component-catalogue.md`.
 - Update `docs/app/*` in the same work when you change bootstrap, architecture, routing, layout structure, or developer-facing conventions.
 
 ## Task Routing
@@ -96,6 +98,10 @@ Read `references/model-and-resource.md` — section "FormField hard rule". Every
 ### UI / styling inside default components or themes
 
 When the change touches a default component shipped by the framework (`class/App/Resources/.../*.php` views, the non-form Components under `class/Elements/Components/`, Media under `class/Elements/Media/`, the form Components under `class/Elements/Form/Components/`, the Wonder / Bootstrap renderers under `class/Themes/{Wonder,Bootstrap}/`, or any `app/view/...` page used by a site), the authoritative UI rulebook is [`wi-site/references/style-and-lib.md`](../wi-site/references/style-and-lib.md). The same reuse-first-from-`wonder-image/lib` policy applies inside `wonder-image/app`: do not invent new `.wi-*` names at framework level (that is a lib-side change), do not bake site-specific tokens into a default component, and preserve compatibility with the site's `color.css` / `root.css`. This includes shared action primitives like `Button`, `Badge`, `ButtonGroup`, and `Dropdown`. For link-like attributes on shared components, prefer the common concern `class/Elements/Concerns/HasLinkAttributes.php` and persist `href`, `target`, `rel`, `title`, `onclick`, `download` in `attributes` so theme renderers stay thin. Install `wi-site` alongside `wi-app` so this reference resolves locally.
+
+### Component cards and the catalogue
+
+Read `references/component-catalogue.md` when adding or changing an Element in `class/Elements/*` or its public API: card location and format, validation test, how to open the catalogue, `PageAssets::once()` and the lib version constraint.
 
 ### Permissions, roles, or user management
 
