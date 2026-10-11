@@ -47,8 +47,24 @@ metrics mean unavailable; PHP peak memory is not RSS or hosting resource use.
 Sitemap is the first default, wrapping the existing licensed crawler without
 modifying its code. The legacy site `api/task/sitemap.php` is removed by build;
 migrate to the generated CLI entrypoint. Euribor reuses `Euribor::sync()` only
-where the site provides it. Google reviews/hours remain documented future work;
-do not claim Place ID supplies every review or activate fake placeholder jobs.
+where the site provides it.
+
+`Tasks\GooglePlacesTask` (`wonder.google-places`, off by default, 03:30) syncs
+every `SocietyLocation` with its own `google_place_id` through Places API (New)
+Place Details and the server key `GCP_API_KEY` (header, never URL). Logic lives
+in `Support/GooglePlaces`: pure `PlaceMapper`, `PlaceDiff`, `PlaceSyncPlan`,
+`GooglePlaceData`; IO behind `PlaceDetailsClient` and `GooglePlacesStore`, so
+tests inject fakes and never call Google. Parameters: `apply_hours` (false =
+store differences only) and `language`. Never apply the business status; a
+manual special-hours row beats Google's on the same date. Snapshots go to
+`society_location_google`, at most five reviews to `society_location_reviews`
+(stale ones deleted, everything cleared when the Place ID goes away).
+`SocietyLocations` exposes `$location->google` / `$location->reviews`; sites
+render them with `GoogleReviews::fromLocation()`, whose Google attributions
+are mandatory. Places returns at most five reviews, not the full archive
+(that needs Business Profile with OAuth). Storing reviews conflicts with the
+Places caching terms (only Place ID may be stored): document it as the site's
+choice, never as compliant. Do not activate fake placeholder jobs.
 
 Validate PHP lint, `tests/scheduler.php`, DB/process integration in a disposable
 site, and normal site `forge update --local` / `forge start`. Update the core
