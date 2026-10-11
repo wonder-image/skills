@@ -113,8 +113,8 @@ Read `references/architecture.md`. Preserve compatibility with Composer discover
 
 ### Console commands or local-start flows
 
-For scheduled tasks, cron entrypoints, task providers, retention, metrics or
-sitemap migration, also read [`references/scheduler.md`](references/scheduler.md).
+For scheduled tasks, cron entrypoints, task providers, retention, metrics, sitemap
+migration or the Google Places location sync (`GoogleReviews`), also read [`references/scheduler.md`](references/scheduler.md).
 
 Read `references/workflows.md`. Remember these commands are meant to be executed from a site even when their source lives in this package.
 

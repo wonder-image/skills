@@ -664,6 +664,8 @@ Override on the Resource subclass to inject behavior around the CRUD pipeline:
 
 - `mutateRequestValues(array $values, string $action, string $context = 'backend', ?array $oldValues = null): array` — change incoming request values before validation / persistence. Typical use: auto-generate a slug from a name (see `AnnouncementResource`).
 - `mutateFormValues(array $values, string $mode, string $context = 'backend'): array` — change values right before the form is rendered (e.g. pre-fill defaults).
+- `formPlaceholders(array $values, string $mode): array` — hints for empty fields (field name => text), e.g. values inherited from another record.
+- `formNotices(array $values, string $mode): array` — `{level: info|warning|danger, message}` alerts printed above the backend form, outside the `<form>` (`FORM_NOTICES` from `ResourcePagePresenter`), escaped with line breaks. For external state (e.g. Google differences in `SocietyLocationResource`), not a replacement for `$ALERT` or validation.
 - `findStoreExistingValues(array $requestValues, string $context = 'backend'): ?array` — return an existing row matching the request to convert a `store` into an idempotent upsert. Returning `null` keeps the default insert behavior.
 - `afterStore(object $result, array $values = []): void`
 - `afterUpdate(int|string $id, object $result, array $values = []): void`
