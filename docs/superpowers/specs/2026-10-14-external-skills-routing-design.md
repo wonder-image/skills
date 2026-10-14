@@ -66,10 +66,10 @@ Le variabili e le classi elencate sono le uniche fonti di colore e tipografia am
 
 | Ruolo | Colore | Contrasto (`-o`) | Variabili |
 |---|---|---|---|
-| primary | #RRGGBB | #RRGGBB | `--primary-color`, `--primary-o-color`, `--primary-color-{0..100}`, `--primary-o-color-{0..100}` |
+| primary | #RRGGBB | #RRGGBB | `--primary-color`, `--primary-o-color`, `--primary-color-{0..100 passo 10}`, `--primary-o-color-{0..100 passo 10}` |
 | … una riga per ogni riga di css_color, nell'ordine della tabella … |
 
-Testo di default: `--tx-color` #RRGGBB (`--tx-color-{0..100}`) · Sfondo di default: `--bg-color` #RRGGBB (`--bg-color-{0..100}`)
+Testo di default: `--tx-color` #RRGGBB (`--tx-color-{0..100 passo 10}`) · Sfondo di default: `--bg-color` #RRGGBB (`--bg-color-{0..100 passo 10}`)
 
 ## Tipografia
 
