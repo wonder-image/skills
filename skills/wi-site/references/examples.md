@@ -7,7 +7,7 @@
 - [3. `lang/it/pages.json`](#3-langitpagesjson)
 - [4. `custom/config/permissions.php` — extend the builder registry](#4-customconfigpermissionsphp--extend-the-builder-registry)
 - [5. `custom/config/modules.php` — enable an external Composer module](#5-customconfigmodulesphp--enable-an-external-composer-module)
-- [6. `PRODUCT.md` — brand and project context](#6-productmd--brand-and-project-context)
+- [6. `docs/ai/PRODUCT.md` — brand and project context](#6-docsaiproductmd--brand-and-project-context)
 
 Reference scaffolds for the five most common starting points in a Wonder site. Patterns derived from `wonder-image/new-site` (`App\Models\Form\Form`, `App\Resources\Form\FormContactResource`, `custom/view/pages/frontend/contact.php`, `custom/config/permissions.php`, `lang/it/pages.json`). Replace the example slug (`Project`) with the real domain noun when copying.
 
@@ -356,13 +356,13 @@ Notes:
 - After editing this file, re-run `php forge update --local` so route / model / resource registration picks up the new state.
 - Prefer this over copy-pasting module code into `custom/` — see [`workflows.md`](workflows.md) on module integration.
 
-## 6. `PRODUCT.md` — brand and project context
+## 6. `docs/ai/PRODUCT.md` — brand and project context
 
-A single markdown file at the **root of the site repo** (same level as `composer.json`). Captures who the site is for, what it sounds like, and what kind of site it is (`site_type`). `wi-site` reads it first. Full schema and the `site_type` semantics in [`product-md.md`](product-md.md).
+A single markdown file at **`docs/ai/PRODUCT.md`** (the `new-site` scaffold ships it with empty sections; older sites have it at the root until the readiness check moves it). Captures who the site is for, what it sounds like, and what kind of site it is (`site_type`). `wi-site` reads it first. Full schema and the `site_type` semantics in [`product-md.md`](product-md.md).
 
 > **Don't fill this template cold.** When `PRODUCT.md` is missing or its required sections are empty, `wi-site` runs an **interview procedure** that asks 2–4 focused questions at a time and builds the file incrementally. Full procedure in [`product-md.md` § Compilation procedure](product-md.md#compilation-procedure-interview-driven). The template below is the **target shape** — what you end up with after the interview, not what you write from a blank page.
 
-Copy this skeleton into `PRODUCT.md` and fill 1–3 lines per section — if a section needs half a page, the content probably belongs in `lang/{locale}/*.json` (copy) or `assets/{ASSETS_VERSION}/css/set-up/` (visual tokens) instead.
+Copy this skeleton into `docs/ai/PRODUCT.md` and fill 1–3 lines per section — if a section needs half a page, the content probably belongs in `lang/{locale}/*.json` (copy) or `assets/{ASSETS_VERSION}/css/set-up/` (visual tokens) instead.
 
 ```markdown
 # PRODUCT.md
@@ -407,10 +407,9 @@ Italiano, prima persona singolare, frasi corte, niente claim altisonanti. Nei te
 
 ## Asset paths
 
-- Logo SVG: `assets/{ASSETS_VERSION}/icons/logo.svg`
-- Logo PNG (fallback): `assets/{ASSETS_VERSION}/icons/logo.png`
-- Favicon: `assets/{ASSETS_VERSION}/icons/favicon.png`
 - OG image default: `assets/{ASSETS_VERSION}/images/og-default.jpg`
+- Illustrazioni hero: `assets/{ASSETS_VERSION}/images/hero/`
+- Logo e favicon: caricati dal backend, già in `assets/upload/logos/` e `assets/upload/favicon.ico` (non elencarli qui)
 
 ## Constraints
 
@@ -423,9 +422,9 @@ Italiano, prima persona singolare, frasi corte, niente claim altisonanti. Nei te
 - https://example.com/studio-bar — usare per la *voice* dei testi, non per il layout.
 ```
 
-After creating `PRODUCT.md`:
+After creating `docs/ai/PRODUCT.md`:
 
-- No further config needed — `wi-site` looks for it at the repo root.
+- No further config needed — `wi-site` looks for it at `docs/ai/PRODUCT.md` (and falls back to `PRODUCT.md` at the root on sites not yet migrated).
 - Keep it short. If a section grows past ~5 lines, ask whether that content really belongs there or in copy (`lang/`) / tokens (`color.css` / `root.css`) / actual page content.
 - Update it when the brand evolves. It is a live document, not a one-shot deliverable.
-- Do **not** create a `DESIGN.md` — Wonder's `color.css` + `root.css` + [`style-and-lib.md`](style-and-lib.md) are the authoritative visual rulebook.
+- Read `docs/ai/DESIGN.md` for the visual tokens, never create or edit it: the framework generates it from `color.css` + `root.css` (rules in [`style-and-lib.md`](style-and-lib.md), precedence over external skills in [`external-skills.md`](external-skills.md#precedence)).

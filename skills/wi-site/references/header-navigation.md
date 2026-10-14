@@ -190,5 +190,5 @@ Before handing off the header:
 6. Verify mobile uses the recursive cascade for both classic and mega data, including Back at every nested level.
 7. Verify `mobileAsButton => false` renders the action as a normal nav link with the same grid gap as sibling items.
 8. Verify `aria-expanded`, `aria-hidden`, `inert`, focus behavior, scroll locking, and reduced motion.
-9. Check the browser console and test at phone, tablet, and desktop widths.
+9. Run the closing check of [`external-skills.md` § Reports](external-skills.md#reports): `playwright-cli` screenshots at 375 / 768 / 1280 and a clean console, then `web-design-guidelines` on the touched files.
 10. Do not run Forge or npm rebuilds unless framework/runtime integration or the installed lib version actually changed.

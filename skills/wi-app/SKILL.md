@@ -41,7 +41,7 @@ Shared vocabulary across `wi-app` and `wi-site` (identical wording in both skill
 Switch to [`wi-site`](../wi-site/SKILL.md) when **any** of these signals are true — the work belongs in a site repo, not in the framework:
 
 - the repo's `composer.json` does **not** declare `"name": "wonder-image/app"`; instead it lists `wonder-image/app` under `require` (the framework is installed as a dependency).
-- a `PRODUCT.md` exists at the repo root declaring a Wonder site (`site_type: landing` / `corporate` / `blog` / `ecom` / `rsvp`) — that file only exists on sites, never inside the framework itself.
+- a `docs/ai/PRODUCT.md` exists (or, on sites not yet migrated, a `PRODUCT.md` at the repo root) declaring a Wonder site (`site_type: landing` / `corporate` / `blog` / `ecom` / `rsvp`) — that file only exists on sites, never inside the framework itself.
 - `vendor/wonder-image/app/` exists at the repo root — the framework is installed under `vendor/`, so this is a site.
 - the requested change lives under `custom/`, `app/Models`, `app/Resources`, `lang/`, `assets/{ASSETS_VERSION}/`, or any path that does not exist inside the framework repo.
 - the task is "add a page", "translate strings", "register a permission key for this site", "edit color tokens", "use a `.wi-*` component / lib class", or any work that **uses** (rather than extends) the framework.
