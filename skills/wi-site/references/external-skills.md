@@ -22,7 +22,7 @@ the closing checks, `product-md.md` only explains why `DESIGN.md` is generated.
 | "Redo / improve / modernise" an existing public page | `redesign-existing-projects` | `Leonxlnx/taste-skill` | Audit → diagnosis → fix inside the existing stack (PHP views + `wonder-image/lib`). No rewrites, no new stack. |
 | The user provides a mockup or screenshot to reproduce | `image-to-code` | `Leonxlnx/taste-skill` | Extract structure, hierarchy, spacing from the image the user gave; map onto `wonder-image/lib` components. No image generation: skip every step of that skill that generates images. |
 | Review of accessibility, UX, perceived performance, UI copy | `web-design-guidelines` | `vercel-labs/agent-skills` | On the frontend files touched by the task; `file:line` findings in the report. |
-| See the page: screenshots at 375 / 768 / 1280, console | `playwright-cli` | `npm i -g @playwright/cli@latest` + `playwright-cli install --skills` | Every task that touches public HTML / CSS, before the Required Final Report. |
+| See the page: screenshots at 375 / 768 / 1280, console | `playwright-cli` | `npm i -g @playwright/cli@latest` + `(cd ~ && playwright-cli install --skills)` | Every task that touches public HTML / CSS, before the Required Final Report. |
 
 Activation, in the order `wi-site` checks it:
 
@@ -60,7 +60,7 @@ npx skills add Leonxlnx/taste-skill --skill design-taste-frontend --global
 npx skills add Leonxlnx/taste-skill --skill redesign-existing-projects --global
 npx skills add Leonxlnx/taste-skill --skill image-to-code --global
 npx skills add vercel-labs/agent-skills --skill web-design-guidelines --global
-npm i -g @playwright/cli@latest && playwright-cli install --skills
+npm i -g @playwright/cli@latest && (cd ~ && playwright-cli install --skills)
 ```
 
 - Verify the `--skill` names once per machine with `npx skills add Leonxlnx/taste-skill --list`:
