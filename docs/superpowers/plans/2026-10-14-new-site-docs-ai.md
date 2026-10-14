@@ -22,7 +22,7 @@
   !/docs/ai/reports/.gitkeep
   /.taste-skill/
   ```
-- **`deploy.yml`:** la riga `docs/**` va dentro la lista `exclude: |` del passo `SamKirkland/FTP-Deploy-Action@v4.3.4`, subito dopo `*.md` (riga 160), con la stessa indentazione di 14 spazi. `*.md` copre solo la root: senza `docs/**` il `PRODUCT.md` committato finirebbe sul server.
+- **`deploy.yml`:** la riga `docs/**` va dentro la lista `exclude: |` del passo `SamKirkland/FTP-Deploy-Action@v4.3.4`, subito dopo `*.md` (riga 160), con la stessa indentazione di 14 spazi. Erratum (review): FTP-Deploy-Action usa `matchBase`, quindi `*.md` esclude già ogni `.md` a qualsiasi profondità; `docs/**` serve per i file non-md sotto `docs/` e per le cartelle stesse.
 - **`docs/ai/PRODUCT.md`:** le intestazioni del template di `skills/wi-site/references/examples.md` §6 con le sezioni vuote. Il file deve esistere per segnalare la convenzione; lo compila l'intervista di `wi-site`. Non inventare contenuti di brand per lo scaffold.
 - **`README.md`** di `new-site` non cita `PRODUCT.md` né `docs/` (verificato con `grep`): nessuna modifica.
 - **Commit:** ogni messaggio termina con la riga `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`.

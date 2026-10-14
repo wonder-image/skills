@@ -155,7 +155,7 @@ Il gate `Debug::enabled()` e la scrittura su disco non si testano a unità: sono
   !/docs/ai/reports/.gitkeep
   /.taste-skill/
   ```
-- `.github/workflows/deploy.yml`, lista `exclude` del passo FTP: aggiungere `docs/**`. Il pattern `*.md` esistente copre solo la root; senza questa riga `docs/ai/PRODUCT.md` (committato) finirebbe sul server.
+- `.github/workflows/deploy.yml`, lista `exclude` del passo FTP: aggiungere `docs/**`. Erratum (review piano 2): FTP-Deploy-Action confronta `exclude` con `matchBase`, quindi il pattern `*.md` esistente esclude già ogni `.md` a qualsiasi profondità, `docs/ai/PRODUCT.md` compreso; `docs/**` serve per i file non-md sotto `docs/` e per le cartelle stesse.
 - `AGENTS.md`: aggiungere `docs/ai/` all'albero della struttura e una riga nella sezione "AI skills" che rimanda a `docs/ai/PRODUCT.md` come primo file da leggere.
 - `README.md`: aggiornare l'eventuale riferimento a `PRODUCT.md` in root (oggi il file non esiste nello scaffold, quindi probabilmente nessun riferimento).
 
