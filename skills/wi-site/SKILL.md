@@ -4,7 +4,7 @@ description: |
   Work inside wonder-image/new-site or any site scaffolded from it. Use when
   composer.json depends on `wonder-image/app` but is not the framework package,
   or when work touches `custom/`, `app/Models`, `app/Resources`, `lang/`,
-  `assets/{ASSETS_VERSION}/`, `PRODUCT.md`, `php forge credentials`,
+  `assets/{ASSETS_VERSION}/`, `docs/ai/` (`PRODUCT.md`, `DESIGN.md`), `php forge credentials`,
   `php forge update --local`, `php forge start`, or npm setup. Covers pages,
   models, resources, repeaters, editable content, translations, routes, roles,
   permissions, external modules, component overrides, and UI/styling that must
@@ -60,11 +60,13 @@ Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals 
 
 ## Start Sequence
 
-0. **Read `PRODUCT.md` at the site root first.** It defines register (brand vs product), `site_type`, target users, brand personality, voice/tone, design principles. Everything you do next must be coherent with what it says — placement choices, copy, suggestions of modules, UI direction.
+0. **Read `docs/ai/PRODUCT.md` first.** It defines register (brand vs product), `site_type`, target users, brand personality, voice/tone, design principles. Everything you do next must be coherent with what it says — placement choices, copy, suggestions of modules, UI direction. If the file is missing but `PRODUCT.md` exists at the site root, the site is not migrated yet: read the root file, then run the **Site readiness check** in [`references/external-skills.md`](references/external-skills.md#site-readiness-check) (it moves the file with `git mv`, adds the `.gitignore` and `deploy.yml` lines, creates `docs/ai/reports/`). Run that check once per session on every site, migrated or not.
 
-   **If `PRODUCT.md` is missing or its required sections are empty, do NOT proceed with the user's task yet.** Run the interview procedure in [`references/product-md.md` § Compilation procedure](references/product-md.md#compilation-procedure-interview-driven): ask 2–4 focused questions at a time with `AskUserQuestion`, save answers into `PRODUCT.md` as they come, and continue interviewing until you have **at least 80% project clarity** — operationalized as: all 6 required sections filled (`Register`, `Site type`, `Target users`, `Brand personality`, `Voice / tone`, `Design principles`) plus at least one of (`Anti-references`, `Asset paths`). Only then proceed with the original task. Reason: the alternative is generic output that the user will have to fix later — the 10–15 minutes spent interviewing pay back on every subsequent decision in the session and in future sessions.
+   **If `docs/ai/PRODUCT.md` is missing or its required sections are empty, do NOT proceed with the user's task yet.** Run the interview procedure in [`references/product-md.md` § Compilation procedure](references/product-md.md#compilation-procedure-interview-driven): ask 2–4 focused questions at a time with `AskUserQuestion`, save answers into `docs/ai/PRODUCT.md` as they come, and continue interviewing until you have **at least 80% project clarity** — operationalized as: all 6 required sections filled (`Register`, `Site type`, `Target users`, `Brand personality`, `Voice / tone`, `Design principles`) plus at least one of (`Anti-references`, `Asset paths`). Only then proceed with the original task. Reason: the alternative is generic output that the user will have to fix later — the 10–15 minutes spent interviewing pay back on every subsequent decision in the session and in future sessions.
 
-   The interview is sequential and adaptive: if the user already mentioned something in passing (e.g. "abbiamo un brand di moda"), pre-fill the relevant section and ask for confirmation rather than re-asking from scratch. Full schema in [`references/product-md.md`](references/product-md.md); copy-paste template in [`references/examples.md` §6](references/examples.md#6-productmd--brand-and-project-context).
+   The interview is sequential and adaptive: if the user already mentioned something in passing (e.g. "abbiamo un brand di moda"), pre-fill the relevant section and ask for confirmation rather than re-asking from scratch. Full schema in [`references/product-md.md`](references/product-md.md); copy-paste template in [`references/examples.md` §6](references/examples.md#6-docsaiproductmd--brand-and-project-context).
+
+   **Then read `docs/ai/DESIGN.md` if the task touches UI** (pages, components, styling, tokens). The framework generates it from the CSS tokens every time it writes `root.css`: read it, never edit it. If it is missing, follow [`references/external-skills.md` § Fallback without DESIGN.md](references/external-skills.md#fallback-without-designmd).
 1. Classify the task:
    - page or component work
    - UI / styling / design-system work
@@ -81,7 +83,7 @@ Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals 
 ## Task Routing
 
 ### Brand, copywriting, voice, site type
-Read [`references/product-md.md`](references/product-md.md). `PRODUCT.md` at site root is the source of truth for register, target users, brand personality, voice/tone, design principles, and `site_type` (`landing` / `corporate` / `blog` / `ecom` / `rsvp`). Copy lives in `lang/{locale}/*.json` and must respect the voice declared in `PRODUCT.md`. Do **not** create a `DESIGN.md` — Wonder's `color.css` + `root.css` + [`style-and-lib.md`](references/style-and-lib.md) are authoritative for visual tokens.
+Read [`references/product-md.md`](references/product-md.md). `docs/ai/PRODUCT.md` is the source of truth for register, target users, brand personality, voice/tone, design principles, and `site_type` (`landing` / `corporate` / `blog` / `ecom` / `rsvp`). Copy lives in `lang/{locale}/*.json` and must respect the voice declared in `docs/ai/PRODUCT.md`. `docs/ai/DESIGN.md` is generated by the framework from `color.css` + `root.css`: read it, do not edit it; the rules in [`style-and-lib.md`](references/style-and-lib.md) stay authoritative for visual tokens.
 
 ### Page or component
 Read `references/implementation-playbook.md` and `references/style-and-lib.md`. Copy-paste skeleton for a frontend page in [`references/examples.md`](references/examples.md#2-frontend-page-customviewpagesfrontendaboutphp).
@@ -90,6 +92,7 @@ Read `references/implementation-playbook.md` and `references/style-and-lib.md`. 
 - Component overrides mirror the framework path under `custom/view/components/{frontend,backend}/...`.
 - Reuse `\Wonder\View\View::component(...)` over manual `include`.
 - Inspect existing page components before adding new markup.
+- Public page? Route through [`references/external-skills.md`](references/external-skills.md#routing-table): new public page or section → `design-taste-frontend`; existing public page to redo → `redesign-existing-projects`; mockup or screenshot supplied → `image-to-code`. Backend pages: no external skill.
 
 ### UI / styling / design system
 Read `references/style-and-lib.md` **first**. Applies to every task touching buttons, inputs, forms, modals, cards, alerts, badges, typography, images, interactive elements, color tokens, root variables, or custom CSS / JS.
@@ -97,7 +100,11 @@ Read `references/style-and-lib.md` **first**. Applies to every task touching but
 - Reuse existing lib classes and tokens before writing anything new. No `.wi-*` (or other) prefix-based naming. No parallel CSS system. No hardcoded colors.
 - Token files: `assets/{ASSETS_VERSION}/css/set-up/color.css` and `root.css`. Custom CSS / JS goes under `assets/{ASSETS_VERSION}/css/` and `assets/{ASSETS_VERSION}/js/` — never inside `set-up/`.
 - Detect `{ASSETS_VERSION}` from the actual `assets/` directory before reading or writing token files.
+- Before closing any task that touched public HTML / CSS: `playwright-cli` screenshots at 375 / 768 / 1280 and console, then `web-design-guidelines` on the touched files, as described in [`references/external-skills.md`](references/external-skills.md#reports). Backend-only tasks skip both.
 - End every UI task with the **Required Final Report** and **Pre-Submit Checklist** in `references/style-and-lib.md`.
+
+### External skills
+Read [`references/external-skills.md`](references/external-skills.md). It is the only place with the routing table (taste, redesign, image-to-code, web-design-guidelines, playwright-cli), detection and on-demand installation with `--global`, the precedence of `docs/ai/PRODUCT.md` + `docs/ai/DESIGN.md` + `style-and-lib.md` over external proposals, the report naming in `docs/ai/reports/`, and the site readiness check. Do not repeat those rules here.
 
 ### Model, resource, repeater, or table — site postilla
 Read `references/implementation-playbook.md` for the placement workflow, then start from the skeleton in [`references/examples.md`](references/examples.md#1-skeleton-model--resource). For the full API contract (method signatures, lifecycle, registry behavior, repeater details), read `wi-app/references/model-and-resource.md` — install wi-app alongside wi-site to have it available locally.
