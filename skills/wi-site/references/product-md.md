@@ -6,7 +6,7 @@
 - [Where it lives](#where-it-lives)
 - [Schema](#schema)
 - [`site_type` field — semantica](#site_type-field--semantica)
-- [The DESIGN.md policy](#the-designmd-policy)
+- [DESIGN.md: generato dal framework](#designmd-generato-dal-framework)
 - [How wi-site uses it](#how-wi-site-uses-it)
 - [Compilation procedure (interview-driven)](#compilation-procedure-interview-driven)
 - [Template](#template)
@@ -21,20 +21,24 @@ Senza `PRODUCT.md` un assistant può solo seguire le convenzioni Wonder. Con `PR
 
 ## Where it lives
 
-**A root del repo del sito.** Stesso livello di `composer.json`, `package.json`, `README.md`. Versionato con git.
+**In `docs/ai/PRODUCT.md`.** Versionato con git, insieme agli altri file che le skill leggono o scrivono in un sito:
 
 ```
 my-wonder-site/
-├── PRODUCT.md          ← qui
 ├── composer.json
 ├── package.json
+├── docs/
+│   └── ai/
+│       ├── PRODUCT.md      ← qui (committato)
+│       ├── DESIGN.md       ← generato dal framework, gitignorato
+│       └── reports/        ← output delle skill, gitignorato
 ├── custom/
 ├── app/
 ├── lang/
 └── assets/
 ```
 
-Una sola istanza per sito. Non si crea sotto `custom/config/` o `docs/`: `wi-site` la cerca alla root per evitare configurazione extra.
+Una sola istanza per sito. I siti nati prima di questa convenzione hanno `PRODUCT.md` a root: `wi-site` lo legge comunque e lo sposta con `git mv` nel [site readiness check](external-skills.md#site-readiness-check), la prima volta che tocca il sito. Lo scaffold `new-site` lo crea già in `docs/ai/` con le sezioni vuote.
 
 ## Schema
 
@@ -52,11 +56,10 @@ Una sola istanza per sito. Non si crea sotto `custom/config/` o `docs/`: `wi-sit
 ### Sezioni opzionali ma utili
 
 - **Anti-references** — cosa NON essere. *"Niente photography stocky di matrimoni patinati; niente font script; niente musica autoplay."*
-- **Asset paths** — logo, favicon, OG image, illustrazioni primarie. Path relativi a `assets/`. *Esempio:*
+- **Asset paths** — OG image, illustrazioni primarie, altri asset di brand. Logo e favicon **non** si dichiarano qui: si caricano dal backend e vivono in `assets/upload/logos/` (`Logo.png`, `Logo-White.png`, `Logo-Black.png`, `Logo-Icon.png`, `App-Icon.png`) e `assets/upload/favicon.ico` (vedi `App\Path`). Elencare solo asset che esistono davvero, con il path relativo al repo del sito. *Esempio:*
   ```
-  - Logo SVG: assets/{ASSETS_VERSION}/icons/logo.svg
-  - Favicon: assets/{ASSETS_VERSION}/icons/favicon.png
   - OG default: assets/{ASSETS_VERSION}/images/og-default.jpg
+  - Illustrazioni hero: assets/{ASSETS_VERSION}/images/hero/
   ```
 - **Constraints** — vincoli reali su contenuti o tecnologia. *"Cliente non vuole carrello pubblico; checkout solo via WhatsApp."*
 - **Inspirations** — 2–3 reference link che esprimono il vibe (non da copiare, da capire).
@@ -114,19 +117,15 @@ Invitati + conferme + gestione lista. Abilitare il modulo `wonder-image/rsvp` (q
 
 Se il progetto è davvero ibrido (un blog *dentro* un sito corporate, una landing che vende un singolo prodotto), scegli il `site_type` **dominante** — quello che descrive la maggior parte delle pagine e dei flussi. Documenta le eccezioni nella sezione **Constraints** del `PRODUCT.md`.
 
-## The DESIGN.md policy
+## DESIGN.md: generato dal framework
 
-**Non creare un `DESIGN.md` a root del sito.** I token visivi vivono in:
+`docs/ai/DESIGN.md` esiste, ma non lo scrive nessuno a mano: `wonder-image/app` lo genera dai token di `assets/{ASSETS_VERSION}/css/set-up/color.css` e `root.css` ogni volta che li rigenera in sviluppo (palette, tipografia, spaziatura, bottoni, classi utility). È gitignorato come `root.css` e `color.css`, perché deriva dal DB.
 
-- `assets/{ASSETS_VERSION}/css/set-up/color.css` — palette colori
-- `assets/{ASSETS_VERSION}/css/set-up/root.css` — typography, spacing, radii, shadows
-- [`style-and-lib.md`](style-and-lib.md) — il rulebook completo (USE vs MODIFY, naming, custom CSS/JS placement)
-
-Questi sono la **single source of truth**. `DESIGN.md` creerebbe una seconda sorgente con rischio di drift — impossibile mantenere coerente nel tempo.
+`PRODUCT.md` dice *chi* e *perché*; `DESIGN.md` dice *con quali colori e font*. Le proposte visive delle skill esterne si mappano su quei token o si scartano: la regola di precedenza e il fallback per i siti con il framework non aggiornato stanno in [`external-skills.md`](external-skills.md#precedence), le regole d'uso dei token in [`style-and-lib.md`](style-and-lib.md).
 
 ## How wi-site uses it
 
-Il primo step di `wi-site` su qualsiasi task di un sito Wonder è: leggere `PRODUCT.md` a root. Tutto quello che segue — placement, copy, scelte di stile, suggerimenti di moduli — deve essere coerente con quanto dichiarato lì.
+Il primo step di `wi-site` su qualsiasi task di un sito Wonder è: leggere `docs/ai/PRODUCT.md` (o `PRODUCT.md` a root nei siti non ancora migrati, che il readiness check sposta). Tutto quello che segue — placement, copy, scelte di stile, suggerimenti di moduli — deve essere coerente con quanto dichiarato lì.
 
 Il `site_type` in particolare cambia il workflow:
 
@@ -138,7 +137,7 @@ Quando `PRODUCT.md` manca, wi-site lavora comunque — segue solo le convenzioni
 
 ## Compilation procedure (interview-driven)
 
-**Hard rule.** Quando un sito Wonder non ha `PRODUCT.md`, o quando una delle sue sezioni richieste è vuota, `wi-site` **non procede con il task dell'utente** finché non ha raggiunto **almeno l'80% di chiarezza sul progetto**. La soglia è operazionalizzata così:
+**Hard rule.** Quando un sito Wonder non ha `PRODUCT.md`, o quando una delle sue sezioni richieste è vuota (un titolo seguito solo da righe di hint `>` o da commenti HTML, com'è nello scaffold `new-site`), `wi-site` **non procede con il task dell'utente** finché non ha raggiunto **almeno l'80% di chiarezza sul progetto**. La soglia è operazionalizzata così:
 
 - **Tutte e 6 le sezioni richieste compilate**: `Register`, `Site type`, `Target users`, `Brand personality`, `Voice / tone`, `Design principles`
 - **Almeno una delle sezioni raccomandate compilata**: `Anti-references` *oppure* `Asset paths`
@@ -147,7 +146,7 @@ Le sezioni opzionali (`Constraints`, `Inspirations`) possono restare vuote — l
 
 ### Perché un'intervista e non un template a freddo
 
-Il template di [`examples.md` §6](examples.md#6-productmd--brand-and-project-context) ha lo scaffolding ma le sezioni sono astratte. Un utente che lo riempie da zero, da solo, in genere scrive frasi vaghe (*"target: utenti interessati"*, *"voce: professionale ma friendly"*) che non producono direzione concreta. L'intervista forza risposte specifiche perché:
+Il template di [`examples.md` §6](examples.md#6-docsaiproductmd--brand-and-project-context) ha lo scaffolding ma le sezioni sono astratte. Un utente che lo riempie da zero, da solo, in genere scrive frasi vaghe (*"target: utenti interessati"*, *"voce: professionale ma friendly"*) che non producono direzione concreta. L'intervista forza risposte specifiche perché:
 
 - Le domande sono mirate ed esemplificate
 - L'assistant può fare follow-up quando la risposta è generica
@@ -165,11 +164,11 @@ L'assistant gestisce l'intervista usando `AskUserQuestion` (tool nativo di Claud
 
 3. **Round 2 — come parla e come appare** (le decisioni di tono). Domande: `Brand personality` (3–5 aggettivi), `Voice / tone` (lingua, persona, tipo di costruzione frase, cosa NON dire).
 
-4. **Round 3 — i principi guida** (le decisioni di pattern). Domande: `Design principles` (3–5 principi), `Anti-references` (cosa NON essere). Per `Asset paths`: chiedere se i path standard (`assets/{ASSETS_VERSION}/icons/logo.svg`, ecc.) sono validi o se vanno modificati; in genere SI conferma e si compila in automatico.
+4. **Round 3 — i principi guida** (le decisioni di pattern). Domande: `Design principles` (3–5 principi), `Anti-references` (cosa NON essere). Per `Asset paths`: logo e favicon vivono già in `assets/upload/logos/` e `assets/upload/favicon.ico` (caricati dal backend), quindi non si chiedono; chiedere solo se esistono altri asset da dichiarare (immagine OG di default, illustrazioni) e con quale path.
 
 5. **Round 4 — opzionali** (skippabili). Chiedere se ci sono `Constraints` reali (cose che il cliente proibisce, vincoli tecnici, scadenze) e `Inspirations` (2–3 reference link). L'utente può rispondere "skip" su entrambi.
 
-6. **Scrittura del file.** Dopo ogni round, l'assistant aggiorna `PRODUCT.md` a root del sito con le risposte. Non aspetta la fine — incrementale. Così se la sessione si interrompe, le risposte già date sono salvate.
+6. **Scrittura del file.** Dopo ogni round, l'assistant aggiorna `docs/ai/PRODUCT.md` con le risposte. Non aspetta la fine — incrementale. Così se la sessione si interrompe, le risposte già date sono salvate.
 
 7. **Verifica della soglia 80%.** Dopo Round 3, controlla che tutte le 6 sezioni richieste siano compilate **con risposte specifiche** (no "professionale ma friendly" — quello forza un follow-up). Solo allora si dichiara raggiunta la soglia e si procede con il task originale dell'utente.
 
@@ -184,7 +183,7 @@ L'assistant gestisce l'intervista usando `AskUserQuestion` (tool nativo di Claud
 L'utente può dire esplicitamente "skippa l'intervista, procedi con quello che ti ho chiesto". In quel caso:
 
 - L'assistant rispetta la richiesta — ma documenta in chat che l'output sarà generico e probabilmente da rivedere.
-- Crea un `PRODUCT.md` placeholder con le 6 sezioni richieste segnate come `# TODO` e una sezione `## Site type` riempita con il default ragionevole inferito dal prompt (es. `corporate` se non si capisce; oppure l'unico site_type compatibile con la richiesta).
+- Crea `docs/ai/PRODUCT.md` placeholder con le 6 sezioni richieste segnate come `# TODO` e una sezione `## Site type` riempita con il default ragionevole inferito dal prompt (es. `corporate` se non si capisce; oppure l'unico site_type compatibile con la richiesta).
 - Procede con il task ma marca il proprio output come "based on generic Wonder conventions — refine after compiling `PRODUCT.md`".
 
 ### Cosa NON fare durante l'intervista
@@ -196,4 +195,4 @@ L'utente può dire esplicitamente "skippa l'intervista, procedi con quello che t
 
 ## Template
 
-Copia il template da [`examples.md` §6](examples.md#6-productmd--brand-and-project-context) e compilalo. Tipicamente 10–15 minuti la prima volta, poi si itera mentre il sito cresce.
+Copia il template da [`examples.md` §6](examples.md#6-docsaiproductmd--brand-and-project-context) in `docs/ai/PRODUCT.md` e compilalo. Tipicamente 10–15 minuti la prima volta, poi si itera mentre il sito cresce.
