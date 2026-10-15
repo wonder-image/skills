@@ -99,7 +99,7 @@ Color and root files in a Wonder site live under:
 
 The lib documents tokens as **currently external** — they live in the site, not in the lib (a future refactor may consolidate them).
 
-**Do not create a `DESIGN.md` at site root.** Visual tokens live in `assets/{ASSETS_VERSION}/css/set-up/color.css` + `root.css` and the rules in this file are the rulebook. A second `DESIGN.md` would create a parallel token source that drifts from `color.css` / `root.css` over time; this is documented self-defense against duplication. Strategic context belongs in [`PRODUCT.md`](product-md.md).
+**`docs/ai/DESIGN.md` is the readable projection of the tokens.** `wonder-image/app` generates it from `color.css` + `root.css` every time they are regenerated in development, so it cannot drift from them. Values come from there or from `root.css` / `color.css`, never from an external skill: a palette, typeface or CSS value proposed by `design-taste-frontend`, `web-design-guidelines` or `image-to-code` is mapped onto an existing token or discarded (precedence in [`external-skills.md`](external-skills.md#precedence)). Do not edit `DESIGN.md` by hand: the next save overwrites it. Strategic context belongs in [`docs/ai/PRODUCT.md`](product-md.md).
 
 - Base color names (`primary`, `secondary`, etc.) can be **expanded only on explicit user request**.
 - Before creating a new token, search `color.css` and `root.css` for an equivalent variable. Reuse it.
@@ -133,13 +133,16 @@ When editing default components shipped by the framework (inside `wonder-image/a
 
 ## Required Final Report
 
-After completing UI work, report explicitly:
+After completing UI work, save the report as `docs/ai/reports/YYYY-MM-DD-<task>-final-report.md` (the folder is gitignored; naming in [`external-skills.md` § Reports](external-skills.md#reports)) and give the same content, shortened, in chat. Report explicitly:
 
 - **Files modified** with paths.
 - **Lib classes used** (list — both utilities and `.wi-*` components).
 - **Tokens / variables used**.
 - **Tokens modified or added** (if any).
 - **Commands executed**.
+- **Screenshots** (`playwright-cli`, paths in `docs/ai/reports/`) and the **findings file** (`...-wdg-review.md`), with each finding fixed or justified.
+- **External skills used** and what their proposals were mapped onto (or discarded), per the precedence rules.
+- **Site readiness check**: which items were touched (`PRODUCT.md` move, `.gitignore`, `deploy.yml`, `docs/ai/reports/`), or "nothing to do".
 - **Residual risks** (visual regression on other pages, dark-mode untested, responsive behavior not verified, etc.).
 
 ## Pre-Submit Checklist
@@ -160,6 +163,8 @@ Before declaring UI work done, every item must be true:
 - [ ] No JS / TS logic changes for styling-only tasks
 - [ ] No new dependencies added for styling-only work
 - [ ] Diff is minimal — no unrelated refactor
+- [ ] `playwright-cli` screenshots at 375 / 768 / 1280 saved in `docs/ai/reports/` and browser console clean (public HTML / CSS tasks only)
+- [ ] `web-design-guidelines` review run on the touched files; every finding fixed or justified in the `wdg-review` report (public HTML / CSS tasks only)
 - [ ] Reported files, classes, tokens, commands as listed in **Required Final Report**
 
 ## Escalation

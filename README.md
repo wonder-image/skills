@@ -32,7 +32,9 @@ npx skills add wonder-image/skills --skill wi-app
 npx skills add wonder-image/skills --skill wi-site
 ```
 
-Full schema and `site_type` semantics for `PRODUCT.md`: [`skills/wi-site/references/product-md.md`](skills/wi-site/references/product-md.md). Copy-paste template: [`skills/wi-site/references/examples.md` §6](skills/wi-site/references/examples.md#6-productmd--brand-and-project-context).
+Full schema and `site_type` semantics for `docs/ai/PRODUCT.md`: [`skills/wi-site/references/product-md.md`](skills/wi-site/references/product-md.md). Copy-paste template: [`skills/wi-site/references/examples.md` §6](skills/wi-site/references/examples.md#6-docsaiproductmd--brand-and-project-context).
+
+External design skills (`design-taste-frontend`, `redesign-existing-projects`, `image-to-code` from `Leonxlnx/taste-skill`, `web-design-guidelines` from `vercel-labs/agent-skills`, `playwright-cli`) are not bundled: `wi-site` installs the one a task needs, on demand, with `--global`. Routing, commands and precedence rules: [`skills/wi-site/references/external-skills.md`](skills/wi-site/references/external-skills.md).
 
 Target a specific agent (defaults to interactive selection):
 

@@ -59,7 +59,9 @@ Each skill lives in `skills/<name>/` with a `SKILL.md` (frontmatter + body) and 
 
 ### Always put work items in TODO.md
 
-**This is the project-wide convention.** Every time work is identified — open question, residual incongruence, follow-up, idea, deferred refactor, missing example, anything that is not being done in the current turn — write it as an entry in [`TODO.md`](TODO.md). Do not let work items live only in conversation, commit messages, or memory.
+**This is the project-wide convention.** Every time work is identified — open question, residual incongruence, follow-up, idea, deferred refactor, missing example, anything that is not being done in the current turn — write it as an entry in `TODO.md`. Do not let work items live only in conversation, commit messages, or memory.
+
+`TODO.md` is **local and gitignored on purpose** (same convention as `new-site`): always update it, never commit it, not even with `git add -f`. It is the maintainer's working list, not documentation.
 
 Concretely:
 
@@ -78,6 +80,7 @@ If you are unsure whether something belongs in `TODO.md`, add it. A tracked item
 - Frontmatter must include `name` and a `description` that states **TRIGGER when** and **SKIP when** with concrete file paths, commands, and library names.
 - Do not duplicate the same rule across SKILL.md and references — pick one canonical location.
 - When two skills share a concern, prefer cross-referencing the canonical file over duplicating content.
+- Everything about external skills (taste, redesign, image-to-code, web-design-guidelines, playwright-cli: routing, installation, precedence, reports, readiness check) lives only in `skills/wi-site/references/external-skills.md`. Other files link to it with one line.
 
 ### Distribution
 
