@@ -100,7 +100,17 @@
   gestionale extends its Contact with commercial fields. Module route files
   load in alphabetical path order, not dependency order.
   `AccountAddressForm::fields()` explicitly applies extension labels and
-  defaults; `layout()` composes existing Containers.
+  defaults; `layout($fields, $address)` composes existing Containers. Both
+  honor `AddressExtension` prefixes (`prefix()`, `fieldKey()`), so a
+  `shipping_*` block can share a form with billing.
+  Signup completion: `phoneEnabled()` shows the phone, `phoneRequired()`
+  enforces it, `validationTexts()` returns translated alert lines and
+  `Input::required(false)` removes a shared `required`. Extra signup sections
+  (birth date, billing, shipping address) come from customer-account:
+  `CustomerAuthProfile` (or the `HasSignupFields` trait on another profile,
+  as ecommerce does) reads `signup.fields` from the module config, each
+  `off` / `optional` / `required`; a required section also makes federated
+  users complete the profile.
   Billing cells use `visibleWhen('type', 'business')`. Country/state FormFields
   require the aligned lib bundle supporting native selects and `/api/states/`;
   an empty state must not implicitly select the first province.
