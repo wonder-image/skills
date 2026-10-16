@@ -44,12 +44,12 @@ removed defaults. Disabled modules and soft-deleted schedules must not execute.
 History retention is 180 days for every task, with bounded cleanup. Null
 metrics mean unavailable; PHP peak memory is not RSS or hosting resource use.
 
-Sitemap is the first default, wrapping the existing licensed crawler without
+Sitemap is the first default (always on), wrapping the existing licensed crawler without
 modifying its code. The legacy site `api/task/sitemap.php` is removed by build;
 migrate to the generated CLI entrypoint. Euribor reuses `Euribor::sync()` only
 where the site provides it.
 
-`Tasks\GooglePlacesTask` (`wonder.google-places`, off by default, 03:30) syncs
+`Tasks\GooglePlacesTask` (`wonder.google-places`, always on, 03:30; skipped with `missing_api_key` without `GCP_API_KEY`) syncs
 every `SocietyLocation` with its own `google_place_id` through Places API (New)
 Place Details and the server key `GCP_API_KEY` (header, never URL). Logic lives
 in `Support/GooglePlaces`: pure `PlaceMapper`, `PlaceDiff`, `PlaceSyncPlan`,
@@ -75,3 +75,20 @@ editing and removing definitions in code, including saved-schedule semantics
 and fallback after removing an override. The quick-start guide documents the
 single cPanel command and `* * * * *` frequency immediately after GitHub Desktop
 setup. Do not document `schedule()` or `active()` as updating existing DB rows.
+
+Always-on tasks: `Task::alwaysOn()` or `Contracts\AlwaysEnabledTask`
+(`alwaysEnabled()`). Sync re-enables their code rows, `Repository::toggle()`
+refuses to suspend them and the form forces `enabled=true`.
+
+Backend actions: each list row has a three-dots `Dropdown` (view, edit, run,
+activate/suspend as a POST item hidden for always-on tasks, runs log, delete
+for backend schedules only); the list header has the "Cron sul server" modal
+button (`Presentation::cronButton()` / `cronModal()`). The view page shows the
+schedule data and an "Esecuzioni" DataTable from `RunResource::backendTable()`
+filtered by `schedule_id`; its "Esegui ora" and warning "Modifica" buttons are
+header actions declared with `pageSchema()->actions('view', ...)`, which
+accepts `Button` / `Dropdown` Elements. "Esegui ora" uses `data-wi-confirm`,
+POSTs to `run` with `X-WI-CSRF`, polls `run-status` and shows the outcome in the
+modal from `Presentation::runAssets()`. The dashboard has no manual run.
+Handlers live in `app/http/backend/scheduler/`, verify `Csrf::verify()` and
+only set `requested`: the worker runs the task, never the web request.
