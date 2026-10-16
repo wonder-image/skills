@@ -105,7 +105,7 @@
   require the aligned lib bundle supporting native selects and `/api/states/`;
   an empty state must not implicitly select the first province.
   Complete account address saves use `AccountAddressValidation` before model
-  writes, without requiring billing during signup. `AccountAddressModal`
+  writes, without requiring billing during signup. `AccountModal`
   composes `Modal::frontend()` and the shared address form; keep CSRF,
   contact ownership, page-only alerts and non-JS routes in the controller.
 
