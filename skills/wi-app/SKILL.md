@@ -63,6 +63,7 @@ Switch to [`wi-site`](../wi-site/SKILL.md) when **any** of these signals are tru
 - Assume `php forge ...` commands are site-side commands unless you confirm otherwise. Do not expect a `forge` executable in this package root.
 - Prefer `class/App/*` for new logic. Touch legacy `app/*` only when the runtime still depends on it.
 - API handlers live under `app/http/api/*`. Do not reintroduce package handlers under `app/api/*`; call routed `/api/...` endpoints via `Path::$api`, `Path::$appApi`, and `Path::$apiDT`.
+- API bearers are verified by `Wonder\Api\Token\BearerVerifier` (signature, `exp`, `hash_equals` against `api_users.token`, authority, IP/domain); reuse it instead of decoding JWTs by hand. Mint with `ApiTokens::issue()`, rotate with `regenerateApiToken()`. Never print `Credentials::appToken()` in HTML: pages get `ApiTokens::pageToken()` as `API_TOKEN`. Server-only endpoints (deploy, cron, external triggers) pass `allowPageToken: false` to `Handler::run()`. `api_activity` keeps only `ApiTokens::fingerprint()`. See `docs/app/piattaforma/api.md#token`.
 - Keep runtime fallbacks and seed payloads separate:
   - `Wonder\\App\\RuntimeDefaults` is for runtime defaults used while rendering or composing in-memory config.
   - `Wonder\\App\\SeedDefaults` is for idempotent bootstrap/seed payloads consumed by `build/row`, setup commands, and seed-backed singleton forms.
