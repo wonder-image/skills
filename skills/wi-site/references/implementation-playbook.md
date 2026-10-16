@@ -21,7 +21,9 @@ opt-in `AuthRoutes`, not a site copy of the auth controller. Extend fields,
 server validation, explicit write whitelists, federation policy and idempotent
 business hooks together; configure email-verification permissions separately.
 `AccountPanel` provides shared navigation/layout and personal-data hooks;
-contact storage and payments stay provider/module-owned. Ecommerce exposes
+the customer record (contacts, addresses, billing) comes from the
+`wonder-image/customer-account` module, enabled in `custom/config/modules.php`
+before gestionale/ecommerce; payments stay module-owned. Ecommerce exposes
 `auth.profile`, `account.panel` and `account.navigation` in its configuration.
 Use `auth.*` / `account.*` translation overrides, active-page form themes and
 page-level alerts outside forms. Core guide: `docs/app/concetti/utenti/auth-frontend.md`.
