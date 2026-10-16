@@ -572,6 +572,7 @@ The Resource listing has two complementary schemas:
   - `.select(string $sql)` — computed columns with aliases (`(SELECT ...) AS qty_total`); the renderer prepends `table`.*. Aliases are for display and sorting only: never in WHERE, filters, counts or search. Keep aliases distinct from real column names.
   - `.filterCustom($label, $column, $options, $input = 'select', ...)` / `.filterRadio(...)` — filters on one column (`=`, `IN`, `LIKE` for `multiple` columns); values are escaped.
   - `.filterQuery($label, $key, $options, Closure $where, $input = 'select', ...)` — filter with its own SQL: the closure receives only values present among the options (tree children included) and returns the condition; `$key` only names the GET parameter.
+  - `.download($formats = true, $label = null)` / `.downloadColumns([...])` / `.downloadFileName()` / `.downloadUsing(callable)` — CSV/Excel export through the generated `export` route (`list` permission). `.downloadAsText()` writes every cell as text (Excel keeps `+39…`, `00187`) and neutralizes CSV formula prefixes (`=`, `+`, `-`, `@`): use it for visitor-written data such as contacts.
 
 Defaults (set in the constructor): title enabled, results enabled, button-add enabled, search + limit enabled. Override only what differs from those defaults.
 

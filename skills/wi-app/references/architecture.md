@@ -67,13 +67,14 @@
 
 ## Model and Resource Roles
 
-- Generic `App/Resources/Contacts/{ContactResource,ContactAddressResource}`
-  are app-only admin panels on shared tables, with CSRF and no API/delete.
-  `Resource::isTableFallback()` keeps table lookups on existing module/site
-  panels; generic contact navigation hides when a richer table panel exists.
-  Shipping labels are optional; account dialogs use layout `page_modals`
-  after main, never inside form/content columns. The route dispatcher preloads
-  core translations before site lang.php route lookups translate metadata.
+- Generic `ContactResource` / `ContactAddressResource` live in the
+  `wonder-image/customer-account` module: admin-only panels on shared tables,
+  with CSRF and no API/delete. `Resource::isTableFallback()` keeps table
+  lookups on existing module/site panels (gestionale wins); generic contact
+  navigation hides when a richer table panel exists. Shipping labels are
+  optional; account dialogs use layout `page_modals` after main, never inside
+  form/content columns. The route dispatcher preloads core translations before
+  site lang.php route lookups translate metadata.
 
 - Wonder selects keep a native fallback until lib enhancement. Reuse geo
   FormFields with `data-wi-select-search`: labels activate the visible button,
@@ -81,22 +82,40 @@
   Esc closes the select before a surrounding modal; frontend modal layer 1100
   covers site headers at 101. No forced view theme or parallel select widget.
 
-- Shared account contacts are available from `Wonder\App\Models\Contacts\Contact`
-  and `ContactAddress`, and provider IDs from `Models\System\ExternalReference`.
-  No gestionale installation is needed; SQL names are `contacts`,
-  `contact_addresses`, `external_references`. Forge update atomically renames
-  legacy `gst_*` names before schema alignment, preserving IDs and FKs;
-  conflicting old/new tables stop the update without deleting data. Gestionale
-  retains compatible model namespaces and extends Contact with commercial
-  fields; integrations should import core models for generic account data.
-  `Wonder\Auth\Frontend\ContactAccount::link()` links an account without
-  requiring fiscal data. `AccountAddressForm::fields()` explicitly applies
-  extension labels and defaults; `layout()` composes existing Containers.
+- The core keeps only generic account pieces: `AuthProfile`/`AuthRoutes`,
+  the extensible `AccountPanel` (`AccountExtension` plus optional
+  `AccountPageExtension` hooks; core sections are only `overview` and
+  `personal`), `AccountAddressForm`, `AccountAddressValidation` and
+  `Models\System\ExternalReference`. The persistent customer record belongs to
+  the `wonder-image/customer-account` module (`Wonder\Plugin\CustomerAccount\`):
+  `Models\{Contact,ContactAddress}`, `Account\ContactAccount::link()`,
+  `CustomerContact`, the `ManagesContact` controller trait, addresses and
+  billing pages, backend Resources and the `gst_*` → `contacts` /
+  `contact_addresses` rename (a `database.migrations` class in `module.json`,
+  built on the core `Support\LegacyTableRenames`: atomic, preserves IDs/FKs,
+  stops on conflicting old/new tables). There are no aliases for the old
+  `Wonder\App\Models\Contacts\*` / `Wonder\Auth\Frontend\ContactAccount`
+  names and the core must never proxy to optional module classes. Gestionale
+  and ecommerce declare `customer-account` in `dependencies.modules`;
+  gestionale extends its Contact with commercial fields. Module route files
+  load in alphabetical path order, not dependency order.
+  `AccountAddressForm::fields()` explicitly applies extension labels and
+  defaults; `layout($fields, $address)` composes existing Containers. Both
+  honor `AddressExtension` prefixes (`prefix()`, `fieldKey()`), so a
+  `shipping_*` block can share a form with billing.
+  Signup completion: `phoneEnabled()` shows the phone, `phoneRequired()`
+  enforces it, `validationTexts()` returns translated alert lines and
+  `Input::required(false)` removes a shared `required`. Extra signup sections
+  (birth date, billing, shipping address) come from customer-account:
+  `CustomerAuthProfile` (or the `HasSignupFields` trait on another profile,
+  as ecommerce does) reads `signup.fields` from the module config, each
+  `off` / `optional` / `required`; a required section also makes federated
+  users complete the profile.
   Billing cells use `visibleWhen('type', 'business')`. Country/state FormFields
   require the aligned lib bundle supporting native selects and `/api/states/`;
   an empty state must not implicitly select the first province.
   Complete account address saves use `AccountAddressValidation` before model
-  writes, without requiring billing during signup. `AccountAddressModal`
+  writes, without requiring billing during signup. `AccountModal`
   composes `Modal::frontend()` and the shared address form; keep CSRF,
   contact ownership, page-only alerts and non-JS routes in the controller.
 
