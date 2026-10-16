@@ -16,7 +16,8 @@ or call `exit`. Reuse application services across API and scheduled tasks.
 
 The existing `Api\Handler::run()` pattern (e.g. backend/alert.php) remains the
 HTTP boundary. Scheduler HTTP endpoints authenticate `api_internal_user` and
-require the `@system` username; they enqueue requests and return 202. CLI
+require the `@system` username, reject page tokens (`allowPageToken: false`);
+they enqueue requests and return 202. CLI
 entrypoints reject HTTP and resolve the enabled system identity internally.
 Never put the system token on the cPanel command line.
 
