@@ -69,7 +69,7 @@
 
 - Generic `ContactResource` / `ContactAddressResource` live in the
   `wonder-image/customer-account` module: admin-only panels on shared tables,
-  with CSRF and no API/delete. `ContactResource` is a
+  with CSRF and no API/delete. `ContactResource` returns `true` from
   `Resource::isTableFallback()`: in table lookups the first non-fallback
   Resource in discovery order wins, and the fallback answers only when there
   is no other one; generic contact navigation hides when a richer table panel
