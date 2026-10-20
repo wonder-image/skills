@@ -59,7 +59,7 @@ It does **not** cover modifying the base classes themselves (`class/App/Model.ph
 - **Site project** → `app/Models`, `app/Resources` inside a project scaffolded from `wonder-image/new-site` (namespace `App\Models\...`, `App\Resources\...`).
 - **External module package** → per the module's own PSR-4 root, declared in its `composer.json` and exposed through `module.json` + an entrypoint implementing `Wonder\App\Module\Contracts\ModuleInterface`.
 
-The ModelRegistry / ResourceRegistry discovery and precedence rules are documented in [`architecture.md`](architecture.md). Subclasses placed in higher-precedence locations override lower-precedence ones.
+The ModelRegistry / ResourceRegistry discovery and precedence rules are documented in [`architecture.md`](architecture.md). A Resource with the same slug in a higher-priority location overrides the lower-priority one; Models on the same table do not follow the location (the last FQCN in alphabetical order wins).
 
 ## Schema extensions (reusable schema fragments)
 
@@ -844,7 +844,7 @@ A hand-written backend `<form>` that saves a record opts into the save bar with 
 
 ## Registration and discovery
 
-- **ModelRegistry precedence**: framework core (`class/App/Models`) → enabled modules → site `app/Models` → site `custom/class/Models`. Full detail in [`architecture.md`](architecture.md).
+- **ModelRegistry discovery**: framework core (`class/App/Models`) → enabled modules → site `app/Models` → site `custom/class/Models`; on the same `$table` the last FQCN in alphabetical order wins, whatever the directory. Full detail in [`architecture.md`](architecture.md).
 - **ResourceRegistry precedence**: same layering plus configured resource lists from config files. Full detail in [`architecture.md`](architecture.md).
 - Resource priority: site / custom definitions can override lower-priority ones.
 
