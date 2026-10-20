@@ -69,8 +69,9 @@
 
 - Generic `ContactResource` / `ContactAddressResource` live in the
   `wonder-image/customer-account` module: admin-only panels on shared tables,
-  with CSRF and no API/delete. `ContactResource` returns `true` from
-  `Resource::isTableFallback()`: in table lookups the first non-fallback
+  with CSRF and no API/delete. Both return `true` from
+  `Resource::isTableFallback()` (the address Resource inherits it from
+  `ContactResource`): in table lookups the first non-fallback
   Resource in discovery order wins, and the fallback answers only when there
   is no other one; generic contact navigation hides when a richer table panel
   exists. Shipping labels are
@@ -140,7 +141,7 @@
   - site `app/Resources`
   - site `custom/class/Resources`
   - configured resource lists from config files when present
-- `ResourceRegistry::resolveByTable()` returns the first Resource with `isTableFallback() === false` in discovery order (the directories above, files sorted by name in each directory, enabled modules in `custom/config/modules.php` order, then the configured lists); only when there is none, the first fallback.
+- `ResourceRegistry::resolveByTable()` returns the first Resource with `isTableFallback() === false` in discovery order (the directories above, files sorted by full path in each directory, subdirectories included, enabled modules in `custom/config/modules.php` order, then the configured lists; a Resource that replaces a slug with a higher priority takes the position of the replaced one); only when there is none, the first fallback.
 - Resource priority matters. Site and custom resources can override lower-priority definitions.
 
 ## Generated Routing
