@@ -98,11 +98,11 @@ Sito orientato a contenuti editoriali. Abilitare il modulo `wonder-image/blog` i
 
 ### `ecom`
 
-Catalogo + carrello + checkout. Abilitare il modulo `wonder-image/ecom` (quando disponibile) in `custom/config/modules.php`.
+Catalogo + carrello + checkout. Installare il modulo `wonder-image/ecommerce` e abilitarlo in `custom/config/modules.php` con la chiave `ecommerce`, insieme alle sue dipendenze `customer-account` e `gestionale` (esempio in [`examples.md` § 5](examples.md#5-customconfigmodulesphp--enable-an-external-composer-module)).
 
 - Pagine prodotto/listing/cart/checkout: dal modulo
 - Override: solo per riconnotare la presentazione
-- Wi-site propone `wonder-image/ecom`, non un Model `Product` custom
+- Wi-site propone `wonder-image/ecommerce`, non un Model `Product` custom
 - `wi-site` privilegia **trust signals**, **friction-checkout** e **gallery quality** rispetto all'editorial
 
 ### `rsvp`
@@ -131,7 +131,7 @@ Il `site_type` in particolare cambia il workflow:
 
 - Una richiesta "aggiungi una pagina prodotti" su `site_type: blog` → wi-site chiede prima conferma (sembra un'azione fuori scope per un blog).
 - Una richiesta "aggiungi un articolo" su `site_type: ecom` senza modulo blog attivo → wi-site suggerisce di abilitare `wonder-image/blog` o di confermare se davvero non serve.
-- Una richiesta "aggiungi una pagina /shop" su `site_type: corporate` senza modulo ecom → wi-site chiede se è il momento di passare a `site_type: ecom` + modulo `wonder-image/ecom`.
+- Una richiesta "aggiungi una pagina /shop" su `site_type: corporate` senza modulo ecommerce → wi-site chiede se è il momento di passare a `site_type: ecom` + modulo `wonder-image/ecommerce`.
 
 Quando `PRODUCT.md` manca, wi-site lavora comunque — segue solo le convenzioni Wonder generiche. Suggerisce di crearlo come primo step su qualsiasi sito nuovo.
 

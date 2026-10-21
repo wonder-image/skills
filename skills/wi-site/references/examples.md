@@ -321,38 +321,31 @@ Full permission builder API and the `$PERMITS` export flow live in [`wi-app/refe
 
 ## 5. `custom/config/modules.php` — enable an external Composer module
 
-`custom/config/modules.php` is **optional** — the scaffold doesn't ship it. Create it only when you need to enable a module (`Wonder\App\Module\StateRepository::all()` returns `[]` when the file is missing). When you do create it, it must return an array keyed by module slug (`wonder-image/<slug>`). Two equivalent shapes per entry:
+`custom/config/modules.php` is **optional** — the scaffold doesn't ship it. Create it only when you need to enable a module (`Wonder\App\Module\StateRepository::all()` returns `[]` when the file is missing). When you do create it, it must return an array keyed by the module `slug` declared in its `module.json` (`ecommerce`), not by the Composer package name (`wonder-image/ecommerce`). Each entry is either `true` / `false` or an array with `enabled` and an optional `config`.
+
+Example from the ecommerce test site (`wonder-image/ecommerce` plus the modules it depends on):
 
 ```php
 <?php
 
-return [
-
-    // Shape A — boolean shortcut.
-    'wonder-image/blog' => true,
-
-    // Shape B — explicit enabled flag plus per-module config.
-    'wonder-image/newsletter' => [
-        'enabled' => true,
-        'config' => [
-            'sender_email' => 'noreply@example.com',
-            'list_id'      => 'main',
+    return [
+        'customer-account' => [
+            'enabled' => true,
         ],
-    ],
-
-    // Disabled module — kept in the file for visibility.
-    'wonder-image/shop' => [
-        'enabled' => false,
-        'config'  => [],
-    ],
-
-];
+        'gestionale' => [
+            'enabled' => true,
+        ],
+        'ecommerce' => [
+            'enabled' => true,
+        ],
+    ];
 ```
 
 Notes:
 
-- The package must be installed first (`composer require wonder-image/blog`). The file only toggles state; it does not install.
-- Per-module `config` is exposed via `\Wonder\App\Module\StateRepository::config('wonder-image/<slug>')`.
+- The package must be installed first (`composer require wonder-image/ecommerce`, which pulls in `wonder-image/customer-account` and `wonder-image/gestionale`; the site `composer.json` declares the `git` repository of each of the three packages). The file only toggles state; it does not install.
+- Every slug listed in a module's `dependencies.modules` must be enabled too: `ecommerce` needs `customer-account` and `gestionale`, `gestionale` needs `customer-account`. Otherwise `Wonder\App\Module\Registry::enabled()` stops with "Il modulo ecommerce richiede customer-account abilitato.".
+- The optional `config` of an entry is exposed via `\Wonder\App\Module\StateRepository::config('ecommerce')`; `Wonder\App\Module\ConfigRepository` merges it over the module defaults and `custom/config/modules/<slug>.php`.
 - After editing this file, re-run `php forge update --local` so route / model / resource registration picks up the new state.
 - Prefer this over copy-pasting module code into `custom/` — see [`workflows.md`](workflows.md) on module integration.
 

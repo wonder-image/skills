@@ -69,9 +69,12 @@
 
 - Generic `ContactResource` / `ContactAddressResource` live in the
   `wonder-image/customer-account` module: admin-only panels on shared tables,
-  with CSRF and no API/delete. `Resource::isTableFallback()` keeps table
-  lookups on existing module/site panels (gestionale wins); generic contact
-  navigation hides when a richer table panel exists. Shipping labels are
+  with CSRF and no API/delete. Both return `true` from
+  `Resource::isTableFallback()` (the address Resource inherits it from
+  `ContactResource`): in table lookups the first non-fallback
+  Resource in discovery order wins, and the fallback answers only when there
+  is no other one; generic contact navigation hides when a richer table panel
+  exists. Shipping labels are
   optional; account dialogs use layout `page_modals` after main, never inside
   form/content columns. The route dispatcher preloads core translations before
   site lang.php route lookups translate metadata.
@@ -131,12 +134,14 @@
   - enabled module model directories
   - site `app/Models`
   - site `custom/class/Models`
+- When several Models declare the same `$table`, `ModelRegistry::all()` keeps the last FQCN after `ksort` (alphabetical order), whatever the directory: the site does not win over the package.
 - `ResourceRegistry` loads resources from:
   - framework core `class/App/Resources`
   - enabled module resource directories
   - site `app/Resources`
   - site `custom/class/Resources`
   - configured resource lists from config files when present
+- `ResourceRegistry::resolveByTable()` returns the first Resource with `isTableFallback() === false` in discovery order (the directories above, files sorted by full path in each directory, subdirectories included, enabled modules in `custom/config/modules.php` order, then the configured lists; a Resource that replaces a slug with a higher priority takes the position of the replaced one); only when there is none, the first fallback.
 - Resource priority matters. Site and custom resources can override lower-priority definitions.
 
 ## Generated Routing
