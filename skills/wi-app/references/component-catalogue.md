@@ -43,3 +43,16 @@ Each preview is an iframe loading only the assets of its theme; Wonder and Boots
 - CSS or JS that a component prints once per page, however many instances there are, goes through `Themes\Support\PageAssets::once()`, not through ad-hoc flags.
 - `Code` (code block with `Support\Code\Highlighter` and copy button) and `Preview` (iframe with selectable sources and light/dark) are shared Elements for both themes; their `data-wi-code` / `data-wi-copy` and `data-wi-preview*` contracts are owned by `wonder-image/lib`.
 - Design tokens shown in previews come from `Wonder\View\CssTokens`, the same template as `cssRoot()`.
+
+## Frontend list and text components
+
+Merged in app#125 / app#126 (released in v2.4.0-beta.5).
+
+- **`Badge::inline()`**: renders only the `<span>` (or `<a>` with `href`) without the column `<div>`, so a badge can sit inside a sentence or a table cell; `columnSpan()` is ignored when inline. The Wonder badge is already inline. Prefer it to hand-written badge markup in cells.
+- **`Wonder\Elements\Frontend\EmptyState`** and **`Wonder\Elements\Frontend\Pagination`**: Wonder theme only, on the lib classes `.wi-empty-state*`, `.wi-pagination*` and `.wi-row-table__foot`.
+  - `EmptyState::make($text, $icon)` with `title()`, `titleTag()` (`h2` to `h6`, default `h2`; use `h3` inside a box that already has an `h2`), `action()` (a renderable, usually a `Button`), part classes `iconClass()` / `titleClass()` / `textClass()`. Empty parts are not printed; title and text are escaped.
+  - `Pagination::make($page, $pages)` runs no query and reads no request. `url($base, $param = 'page')` keeps the other query parameters and the fragment (pass the current URL on filtered lists), or takes a `fn (int $page): string`. `window()`, `summary()`, `label()`, `previousLabel()`, `nextLabel()`, `hidden()`; a single page is hidden by default. `Pagination::account($pagination, $baseUrl)` takes the array returned by `AccountPagination::make()` (page, pages, from, to, total) and backs the `frontend.account.pagination` component.
+  - The legacy `pagination()` in `app/function/frontend/plugin/pagination.php` becomes deprecated: count first, then pass the numbers to `Pagination::make()`.
+- **`Text` / `RichText` in the Wonder theme**: rendered with lib utilities (`bold()` → `fw-700`, `small()` → `text-small`, `muted()` → `tx-secondary`, `lead()` → `subtitle`, `align()` → `a-l` / `a-c` / `a-r`, `color('x')` → `tx-x` only for a palette role, `italic()` has no class). No wrapper `<div>` unless `columnSpan()` is set.
+
+Each of them has its catalogue card, as the hard rule requires.
