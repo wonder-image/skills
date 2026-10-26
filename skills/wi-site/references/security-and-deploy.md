@@ -87,7 +87,9 @@ denied.
 
 - The guest order limit of the ecommerce module lives in its config
   (`checkout.guest_order_limit`: `ip` and `cart` as `[attempts, seconds]`,
-  `0` turns one off; the other limits are constants in code). The gestionale
+  `0` turns one off; the other limits are constants in code). Past the limit the
+  normal checkout answers 422 with `errors[]`; express answers 422
+  `error:"rejected"` plus `reason:"too_many_orders"`. The gestionale
   `Support\Throttle` counts them: guest orders and guest email checks in table
   `gst_throttles`, coupons and the other buckets in files under
   `storage/gestionale/throttle`. Behind a proxy or CDN set `APP_TRUST_PROXY`, or every
