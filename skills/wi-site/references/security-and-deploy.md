@@ -77,7 +77,9 @@ Forge owns the `PERFORMANCE`, `SECURITY` and `UPLOAD` blocks between
 `assets/upload/.htaccess`) and
 rewrites them on `php forge update`. Never edit inside a block: changes are
 lost. Site-specific rules go outside the markers, where Forge leaves them
-alone. Files the browser must load from a package live under
+alone. The root `.htaccess` is gitignored and Forge creates it only when it is
+missing, so rules outside the markers live only on the server: note them in the
+project docs and reapply them by hand on a new host. Files the browser must load from a package live under
 `vendor/<vendor>/<package>/resources/assets/`; every other `vendor/` path is
 denied.
 

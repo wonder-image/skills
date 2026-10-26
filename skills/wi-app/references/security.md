@@ -58,16 +58,16 @@ Owner: `Wonder\Http\Csrf` (`class/Http/Csrf.php`). Docs:
   never a message containing "CSRF" or "token"; re-render the form with the
   values the user typed. Helpers: `Csrf::ALERT` (929; same value as
   `ResourcePageController::CSRF_ALERT`), `Csrf::failureMessage()` (reads
-  `notifications.929`), `Csrf::oldInput($input, $extra)` (drops the token and
-  the password fields of `Csrf::SENSITIVE`), `Csrf::flashFailure()`.
+  `notifications.929`), `Csrf::oldInput($input, $extra)` (empties to `''` the
+  token, the fields of `Csrf::SENSITIVE` and every key starting with `password`), `Csrf::flashFailure()`.
   `AccountController::renderCsrfFailure()` (protected) and
   `AuthController::renderCsrfFailure()` re-render the page with the typed
   values; a module controller that extends `AccountController` overrides the
   protected one (customer-account: `CustomerAccountController::renderCsrfFailure()`
   reopens the address editor with alert 929 and writes nothing).
 - Do not add per-feature tokens: `AuthSession` delegates to `Csrf`;
-  `_contact_csrf` (customer-account module) is legacy, do not replicate it in
-  the core or in sites; `Impersonation` keeps its scoped token.
+  `_contact_csrf` was removed from the customer-account module, whose forms
+  now use `_csrf`: do not bring it back in the core or in sites; `Impersonation` keeps its scoped token.
 
 ## Cookies, sessions and proxies
 
