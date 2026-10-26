@@ -6,11 +6,10 @@ that owns the behavior: reuse it, never re-implement it in a handler or a
 module. The canonical prose lives in the app docs linked per section; this file
 lists the contracts an agent must not break.
 
-Status: everything below is merged on `wonder-image/app` main, except the
-section "In arrivo". Client-side parts marked "lib ≥ 2.1.2-alpha.31" need
-`wonder-image` lib ≥ 2.1.2-alpha.31 in the site (published on npm, dist-tag
-`alpha`); `extra.wonder.lib` of the app is raised by the app itself (PR-C / I7),
-not by this skill.
+Status: everything below is merged on `wonder-image/app` main. Client-side
+parts marked "lib ≥ 2.1.2-alpha.31" need `wonder-image` lib ≥ 2.1.2-alpha.31
+in the site (published on npm, dist-tag `alpha`; `extra.wonder.lib` of the app
+already requires it).
 
 ## CSRF
 
@@ -37,9 +36,8 @@ Owner: `Wonder\Http\Csrf` (`class/Http/Csrf.php`). Docs:
   group. `RouteDispatcher` calls `Wonder\Http\CsrfGuard::enforce($route)`
   after `authorizeUser()` and before the handler: methods other than
   GET/HEAD/OPTIONS without a valid token throw `ForbiddenHttpException`
-  (403 JSON or the HTML error page) and the handler is not included. On main
-  that 403 still carries the text `Token CSRF non valido.`: do not copy it into
-  sites; PR wonder-image/app#128 replaces it (see "In arrivo").
+  (403 JSON or the HTML error page) and the handler is not included. The 403
+  text is `Csrf::failureMessage()`.
 - Every `/api/backend/*` route is under `->csrf()` (`app/config/routes/route.api.php`)
   except `/api/backend/alert/`. A new backend API route is both `guarded()` and
   inside that group.
@@ -58,7 +56,14 @@ Owner: `Wonder\Http\Csrf` (`class/Http/Csrf.php`). Docs:
   counts.
 - User-facing failure text is notification `929` ("La pagina è scaduta…"),
   never a message containing "CSRF" or "token"; re-render the form with the
-  values the user typed.
+  values the user typed. Helpers: `Csrf::ALERT` (929; same value as
+  `ResourcePageController::CSRF_ALERT`), `Csrf::failureMessage()` (reads
+  `notifications.929`), `Csrf::oldInput($input, $extra)` (drops the token and
+  the password fields of `Csrf::SENSITIVE`), `Csrf::flashFailure()`.
+  `AccountController::renderCsrfFailure()` (protected) and
+  `AuthController::renderCsrfFailure()` re-render the page with the typed
+  values; a module controller that extends `AccountController` overrides the
+  protected one.
 - Do not add per-feature tokens: `AuthSession` delegates to `Csrf`;
   `_contact_csrf` (customer-account module) is legacy, do not replicate it in
   the core or in sites; `Impersonation` keeps its scoped token.
@@ -182,21 +187,3 @@ The frontend layout writes `gtag('consent', 'default', …)` with every storage
 denied (Consent Mode) before the GTM loader, and pushes only an HMAC of the user
 id (`Wonder\Frontend\Support\DataLayer`). The core does not emit the Meta Pixel:
 it is a GTM tag subject to consent. Do not add trackers outside GTM.
-
-## In arrivo
-
-Not on main yet: do not document these as rules or rely on them in code.
-
-- **Generic CSRF failure handling** (open PR wonder-image/app#128):
-  `Csrf::ALERT = 929`, `Csrf::oldInput($input, $extra)` (drops the token and
-  password fields of `Csrf::SENSITIVE`), `Csrf::failureMessage()` (reads
-  `notifications.929`, no "CSRF" in the text), `Csrf::flashFailure()`, and
-  `renderCsrfFailure()` in `AccountController` (protected) and
-  `AuthController`. `CsrfGuard` then answers with `failureMessage()` instead of
-  `Token CSRF non valido.`. Until it lands, use
-  `ResourcePageController::CSRF_ALERT` as described above.
-- **Removal of the legacy `modal()` helpers and `#modal`** (PR-C / I7,
-  breaking, not opened yet): the core PHP `modal()` and its `onclick` callers
-  are still on main; see the confirmation rule in `SKILL.md`.
-- **Performance block** (audit block 5): open questions on `Geo::country()` and
-  the `Api\Call` timeout. Nothing to apply yet.

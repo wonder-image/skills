@@ -89,7 +89,7 @@ Read [`references/product-md.md`](references/product-md.md). `docs/ai/PRODUCT.md
 
 ### Page or component
 Read `references/implementation-playbook.md` and `references/style-and-lib.md`. Copy-paste skeleton for a frontend page in [`references/examples.md`](references/examples.md#2-frontend-page-customviewpagesfrontendaboutphp).
-- `Badge::inline()`, `Wonder\Elements\Frontend\EmptyState`, `Wonder\Elements\Frontend\Pagination` and the Wonder renderer of `Text` / `RichText` are still in open `wonder-image/app` PRs: use them only when `vendor/wonder-image/app` contains them (APIs in `wi-app/references/component-catalogue.md` § Component APIs in open PRs); until then keep the site's current markup.
+- Prefer `Badge::inline()`, `Wonder\Elements\Frontend\EmptyState`, `Wonder\Elements\Frontend\Pagination` and the Wonder renderer of `Text` / `RichText` (app ≥ v2.4.0-beta.5) to hand-written markup; APIs in `wi-app/references/component-catalogue.md` § Frontend list and text components.
 - For a reusable header driven by one recursive navigation tree, read [`references/header-navigation.md`](references/header-navigation.md). It defines the `classic` / `mega` contract, `list` default, optional `card` presentation, action links, appearance options, desktop hover behavior, and the mobile cascade.
 - Pages go under `custom/view/pages/{frontend,backend}/...`.
 - Component overrides mirror the framework path under `custom/view/components/{frontend,backend}/...`.

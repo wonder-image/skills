@@ -43,10 +43,9 @@ and `docs/app/concetti/form/csrf.md` in `wonder-image/app`.
   `custom/routes/` (the dispatcher answers 403 and never includes the handler),
   or call `Csrf::verify()` at the top of a page handler and stop on failure.
   Routes authenticated only by a Bearer token do not declare `->csrf()`.
-- On a failed check show notification `929` (`ResourcePageController::CSRF_ALERT`;
-  `Csrf::ALERT` once wonder-image/app#128 lands) and re-render the form with
-  the values the user typed (with #128: `Csrf::flashFailure()` /
-  `Csrf::oldInput()`). Never show a message containing "CSRF" or "token".
+- On a failed check show notification `929` (`Csrf::ALERT`) and re-render the
+  form with the values the user typed (`Csrf::oldInput()`, or
+  `Csrf::flashFailure()` before a redirect). Never show a message containing "CSRF" or "token".
 - Never change state on GET (logout, delete, "connect", "send again"): show a
   confirmation page whose form POSTs.
 

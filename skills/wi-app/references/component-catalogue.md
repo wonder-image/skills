@@ -44,15 +44,15 @@ Each preview is an iframe loading only the assets of its theme; Wonder and Boots
 - `Code` (code block with `Support\Code\Highlighter` and copy button) and `Preview` (iframe with selectable sources and light/dark) are shared Elements for both themes; their `data-wi-code` / `data-wi-copy` and `data-wi-preview*` contracts are owned by `wonder-image/lib`.
 - Design tokens shown in previews come from `Wonder\View\CssTokens`, the same template as `cssRoot()`.
 
-## Component APIs in open PRs
+## Frontend list and text components
 
-These APIs come from `wonder-image/app` pull requests that are still open. Use them only on a checkout that contains the PR; once merged, move the rule to the section where it belongs and drop the PR reference.
+Merged in app#125 / app#126 (released in v2.4.0-beta.5).
 
-- **`Badge::inline()`** (app#126): renders only the `<span>` (or `<a>` with `href`) without the column `<div>`, so a badge can sit inside a sentence or a table cell; `columnSpan()` is ignored when inline. The Wonder badge is already inline. Prefer it to hand-written badge markup in cells.
-- **`Wonder\Elements\Frontend\EmptyState`** and **`Wonder\Elements\Frontend\Pagination`** (app#125): Wonder theme only, on the lib classes `.wi-empty-state*`, `.wi-pagination*` and `.wi-row-table__foot`.
+- **`Badge::inline()`**: renders only the `<span>` (or `<a>` with `href`) without the column `<div>`, so a badge can sit inside a sentence or a table cell; `columnSpan()` is ignored when inline. The Wonder badge is already inline. Prefer it to hand-written badge markup in cells.
+- **`Wonder\Elements\Frontend\EmptyState`** and **`Wonder\Elements\Frontend\Pagination`**: Wonder theme only, on the lib classes `.wi-empty-state*`, `.wi-pagination*` and `.wi-row-table__foot`.
   - `EmptyState::make($text, $icon)` with `title()`, `titleTag()` (`h2` to `h6`, default `h2`; use `h3` inside a box that already has an `h2`), `action()` (a renderable, usually a `Button`), part classes `iconClass()` / `titleClass()` / `textClass()`. Empty parts are not printed; title and text are escaped.
   - `Pagination::make($page, $pages)` runs no query and reads no request. `url($base, $param = 'page')` keeps the other query parameters and the fragment (pass the current URL on filtered lists), or takes a `fn (int $page): string`. `window()`, `summary()`, `label()`, `previousLabel()`, `nextLabel()`, `hidden()`; a single page is hidden by default. `Pagination::account($pagination, $baseUrl)` takes the array returned by `AccountPagination::make()` (page, pages, from, to, total) and backs the `frontend.account.pagination` component.
   - The legacy `pagination()` in `app/function/frontend/plugin/pagination.php` becomes deprecated: count first, then pass the numbers to `Pagination::make()`.
-- **`Text` / `RichText` in the Wonder theme** (app#125): rendered with lib utilities (`bold()` → `fw-700`, `small()` → `text-small`, `muted()` → `tx-secondary`, `lead()` → `subtitle`, `align()` → `a-l` / `a-c` / `a-r`, `color('x')` → `tx-x` only for a palette role, `italic()` has no class). No wrapper `<div>` unless `columnSpan()` is set.
+- **`Text` / `RichText` in the Wonder theme**: rendered with lib utilities (`bold()` → `fw-700`, `small()` → `text-small`, `muted()` → `tx-secondary`, `lead()` → `subtitle`, `align()` → `a-l` / `a-c` / `a-r`, `color('x')` → `tx-x` only for a palette role, `italic()` has no class). No wrapper `<div>` unless `columnSpan()` is set.
 
-Each of them ships with its catalogue card in the same PR, as the hard rule requires.
+Each of them has its catalogue card, as the hard rule requires.
