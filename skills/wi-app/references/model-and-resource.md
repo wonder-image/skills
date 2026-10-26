@@ -406,6 +406,7 @@ HTML;
 - List all and only the keys the renderer writes on that same tag, so the theme value stays the only one.
 - Skip a conditional key only when it is written: `$checked === '' ? ['data-wi-check'] : ['data-wi-check', 'checked']`.
 - When the renderer retouches the attributes first (drops `required`, adds a default), pass the same array as second argument to both helpers.
+- A required `CheckGroup` means "at least one": both renderers put `wi-{type}-required` (`wi-checkbox-required` / `wi-radio-required`) on the container and drop `required` from the inputs. Only the backend lib (`src/build/backend/js/form/input.js`) checks that class, and nothing checks it on the server (an empty `"[]"` passes): validate the selection in the Resource when it matters.
 - Never append a raw `renderAttributes()` of the field attributes after hardcoded ones. `Repeater` and deprecated `SortableInput` still predate this.
 
 Full rules in the framework docs: `docs/app/concetti/form/theme-system.md` → "Attributi del campo".
@@ -663,7 +664,7 @@ Use this when a resource needs an extra route (e.g. a dashboard page, an export 
 
 Override on the Resource subclass to inject behavior around the CRUD pipeline:
 
-- `mutateRequestValues(array $values, string $action, string $context = 'backend', ?array $oldValues = null): array` — change incoming request values before validation / persistence. Typical use: auto-generate a slug from a name (see `AnnouncementResource`).
+- `mutateRequestValues(array $values, string $action, string $context = 'backend', ?array $oldValues = null): array` — change incoming request values before validation / persistence. Typical use: auto-generate a slug from a name (see `AnnouncementResource`). It is also where a value that passes `required()` but is blank after `trim()` gets rejected: gestionale `TagResource` trims the name and throws `UserError::make('tag.name_required')`, checking on update only when the key is sent.
 - `mutateFormValues(array $values, string $mode, string $context = 'backend'): array` — change values right before the form is rendered (e.g. pre-fill defaults).
 - `formPlaceholders(array $values, string $mode): array` — hints for empty fields (field name => text), e.g. values inherited from another record.
 - `formNotices(array $values, string $mode): array` — `{level: info|warning|danger, message}` alerts printed above the backend form, outside the `<form>` (`FORM_NOTICES` from `ResourcePagePresenter`), escaped with line breaks. For external state (e.g. Google differences in `SocietyLocationResource`), not a replacement for `$ALERT` or validation.

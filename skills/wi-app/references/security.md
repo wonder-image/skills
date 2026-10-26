@@ -195,6 +195,13 @@ Docs: `docs/app/piattaforma/sicurezza.md#sql`. Values go through
 raw fragments are written by code, never by the request (see the app
 `AGENTS.md`).
 
+A client-chosen connection goes through
+`Wonder\App\Support\ApiRequest::selectDatabase()`: it accepts a configured
+alias of `$DB->database` or, from backend lists, the real name
+(`Table::$database`) mapped back to its alias; anything else, and
+`information_schema` always, answers 422. The match is case-exact: do not
+loosen it.
+
 ## Errors, debug and logs
 
 Docs: `docs/app/piattaforma/sicurezza.md#errori-500-e-request_id`, `#log`.
