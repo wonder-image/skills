@@ -127,6 +127,50 @@
 - `class/App/PageSchema/*` provides special backend pages outside standard CRUD.
 - `class/App/Support/Repeater.php` plus `RepeaterColumn` and `RepeaterRelation` drive repeatable rows and related-record sync.
 
+## Per-request Performance
+
+Docs: `docs/performance.md`.
+
+- Per-request memo: `Wonder\App\Support\RequestMemo` (`has`, `get`, `put`,
+  `remember`, `forget`, `reset`); the scope is the table name. Writes through
+  `Query::Insert/Update/Delete/Truncate`, a `Transaction` rollback,
+  `CreateTable` and `LegacyTableRenames::run()` forget the scope on their own;
+  a raw `mysqli` write does not. Already memoized: `sqlTableExists()` (only a
+  `true` result, scope `@sql.table_exists`), `infoUser($id)` (scope `user`,
+  `forgetInfoUser()`), the analytics and font reads of `head.php`,
+  `Asset::version()` (`cssRoot()` / `cssColor()` forget it). Keys of SQL reads
+  include `sqlMemoConnectionKey()`. A CLI loop or a test that serves several
+  requests in one process calls `RequestMemo::reset()` between them.
+- `Wonder\Sql\QueryCounter`: registered by `wonder-image.php`, active only in
+  debug (`Debug::enabled()`) and for web requests; logs
+  `[SQL] {path} queries=N top=...` (`QUERY_COUNTER_TOP`, default 10). It does
+  not count raw `mysqli` queries.
+- The visitor country is lazy: `Wonder\Plugin\GeoPlugin\Geo::country()` asks
+  IPInfo on first use and stores it in `$_SESSION['system_cache']['country']`,
+  which is `null` until then. Read it only through `Geo::country()`
+  (`Geo::reset()` in tests); `session.php` no longer calls IPInfo.
+- `Wonder\Api\Call` has `DEFAULT_TIMEOUT = 10` seconds; raise it per call with
+  `->timeout($s)` / `->connectTimeout($s)` (PayPal and Nexi use 30, the backend quick-create 60 through `curlJson()`).
+  On a transport error it returns `success => false` with `error`, `errno`
+  (28 = timeout) and `result => null`: check `success`, never assume a body.
+  `curlJson()` takes an optional `$timeout`.
+- Table schemas can be lazy: `Table::key($t)->setSchemaResolver(callable)`;
+  `schema()`, `columns()`, `hasColumn()`, `prepare()` and `prepareFor()`
+  resolve and keep it. Use `Table::has($name)` to test registration without
+  resolving. Reading `Table::$list['resource:…']` directly returns `[]` for a
+  lazy schema (breaking): use `Table::key(...)->schema()`. A resolver that reads
+  its own key throws `LogicException`.
+- Modules: gestionale has its own `Wonder\Plugin\Gestionale\Support\RequestMemo`
+  (groups per `MEMO_GROUP`, trait `ForgetsRequestMemo`) behind
+  `Setting::current()` (`Setting::forget()`), `TaxRule::active()`,
+  `Campaigns::running()` and `ProductScope`; nothing is cached inside a
+  transaction, and writers go through its Models/Resources or call the
+  matching forget. In ecommerce, `CartSession::peek()` reads the cart on GET
+  without recalculating it, and `CheckoutSnapshot` (TTL 120 s) reuses the
+  checkout preview while lines, prices, campaigns, input and language are
+  unchanged and no coupon is applied; placing the order always recalculates,
+  and POSTs that write the cart drop the snapshot.
+
 ## Discovery and Registry Precedence
 
 - `ModelRegistry` loads models from:
