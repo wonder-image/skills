@@ -63,7 +63,8 @@ Owner: `Wonder\Http\Csrf` (`class/Http/Csrf.php`). Docs:
   `AccountController::renderCsrfFailure()` (protected) and
   `AuthController::renderCsrfFailure()` re-render the page with the typed
   values; a module controller that extends `AccountController` overrides the
-  protected one.
+  protected one (customer-account: `CustomerAccountController::renderCsrfFailure()`
+  reopens the address editor with alert 929 and writes nothing).
 - Do not add per-feature tokens: `AuthSession` delegates to `Csrf`;
   `_contact_csrf` (customer-account module) is legacy, do not replicate it in
   the core or in sites; `Impersonation` keeps its scoped token.
@@ -90,11 +91,55 @@ Docs: `docs/app/concetti/utenti/auth-frontend.md`, `docs/app/piattaforma/api.md#
   Enumeration-safe responses use the uniform code 925; do not add a message
   that tells "user exists" from "wrong password".
 - One-time tokens (reset, verification, magic links): `Wonder\Auth\OneTimeToken`.
+- Changing a user's email through `user()` (modify) sets `email_verified = 0`
+  and `email_verified_at = NULL` in the same UPDATE, overriding a posted
+  `email_verified`, then revokes the open verification links
+  (`userEmailVerificationRevokeOpenTokens()`). Code that trusts an address
+  checks `isUserEmailVerified()`, never the email alone.
 - reCAPTCHA: `Wonder\App\Security\RecaptchaGuard`.
 - Remember-me is configured on the profile (`AuthProfile::rememberMe()`).
 - Same-origin checks for session-bound endpoints: `Wonder\Http\SameOrigin`.
 - API bearer and page-token rules are the Core Rule in `SKILL.md`; Resource API
   access checks live in `Wonder\Api\Support\ResourceApiAccess`.
+
+## Rate limits
+
+Two primitives, split by owner:
+
+- `Wonder\Auth\LoginThrottle` (core) covers authentication only.
+- Commercial attempts (orders, coupons, guest checks) use
+  `Wonder\Plugin\Gestionale\Support\Throttle` from the gestionale module:
+  `attempt($bucket, $key, $limit, $window)` is one atomic UPSERT on
+  `gst_throttles` (Model `System\Throttle`, created by `php forge update`)
+  with a fixed window; `allowed()` / `hit()` keep file counters under
+  `storage/gestionale/throttle`. Keys are hashed, a limit of 0 or an empty key
+  never blocks, and a store error lets the request through (logged as
+  `gestionale.throttle`). `Throttle::ip()` is `Wonder\Http\ClientIp::resolve()`,
+  so `APP_TRUST_PROXY` decides the address. Each module keeps its own buckets
+  and limits in its config; do not add a third throttle store.
+- Ecommerce calls the gestionale class directly; `Wonder\Plugin\Ecommerce\Support\Throttle`
+  is a deprecated `class_alias` that breaks under
+  `composer dump-autoload --classmap-authoritative` and goes away in 0.3.0.
+
+## Orders of a returning customer (gestionale + ecommerce)
+
+- `Wonder\Plugin\Gestionale\Support\Orders\OrderOwner::claim($userId, $customerId, $email)`
+  attaches unlinked orders with that email to the account; it never takes an
+  order in stage `cart`.
+- Ecommerce calls it only through `Wonder\Plugin\Ecommerce\Frontend\Auth\OrderClaim::run()`,
+  on pages that show orders (account overview, list and detail; checkout
+  index, completed and return), never on actions. It runs only for a logged-in
+  frontend user with the `client` authority, not deleted, with a verified email
+  and a customer card: staff accounts are never claimed. Errors are logged as
+  `ecommerce.account.order_claim` and do not stop the page.
+- Express checkout with the email of an existing account creates the order
+  unlinked (`user_id` / `customer_id` 0) instead of refusing it
+  (`GuestCheckout::account(..., $express = true)`); reCAPTCHA on start and
+  `checkout.guest_order_limit` still apply, and `AuthLog` records
+  `guest_checkout_existing_unlinked` with an email hash. The wallet email is
+  not verified; the order reaches the account later, through the claim
+  above. Accepted risk: an express order paid by someone else with that email
+  can end up in that account.
 
 ## Authorization of backend list mutations
 

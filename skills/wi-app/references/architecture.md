@@ -122,6 +122,12 @@
   composes `Modal::frontend()` and the shared address form; keep CSRF,
   contact ownership, page-only alerts and non-JS routes in the controller.
 
+- Commercial throttling and order ownership belong to gestionale
+  (`Support\Throttle`, table `gst_throttles`; `Support\Orders\OrderOwner`);
+  ecommerce only calls them and declares `customer-account` and `gestionale`
+  in `dependencies.modules`. The core keeps `LoginThrottle` for auth. Details
+  in `security.md` § Rate limits.
+
 - `class/App/Model.php` owns table metadata, data schema, query helpers, and field-to-SQL conversion.
 - `class/App/Resource.php` owns backend/API module behavior, form fields, query schema, permission schema, navigation schema, and repeater relation handling.
 - `class/App/PageSchema/*` provides special backend pages outside standard CRUD.

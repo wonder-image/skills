@@ -81,6 +81,20 @@ alone. Files the browser must load from a package live under
 `vendor/<vendor>/<package>/resources/assets/`; every other `vendor/` path is
 denied.
 
+## Commercial rate limits
+
+- Order and coupon limits of the ecommerce module live in its config
+  (`checkout.guest_order_limit`: `ip` and `cart` as `[attempts, seconds]`,
+  `0` turns one off) and are counted by the gestionale `Support\Throttle` in
+  table `gst_throttles`. Behind a proxy or CDN set `APP_TRUST_PROXY`, or every
+  visitor shares the proxy IP.
+- Deploy order when a site moves to that class: gestionale first, then the
+  site `composer.lock` and `php forge update --local` (or the deploy, which
+  creates `gst_throttles`), then ecommerce. A missing gestionale class is a
+  fatal 500 on every order and coupon, not a fail-open. Counters restart from
+  zero; the old `ecommerce_throttle` table stays unused and can be dropped by
+  hand after a `php forge db:backup`.
+
 ## Database backups
 
 - `php forge update` already backs up a non-empty database before migrations
