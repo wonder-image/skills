@@ -5,9 +5,11 @@ description: |
   composer.json depends on `wonder-image/app` but is not the framework package,
   or when work touches `custom/`, `app/Models`, `app/Resources`, `lang/`,
   `assets/{ASSETS_VERSION}/`, `docs/ai/` (`PRODUCT.md`, `DESIGN.md`), `php forge credentials`,
-  `php forge update --local`, `php forge start`, or npm setup. Covers pages,
+  `php forge update --local`, `php forge start`, `php forge db:backup`, the
+  site `.htaccess`, `.github/workflows/deploy.yml`, or npm setup. Covers pages,
   models, resources, repeaters, editable content, translations, routes, roles,
-  permissions, external modules, component overrides, and UI/styling that must
+  permissions, external modules, component overrides, visitor-data escaping,
+  CSRF in hand-written forms, tracking via GTM, and UI/styling that must
   reuse `wonder-image/lib`. Do not use for the `wonder-image/app` core, direct
   edits under `vendor/wonder-image/app`, or the `wonder-image/lib` source.
 ---
@@ -87,6 +89,7 @@ Read [`references/product-md.md`](references/product-md.md). `docs/ai/PRODUCT.md
 
 ### Page or component
 Read `references/implementation-playbook.md` and `references/style-and-lib.md`. Copy-paste skeleton for a frontend page in [`references/examples.md`](references/examples.md#2-frontend-page-customviewpagesfrontendaboutphp).
+- `Badge::inline()`, `Wonder\Elements\Frontend\EmptyState`, `Wonder\Elements\Frontend\Pagination` and the Wonder renderer of `Text` / `RichText` are still in open `wonder-image/app` PRs: use them only when `vendor/wonder-image/app` contains them (APIs in `wi-app/references/component-catalogue.md` § Component APIs in open PRs); until then keep the site's current markup.
 - For a reusable header driven by one recursive navigation tree, read [`references/header-navigation.md`](references/header-navigation.md). It defines the `classic` / `mega` contract, `list` default, optional `card` presentation, action links, appearance options, desktop hover behavior, and the mobile cascade.
 - Pages go under `custom/view/pages/{frontend,backend}/...`.
 - Component overrides mirror the framework path under `custom/view/components/{frontend,backend}/...`.
@@ -119,6 +122,9 @@ Steps for a new site Model + Resource:
 6. Run `composer dump-autoload`, then `php forge update --local` to apply runtime generation.
 
 The canonical flow is `Model::tableSchema()` + `Model::dataSchema()`. Do not invent parallel table-definition files alongside it.
+
+### Visitor data, hand-written forms, tracking, `.htaccess`, deploy, backups
+Read [`references/security-and-deploy.md`](references/security-and-deploy.md). It covers escaping visitor data in custom backend pages and emails, CSRF in hand-written forms and site routes, `SafeRedirect`, `downloadAsText()` exports, GTM-only tracking behind consent, the managed `WONDER` blocks of `.htaccess`, database backups and the deploy exclusion proposal. The framework side of the same contracts is `wi-app/references/security.md`.
 
 ### Backend-editable content
 Read `references/implementation-playbook.md`. Prefer a real `Model` + `Resource` flow. Connect media to existing media resources. Never store editable content in static arrays or loose files.

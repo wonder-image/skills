@@ -55,7 +55,8 @@ Verified against `wonder-image/new-site` (https://github.com/wonder-image/new-si
 
 - **Never edit** `vendor/`, `node_modules/`, `assets/lib/wonder-image/dist/`.
 - Do not hand-edit:
-  - Forge-generated entry points: `handler/index.php`, `.htaccess`, `robots.txt`
+  - Forge-generated entry points: `handler/index.php`, `robots.txt`
+  - the `WONDER` blocks of `.htaccess` (site rules go outside the markers, see [`security-and-deploy.md`](security-and-deploy.md#htaccess))
   - Runtime upload destinations under `assets/upload/`
   - Runtime sitemap output under `shared/sitemap/`
   - Compiled / merged outputs that Forge regenerates on `php forge update --local`
