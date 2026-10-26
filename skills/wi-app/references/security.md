@@ -7,7 +7,10 @@ module. The canonical prose lives in the app docs linked per section; this file
 lists the contracts an agent must not break.
 
 Status: everything below is merged on `wonder-image/app` main, except the
-section "In arrivo".
+section "In arrivo". Client-side parts marked "lib ≥ 2.1.2-alpha.31" need
+`wonder-image` lib ≥ 2.1.2-alpha.31 in the site (published on npm, dist-tag
+`alpha`); `extra.wonder.lib` of the app is raised by the app itself (PR-C / I7),
+not by this skill.
 
 ## CSRF
 
@@ -16,8 +19,15 @@ Owner: `Wonder\Http\Csrf` (`class/Http/Csrf.php`). Docs:
 
 - One token per session. API: `token()`, `field()`, `verify()`, `active()`,
   `fieldFor($method)`, `legacyFormField()`. Field `_csrf`, header
-  `X-WI-CSRF`, `<meta name="wi-csrf">` in the base layouts. The lib sends the
-  header from `ajaxRequest`, `fetch`, `ApiClient`, DataTables and Editor.js.
+  `X-WI-CSRF`, `<meta name="wi-csrf">` in the base layouts. From `wonder-image`
+  lib ≥ 2.1.2-alpha.31 the lib sends the header from `ajaxRequest`, `fetch`,
+  `ApiClient`, DataTables and Editor.js.
+- Frontend auth forms (`app/view/pages/frontend/auth/*`) post the field
+  `csrf_token` with `AuthSession::csrfToken()`, verified by
+  `AuthSession::verify()` (same session token as `Csrf`); the account logout
+  posts `csrf_token` with the page's `logout_token`, and the impersonation
+  banner posts `csrf_token` with `Impersonation::csrfToken()`. Do not rename
+  those fields and do not add `_csrf` beside them.
 - Automatic emission (both `Form` renderers, `Button::post()`, POST `Dropdown`
   items, `Modal::form()`, the Resource form page) goes through
   `Csrf::fieldFor()`: never for GET, never without an active session or with a
@@ -27,7 +37,9 @@ Owner: `Wonder\Http\Csrf` (`class/Http/Csrf.php`). Docs:
   group. `RouteDispatcher` calls `Wonder\Http\CsrfGuard::enforce($route)`
   after `authorizeUser()` and before the handler: methods other than
   GET/HEAD/OPTIONS without a valid token throw `ForbiddenHttpException`
-  (403 JSON or the HTML error page) and the handler is not included.
+  (403 JSON or the HTML error page) and the handler is not included. On main
+  that 403 still carries the text `Token CSRF non valido.`: do not copy it into
+  sites; PR wonder-image/app#128 replaces it (see "In arrivo").
 - Every `/api/backend/*` route is under `->csrf()` (`app/config/routes/route.api.php`)
   except `/api/backend/alert/`. A new backend API route is both `guarded()` and
   inside that group.
@@ -44,8 +56,12 @@ Owner: `Wonder\Http\Csrf` (`class/Http/Csrf.php`). Docs:
 - No action on GET: backend logout and Stripe "connect webhook" show a
   confirmation page whose form POSTs `_csrf`. A token in the query string never
   counts.
+- User-facing failure text is notification `929` ("La pagina è scaduta…"),
+  never a message containing "CSRF" or "token"; re-render the form with the
+  values the user typed.
 - Do not add per-feature tokens: `AuthSession` delegates to `Csrf`;
-  `_contact_csrf` is legacy and `Impersonation` keeps its scoped token.
+  `_contact_csrf` (customer-account module) is legacy, do not replicate it in
+  the core or in sites; `Impersonation` keeps its scoped token.
 
 ## Cookies, sessions and proxies
 
@@ -54,9 +70,10 @@ Docs: `docs/app/concetti/form/csrf.md#cookie`, `docs/app/piattaforma/multi-ambie
 - `Wonder\Http\Cookie` is the only caller of `setcookie`: SameSite=Lax,
   HttpOnly, Secure on HTTPS. Session cookie options come from
   `Cookie::sessionOptions()` in `app/config/app/ini.php`.
-- Forwarded headers (`X-Forwarded-For`, `-Proto`, `-Scheme`, `-Ssl`) count only
-  with `APP_TRUST_PROXY=true`, in one place each: `Cookie::isSecure()`,
-  `Wonder\Http\ClientIp`, `Wonder\Http\UrlParser`. Never read them directly.
+- Forwarded headers count only with `APP_TRUST_PROXY=true` and are read only
+  by these classes: `X-Forwarded-For` → `Wonder\Http\ClientIp`;
+  `X-Forwarded-Proto` → `Cookie::isSecure()` and `Wonder\Http\UrlParser`;
+  `X-Forwarded-Scheme` / `-Ssl` → `UrlParser`. Never read them directly.
 
 ## Authentication helpers
 
@@ -76,9 +93,9 @@ Docs: `docs/app/concetti/utenti/auth-frontend.md`, `docs/app/piattaforma/api.md#
 
 ## Authorization of backend list mutations
 
-`Wonder\Backend\Table\TableAuthorization` authorizes `change/boolean`,
-`active`, `visible`, `delete`, `move`, `file/delete`, `file/move` and
-`authority` before any SQL. Do not add a list mutation endpoint that skips it.
+`Wonder\Backend\Table\TableAuthorization` authorizes every list mutation
+endpoint (`change/boolean`, `active`, `visible`, `delete`, `delete-icon`,
+`move`, `file/delete`, `file/move`, `authority`) before any SQL. Do not add a list mutation endpoint that skips it.
 
 ## Redirects
 
@@ -103,9 +120,9 @@ Docs: `docs/app/piattaforma/sicurezza.md#upload`.
 ## Managed `.htaccess` blocks
 
 Docs: `docs/app/piattaforma/sicurezza.md#blocchi-htaccess-gestiti-da-forge`.
-`class/Console/Commands/Build.php` maintains `WONDER PERFORMANCE`,
-`WONDER SECURITY` and `WONDER UPLOAD` between markers; the rest of the file is
-left alone. Package assets served to the browser must live under
+`class/Console/Commands/Build.php` maintains the `PERFORMANCE`, `SECURITY` and
+`UPLOAD` blocks between `# WONDER <NAME> START` and `# WONDER <NAME> END`
+markers; the rest of the file is left alone. Package assets served to the browser must live under
 `vendor/<vendor>/<package>/resources/assets/` (static extensions only): every
 other `vendor/` path is denied. PHP responses get the same headers from
 `Wonder\Http\SecurityHeaders`.
@@ -170,11 +187,16 @@ it is a GTM tag subject to consent. Do not add trackers outside GTM.
 
 Not on main yet: do not document these as rules or rely on them in code.
 
-- **Generic CSRF failure handling** (branch `fix/2026-10-4d-csrf-generico`, no
-  PR yet): `Csrf::ALERT`, `Csrf::oldInput()`, `failureMessage()`,
-  `flashFailure()` and an `AccountController::renderCsrfFailure()` extension
-  point. Until it lands, use alert `929` as described above.
-- **Removal of the legacy `modal()` helpers** (audit block 4, PR-B / PR-C): they
-  are `@deprecated` aliases today; see the confirmation rule in `SKILL.md`.
+- **Generic CSRF failure handling** (open PR wonder-image/app#128):
+  `Csrf::ALERT = 929`, `Csrf::oldInput($input, $extra)` (drops the token and
+  password fields of `Csrf::SENSITIVE`), `Csrf::failureMessage()` (reads
+  `notifications.929`, no "CSRF" in the text), `Csrf::flashFailure()`, and
+  `renderCsrfFailure()` in `AccountController` (protected) and
+  `AuthController`. `CsrfGuard` then answers with `failureMessage()` instead of
+  `Token CSRF non valido.`. Until it lands, use
+  `ResourcePageController::CSRF_ALERT` as described above.
+- **Removal of the legacy `modal()` helpers and `#modal`** (PR-C / I7,
+  breaking, not opened yet): the core PHP `modal()` and its `onclick` callers
+  are still on main; see the confirmation rule in `SKILL.md`.
 - **Performance block** (audit block 5): open questions on `Geo::country()` and
   the `Api\Call` timeout. Nothing to apply yet.

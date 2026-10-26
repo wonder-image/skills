@@ -33,11 +33,20 @@ and `docs/app/concetti/form/csrf.md` in `wonder-image/app`.
 - Forms built with the framework Elements (`Form`, `Button::post()`, POST
   `Dropdown` items, `Modal::form()`) already carry the token. A hand-written
   `<form method="post">` prints `<?= \Wonder\Http\Csrf::field() ?>`; a `fetch`
-  from site JS sends the `X-WI-CSRF` header read from `<meta name="wi-csrf">`.
+  from site JS sends the `X-WI-CSRF` header read from `<meta name="wi-csrf">`
+  (from `wonder-image` lib ≥ 2.1.2-alpha.31 the lib's own `fetch` /
+  `ajaxRequest` add it).
+- Frontend auth and account forms of the framework post their token as
+  `csrf_token` (`AuthSession`, logout, impersonation banner): when overriding
+  their views, keep that field and do not add `_csrf` beside it.
 - The handler verifies before writing: declare `->csrf()` on the route in
   `custom/routes/` (the dispatcher answers 403 and never includes the handler),
   or call `Csrf::verify()` at the top of a page handler and stop on failure.
   Routes authenticated only by a Bearer token do not declare `->csrf()`.
+- On a failed check show notification `929` (`ResourcePageController::CSRF_ALERT`;
+  `Csrf::ALERT` once wonder-image/app#128 lands) and re-render the form with
+  the values the user typed (with #128: `Csrf::flashFailure()` /
+  `Csrf::oldInput()`). Never show a message containing "CSRF" or "token".
 - Never change state on GET (logout, delete, "connect", "send again"): show a
   confirmation page whose form POSTs.
 
@@ -64,8 +73,9 @@ consent. Do not paste tracker snippets into `custom/view/` layouts. Docs:
 
 ## `.htaccess`
 
-Forge owns the blocks between `# WONDER PERFORMANCE`, `# WONDER SECURITY` and
-`# WONDER UPLOAD` markers (root `.htaccess` and `assets/upload/.htaccess`) and
+Forge owns the `PERFORMANCE`, `SECURITY` and `UPLOAD` blocks between
+`# WONDER <NAME> START` and `# WONDER <NAME> END` markers (root `.htaccess` and
+`assets/upload/.htaccess`) and
 rewrites them on `php forge update`. Never edit inside a block: changes are
 lost. Site-specific rules go outside the markers, where Forge leaves them
 alone. Files the browser must load from a package live under
