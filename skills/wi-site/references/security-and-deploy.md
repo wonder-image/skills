@@ -83,10 +83,12 @@ denied.
 
 ## Commercial rate limits
 
-- Order and coupon limits of the ecommerce module live in its config
+- The guest order limit of the ecommerce module lives in its config
   (`checkout.guest_order_limit`: `ip` and `cart` as `[attempts, seconds]`,
-  `0` turns one off) and are counted by the gestionale `Support\Throttle` in
-  table `gst_throttles`. Behind a proxy or CDN set `APP_TRUST_PROXY`, or every
+  `0` turns one off; the other limits are constants in code). The gestionale
+  `Support\Throttle` counts them: guest orders and guest email checks in table
+  `gst_throttles`, coupons and the other buckets in files under
+  `storage/gestionale/throttle`. Behind a proxy or CDN set `APP_TRUST_PROXY`, or every
   visitor shares the proxy IP.
 - Deploy order when a site moves to that class: gestionale first, then the
   site `composer.lock` and `php forge update --local` (or the deploy, which

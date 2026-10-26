@@ -116,7 +116,8 @@ Two primitives, split by owner:
   never blocks, and a store error lets the request through (logged as
   `gestionale.throttle`). `Throttle::ip()` is `Wonder\Http\ClientIp::resolve()`,
   so `APP_TRUST_PROXY` decides the address. Each module keeps its own buckets
-  and limits in its config; do not add a third throttle store.
+  and limits (ecommerce: guest orders in config, coupons, declined and customer
+  orders as constants in code); do not add a third throttle store.
 - Ecommerce calls the gestionale class directly; `Wonder\Plugin\Ecommerce\Support\Throttle`
   is a deprecated `class_alias` that breaks under
   `composer dump-autoload --classmap-authoritative` and goes away in 0.3.0.
