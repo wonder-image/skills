@@ -70,7 +70,7 @@ Permissions decide which actions a user may run; row visibility decides which ro
 - `admin` and `administrator` skip the rule; change the list with `rowVisibilitySeeAll()` or the third argument of `rule()`.
 - A rule must not name `deleted` (it would undo soft delete): it throws `LogicException`.
 - The core applies it to backend lists (rows, search, filters, counts), export, record pages, generated APIs and list id actions. A hidden row is a 404, never a 403.
-- CLI, scheduler and the `@system` bearer have no user and see everything; a page token without a session is anonymous.
+- CLI, scheduler and the `@system` bearer have no user and see everything; page access (session without bearer, or a page token) uses the session user, anonymous without a session.
 - Code that reads rows on its own (MCP tools, dashboard totals, hand-built relation options) must go through `RowVisibility::current()` or `RowVisibility::for($user)` (`find()`, `findById()`, `count()`, `condition()`, `visible()`).
 - A table without a rule behaves exactly as before.
 

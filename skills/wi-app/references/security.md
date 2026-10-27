@@ -41,9 +41,10 @@ Owner: `Wonder\Http\Csrf` (`class/Http/Csrf.php`). Docs:
 - Every `/api/backend/*` route is under `->csrf()` (`app/config/routes/route.api.php`)
   except `/api/backend/alert/`. A new backend API route is both `guarded()` and
   inside that group.
-- Bearer-only routes (Resource API, page token, tasks, `/api/app/update/`)
-  and OAuth flows do not declare `->csrf()`: the browser never sends
-  `Authorization` by itself.
+- Bearer routes (Resource API, tasks, `/api/app/update/`) and OAuth flows do
+  not declare `->csrf()`: the browser never sends `Authorization` by itself.
+  When the same endpoint is reached without bearer from a page (session
+  access), `Endpoint` itself requires same origin and `Csrf::verify()`.
 - Core backend pages that write on POST verify first (Resource CRUD through
   `ResourcePageController`, users, account, login and password pages, bulk
   uploader, config files, legacy forms including `app/html/backend/index.php`,
