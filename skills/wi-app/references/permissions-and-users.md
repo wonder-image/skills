@@ -62,6 +62,18 @@ When asked to create a new backend permission:
 4. If the navigation entry is restricted, update the resource `navigationSchema()->authority([...])` or equivalent gate.
 5. Validate that the shared user-management backend can assign that new authority.
 
+## Row Visibility
+
+Permissions decide which actions a user may run; row visibility decides which rows of a table that user sees (for example a sales agent sees only their own orders). See `docs/app/concetti/risorse/visibilita-per-riga.md`.
+
+- Declare it on the Resource with `rowVisibility(object $user): string|array|null` (array `column => value`, code-written SQL string, or `null` for no restriction), or from a site/module without touching the Resource with `RowVisibility::rule($table, $rule, $seeAll)` (`Wonder\App\Visibility\RowVisibility`). Rules on the same table are ANDed.
+- `admin` and `administrator` skip the rule; change the list with `rowVisibilitySeeAll()` or the third argument of `rule()`.
+- A rule must not name `deleted` (it would undo soft delete): it throws `LogicException`.
+- The core applies it to backend lists (rows, search, filters, counts), export, record pages, generated APIs and list id actions. A hidden row is a 404, never a 403.
+- CLI, scheduler and the `@system` bearer have no user and see everything; a page token without a session is anonymous.
+- Code that reads rows on its own (MCP tools, dashboard totals, hand-built relation options) must go through `RowVisibility::current()` or `RowVisibility::for($user)` (`find()`, `findById()`, `count()`, `condition()`, `visible()`).
+- A table without a rule behaves exactly as before.
+
 ## Risk Notes
 
 - The architecture is only partially migrated: user CRUD is centralized, while runtime permission lookup still passes through helper functions that read the built `$PERMITS` array.
