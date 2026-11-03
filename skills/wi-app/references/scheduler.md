@@ -50,6 +50,17 @@ modifying its code. The legacy site `api/task/sitemap.php` is removed by build;
 migrate to the generated CLI entrypoint. Euribor reuses `Euribor::sync()` only
 where the site provides it.
 
+`Tasks\ContentTranslationTask` (`wonder.content-translation`, enabled, every
+10 minutes) translates the fields of `Translatable` Models into the active
+languages. Per text `MachineTranslation` tries local vocabulary composition,
+then `translation_memory`, then the `Translator` driver (`GoogleTranslator`
+with `GCP_API_KEY`; without it only vocabulary and memory run and the result
+carries `skipped: missing_api_key`). Parameters: `budget` (1-2000, default 200)
+and `threshold` (2-1000, default 3: uncovered segments repeated that often
+become `candidate` terms). A `reviewed` row whose source changed becomes
+`review` and is never rewritten. Driver, store and models are constructor
+arguments, so tests never call Google.
+
 `Tasks\GooglePlacesTask` (`wonder.google-places`, always on, 03:30; skipped with `missing_api_key` without `GCP_API_KEY`) syncs
 every `SocietyLocation` with its own `google_place_id` through Places API (New)
 Place Details and the server key `GCP_API_KEY` (header, never URL). Logic lives
