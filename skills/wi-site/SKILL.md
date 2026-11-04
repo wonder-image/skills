@@ -150,6 +150,7 @@ Read `references/workflows.md`. Sample `lang/it/pages.json` entry in [`reference
 - Build URLs:
   - **Prefer `__r(string $name, array $parameters = [])`** — URL from a named route. Works for every route registered in `app/config/routes/` or `custom/routes/`, including frontend pages, resource CRUD routes, and custom backend routes. Survives slug / path changes because it resolves by name.
   - Fallback to `__u(string $path)` only when no named route exists and you must build a locale-aware URL from a free path string (e.g. `<a href="<?= __u('contact') ?>">`).
+- To let the client load data from a spreadsheet, register an import `Layout` (`Wonder\App\Import`) with `Layouts::set($key, MyLayout::class)` (`false` removes a module's one) and link `ImportResource::url(['layout' => $key])` from the list: never write an ad-hoc upload page. Details in `vendor/wonder-image/app/docs/app/concetti/importazione.md`.
 - Legal pages (privacy, cookie, terms) render `LegalDocument::make('privacy')` from `wonder-image/app`: `legal_documents` in the database is the only source, `lang/{locale}/legal.json` is just the seed. Never print legal text from `__t('legal...')` in a page.
 - Site texts and legal documents are translated by the client in Set-up → Traduzioni (XLSX/CSV export, previewed import). For translatable content fields, make the site Model implement `Translatable` with `HasTranslations` and read rows with `Model::translated($rows)`; the scheduler translates them automatically. Details in `vendor/wonder-image/app/docs/app/concetti/traduzioni.md`.
 
