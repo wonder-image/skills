@@ -57,7 +57,7 @@ Switch to [`wi-site`](../wi-site/SKILL.md) when **any** of these signals are tru
    - `references/model-and-resource.md` for the Model / Resource extension API, schemas, repeater fields, and `CustomPageSchema`
    - `references/permissions-and-users.md` for the permission builder API, permission keys, and shared user-management resources
    - `references/workflows.md` for change placement, validation, and common gotchas
-   - `references/security.md` for CSRF, cookies, auth helpers, uploads, redirects, exports, SQL escaping, error/log hygiene, backups and consent
+   - `references/security.md` for CSRF, cookies, auth helpers, uploads, redirects, exports, SQL escaping, encrypted secrets in `security` (`APP_ENCRYPTION_KEY`), error/log hygiene, backups and consent
 
 ## Core Rules
 
