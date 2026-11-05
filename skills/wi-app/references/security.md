@@ -215,6 +215,35 @@ Docs: `docs/app/piattaforma/sicurezza.md#errori-500-e-request_id`, `#log`.
 - `Logger` writes only under `ROOT/storage/logs/` (0750 / 0640). Redact URIs and
   identifiers with `Wonder\App\LogRedactor` before logging.
 
+## Secrets in `security`
+
+Docs: `docs/app/piattaforma/sicurezza.md#segreti-in-security`.
+
+- `Security::SECRET_COLUMNS` (API keys, passwords, tokens of the Credenziali
+  integrations) are encrypted at rest by `Wonder\App\Security\SecretCipher`:
+  XChaCha20-Poly1305 (sodium), random nonce, `enc:v1:<kid>:<payload>`,
+  associated data `security:<column>` (`Credentials::secretContext()`).
+  `api_key` and public ids stay plain.
+- The key is the dedicated `APP_ENCRYPTION_KEY` (64 hex). Never derive it
+  from, or reuse it as, `APP_KEY` (which is shared with wonderimage.it).
+  Rotation: old key in `APP_ENCRYPTION_KEY_PREVIOUS`, new key in
+  `APP_ENCRYPTION_KEY`, `forge update` re-encrypts, then drop PREVIOUS.
+- Encrypt and decrypt only inside `Credentials`: call
+  `Credentials::encryptSecurityValues()` before any write of a secret column
+  (a new handler that stores a secret must do it); reads come back decrypted.
+  Never cipher in a handler or module, never log a value (column and kid
+  only). An empty secret field in a form keeps the saved value.
+- A value that fails to decrypt reads as `''` (integration not configured),
+  is logged, and the Credenziali page shows a notice. Without a key values
+  are stored plain with a warning.
+- Production key lives only in Bitwarden: `forge provision` creates it when
+  missing and never overwrites an existing auto-gen secret; local
+  `config` / `db:init` / `start` generate it only when missing; it is never
+  in `dev-shared`. `SecurityEncryptionMigration` runs in `forge update`,
+  is idempotent and never generates a key.
+- A DB dump of `security` is readable only with the key of the environment
+  that wrote it; `security` is not synced by `forge export` / `import`.
+
 ## Database backups
 
 Docs: `docs/app/piattaforma/installazione-e-deploy.md`.
