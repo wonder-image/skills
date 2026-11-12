@@ -52,6 +52,8 @@ Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals 
   - `php forge provision`
   - `php forge db:init`
   - `php forge build`
+
+  `composer install` / `composer update` trigger `php forge config` through the Composer scripts: in an agent session install with `composer install --no-scripts`.
 - Every user-facing string goes through `__t(...)` with entries in `lang/{locale}/*.json` (any number of JSON files: `pages.json`, `components.json`, `emails.json`, `legal.json`, plus any new ones the site needs). URLs go through **`__r(string $name, array $parameters = [])`** (preferred — builds the URL from a named route, picks up the active locale, survives route renames). Use `__u(string $path)` only when there is no named route and you must build a URL from a free path (e.g. `__u('contact')`). No hardcoded copy or language prefixes in PHP.
 - Before writing new CSS classes, JS behavior, or UI structure, inspect `wonder-image/lib` and reuse the existing design system. Full UI rulebook in `references/style-and-lib.md` — read it for any UI / styling / design-system task. The default mode is **USE the lib, do not MODIFY it**.
 - **`<wi-card>` is retired.** Do not write `<wi-card>` in the site's backend pages: use `Card` from `wonder-image/app`. Existing pages that use it keep working until the lib removes it; replace it when you touch them.
@@ -65,6 +67,8 @@ Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals 
 0. **Read `docs/ai/PRODUCT.md` first.** It defines register (brand vs product), `site_type`, target users, brand personality, voice/tone, design principles. Everything you do next must be coherent with what it says — placement choices, copy, suggestions of modules, UI direction. Run the **Site readiness check** in [`references/external-skills.md`](references/external-skills.md#site-readiness-check) once per session on every site, migrated or not, **before** deciding whether the file is missing or empty: it moves a root `PRODUCT.md` into `docs/ai/` (`git mv` when tracked, `mv` otherwise, also over an untouched scaffold template with empty sections), adds the `.gitignore` and `deploy.yml` lines, creates `docs/ai/reports/`. Only after the check, judge `docs/ai/PRODUCT.md`.
 
    **If `docs/ai/PRODUCT.md` is missing or its required sections are empty, do NOT proceed with the user's task yet.** Run the interview procedure in [`references/product-md.md` § Compilation procedure](references/product-md.md#compilation-procedure-interview-driven): ask 2–4 focused questions at a time with `AskUserQuestion`, save answers into `docs/ai/PRODUCT.md` as they come, and continue interviewing until you have **at least 80% project clarity** — operationalized as: all 6 required sections filled (`Register`, `Site type`, `Target users`, `Brand personality`, `Voice / tone`, `Design principles`) plus at least one of (`Anti-references`, `Asset paths`). Only then proceed with the original task. Reason: the alternative is generic output that the user will have to fix later — the 10–15 minutes spent interviewing pay back on every subsequent decision in the session and in future sessions.
+
+   The boilerplates themselves (`new-site`, `ecommerce-site`, `immobili-site`, `rsvp-site`) are exempt: see [`references/product-md.md` § Compilation procedure](references/product-md.md#compilation-procedure-interview-driven).
 
    The interview is sequential and adaptive: if the user already mentioned something in passing (e.g. "abbiamo un brand di moda"), pre-fill the relevant section and ask for confirmation rather than re-asking from scratch. Full schema in [`references/product-md.md`](references/product-md.md); copy-paste template in [`references/examples.md` §6](references/examples.md#6-docsaiproductmd--brand-and-project-context).
 
@@ -101,7 +105,7 @@ Read `references/implementation-playbook.md` and `references/style-and-lib.md`. 
 Read `references/style-and-lib.md` **first**. Applies to every task touching buttons, inputs, forms, modals, cards, alerts, badges, typography, images, interactive elements, color tokens, root variables, or custom CSS / JS.
 - Default mode: **USE** the lib, do not **MODIFY** it. Modifying `wonder-image/lib` requires an explicit user request.
 - Reuse existing lib classes and tokens before writing anything new. No `.wi-*` (or other) prefix-based naming. No parallel CSS system. No hardcoded colors.
-- Token files: `assets/{ASSETS_VERSION}/css/set-up/color.css` and `root.css`. Custom CSS / JS goes under `assets/{ASSETS_VERSION}/css/` and `assets/{ASSETS_VERSION}/js/` — never inside `set-up/`.
+- Token files: `assets/{ASSETS_VERSION}/css/set-up/color.css` and `root.css` are generated from the database (backend Set-up → CSS) by `php forge update --local`: read them, never edit them. Custom CSS / JS goes under `assets/{ASSETS_VERSION}/css/` and `assets/{ASSETS_VERSION}/js/` — never inside `set-up/`.
 - Detect `{ASSETS_VERSION}` from the actual `assets/` directory before reading or writing token files.
 - Before closing any task that touched public HTML / CSS: `playwright-cli` screenshots at 375 / 768 / 1280 and console, then `web-design-guidelines` on the touched files, as described in [`references/external-skills.md`](references/external-skills.md#reports). Backend-only tasks skip both.
 - End every UI task with the **Required Final Report** and **Pre-Submit Checklist** in `references/style-and-lib.md`.
@@ -161,15 +165,20 @@ Read `references/project-structure.md` and `references/workflows.md`.
 
 ### Setup, runtime, or local environment
 Read `references/workflows.md`. From the project root:
-- `composer install` (also runs `php forge config` via Composer scripts)
+- `composer install` (also runs `php forge config` via Composer scripts — the developer runs it; an agent uses `composer install --no-scripts`)
 - `npm install` (copies `wonder-image/lib` into `assets/lib/wonder-image/dist/`)
 - `php forge credentials` (only when the user explicitly requests Bitwarden `dev-shared` recovery; writes secrets into `.env`)
 - `php forge update --local` (applies DB and runtime generation)
 - `php forge start` (runs the local server, may fill missing `.env`)
 
+## Preflight
+
+Before writing code, run the preflight defined in the site's `AGENTS.md` (§ Before you start: preflight): what you understood, what is missing, whether the change is needed at all (framework component, module, lib class or backend setting that already does it), and a better prompt when the request was ambiguous. One line is enough for a small, unambiguous request.
+
 ## Validation
 
 - Run `php -l` on every touched PHP file.
+- Run every `tests/*Test.php` (`php tests/<Name>Test.php`) and `php .github/scripts/check-lang.php` when the site has them: they are the same checks CI runs on pull requests and before deploy.
 - Run `composer dump-autoload` when PSR-4 classes are added, moved, or renamed.
 - For integration-sensitive changes: `php forge update --local` then `php forge start`.
 - Re-run `npm install` only when changes depend on `assets/lib/wonder-image/dist/` from `wonder-image/lib`.

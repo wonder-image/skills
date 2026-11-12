@@ -76,8 +76,7 @@ If a task seems to require modifying the lib, first attempt reuse or composition
 5. Only when no existing class or token solves the problem, propose the **minimal** addition:
    - new custom CSS → `assets/{ASSETS_VERSION}/css/`
    - new custom JS → `assets/{ASSETS_VERSION}/js/`
-   - new color token → `assets/{ASSETS_VERSION}/css/set-up/color.css`
-   - new root-level token → `assets/{ASSETS_VERSION}/css/set-up/root.css`
+   - new color or root-level token → backend Set-up → CSS (stored in the database). `php forge update --local` regenerates `set-up/color.css`, `set-up/root.css` and `docs/ai/DESIGN.md` from it: never edit those files by hand, they are generated and gitignored.
 
    Always explain why the addition is necessary and why no existing primitive worked.
 6. For any lib-internal change (new `.wi-*` component, new utility, new token planned for lib relocation), stop and request explicit user confirmation.
@@ -104,7 +103,7 @@ The lib documents tokens as **currently external** — they live in the site, no
 - Base color names (`primary`, `secondary`, etc.) can be **expanded only on explicit user request**.
 - Before creating a new token, search `color.css` and `root.css` for an equivalent variable. Reuse it.
 - Never hardcode HEX / RGB / HSL in a component if a token or class covers the case.
-- If a new color variable is genuinely needed, add it in `assets/{ASSETS_VERSION}/css/set-up/color.css` (and `root.css` if it is a root-level token). **Do not declare it locally in a component file.**
+- If a new color variable is genuinely needed, ask the developer to add it in the backend (Set-up → CSS), then regenerate with `php forge update --local`. Never write it into `color.css` / `root.css` (generated, overwritten on the next update) and **do not declare it locally in a component file.**
 - Some variables are read or written by the new-site backend through the `wonder-image/app` framework. Avoid solutions that lock a value statically in CSS and break that backend control path.
 
 ## Custom CSS / JS Placement
