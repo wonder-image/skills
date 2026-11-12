@@ -86,6 +86,7 @@ If you are unsure whether something belongs in `TODO.md`, add it. A tracked item
 
 - Keep `SKILL.md` focused on triggering, non-negotiable rules, and routing to references. Put detailed material in `references/<topic>.md`.
 - Frontmatter must include `name` and a `description` that states **TRIGGER when** and **SKIP when** with concrete file paths, commands, and library names.
+- A skill meant to run only by hand (today `wi-sync`) also sets `disable-model-invocation: true` (Claude Code). Other agents may ignore that key, so its SKIP when must still exclude every case the user did not ask for explicitly.
 - Do not duplicate the same rule across SKILL.md and references — pick one canonical location.
 - When two skills share a concern, prefer cross-referencing the canonical file over duplicating content.
 - Everything about external skills (taste, redesign, image-to-code, web-design-guidelines, playwright-cli: routing, installation, precedence, reports, readiness check) lives only in `skills/wi-site/references/external-skills.md`. Other files link to it with one line.

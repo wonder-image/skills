@@ -31,9 +31,11 @@ and before each deploy.
      `RequestResource::mailValues()`, `App\Support\SafeUrl::http()`); if the
      logic sits inside a hook that also sends mail or writes the DB, extract it
      into a static method first and call that from the hook;
-   - the route registry (`Route::reset()`, register, read `Route::all()`) for
-     routes, `csrf`, permits — see `tests/RequestSendRouteTest.php` in
-     `wonder-image/ecommerce-site`;
+   - the route registry for routes, `csrf` and permits: `Route::reset()`,
+     register the routes as the framework does (e.g.
+     `ResourceRouteRegistrar::registerApi($rootApp)` inside
+     `Route::area('api')->prefix('/api')->group(...)`), then read
+     `Route::all()` and assert on `method`, `path`, `csrf`, `permit`;
    - a **source contract** (read the file with `file_get_contents` and assert
      the call is there) only for a view that needs `View::layout` or the DB,
      e.g. `show.php` must contain `e($REQUEST['email'])`.
@@ -43,9 +45,18 @@ and before each deploy.
    `check()` per case, `summary();` at the end. Check names describe the
    behavior in Italian, as in the existing tests. Hostile inputs for escaping
    and URLs: `<script>`, `onerror=`, quotes, `javascript:`, `data:`, `//host`,
-   `user:pass@host`. If a check needs translations, initialise them with
-   `LanguageContext::addLangPath(...)->setLang('it')` and
-   `TranslationProvider::init()`.
+   `user:pass@host`. If a check needs translations (anything that calls `__t()`,
+   including the framework's CSRF 403 message), load the framework's
+   translations *and* the site's, then initialise:
+
+   ```php
+   use Wonder\Localization\{ LanguageContext, TranslationProvider };
+
+   LanguageContext::addLangPath(dirname(__DIR__).'/vendor/wonder-image/app/resources/lang/')
+       ::addLangPath(dirname(__DIR__).'/lang/')
+       ::setLang('it');
+   TranslationProvider::init();
+   ```
 4. **Red, then green.** Run the test against the code *without* the change
    (stash it or reason from the diff) and see it **red**; then with the change
    and see it green. A test that was never red proves nothing.

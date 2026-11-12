@@ -2,8 +2,10 @@
 name: wi-sync
 description: |
   Align a Wonder boilerplate or site with the scaffold wonder-image/new-site:
-  AI files, CI, PR template and shared hardening. Run by hand, one target
-  repo at a time.
+  AI files, CI, PR template and shared hardening, one target repo at a time.
+  TRIGGER when: the user explicitly asks to sync, align or "allineare" a
+  repo with new-site (or types /wi-sync).
+  SKIP when: any other task, including ordinary work inside a site.
 disable-model-invocation: true
 ---
 

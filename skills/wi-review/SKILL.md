@@ -18,34 +18,30 @@ the user asks: the review reports.
 
 ## Steps
 
-1. **Scope.** Diff against the base branch (`git diff origin/main...HEAD`, or
-   the PR diff). List every changed file. Read `docs/ai/PRODUCT.md` if copy or
+1. **Scope.** The diff the user names (a commit, a branch, a PR); default
+   `git diff origin/main...HEAD`. List every changed file. Read `docs/ai/PRODUCT.md` if copy or
    UI changed, and `custom/config/lang.php` for the active languages.
-2. **Checks.** Run the site's validation (the "Validation" section of
-   `AGENTS.md`): `php -l` on changed PHP, every `tests/*Test.php`,
-   `php .github/scripts/check-lang.php`. A red check is a blocking finding.
-3. **Rules.** Apply every rule below to every changed file. Done when each
-   (file, rule) pair is either a finding or clean.
-4. **Report.** Findings grouped as **blocking** (security, broken check,
-   wrong placement, edited generated file) and **should fix**, each with
-   `path:line`. Then: what the developer must still run (Forge commands,
-   backend settings), and "clean" for the rule groups with no findings.
+2. **Checks.** Run the site's validation exactly as the "Validation" section
+   of `AGENTS.md` lists it (`composer install --no-scripts` first if
+   `vendor/` is missing). A red check is a blocking finding, reported against
+   the source line that turned it red, not as a missing test.
+3. **Rules.** Apply every rule below to the lines the diff adds or changes.
+   Done when each (file, rule) pair is either a finding or clean. Problems
+   already in a touched file go in a separate "pre-existing" list: they do
+   not block this change.
+4. **Report**, in this order: **Blocking** (security, red check, wrong
+   placement, edited generated file) and **Should fix**, each finding with
+   `path:line`, rule, why, fix; **Pre-existing**; **Checks run** with their
+   result; **Developer still has to** (Forge commands, backend settings);
+   **Clean** rule groups.
 
 ## Rules
 
-**Placement** — pages in `custom/view/pages/`, component overrides in
-`custom/view/components/{frontend,backend}/{layout,ui,sections,overlay}/`,
-classes in `app/` (`App\`), tables as a Model with `tableSchema()` /
-`dataSchema()` (no new files in `custom/build/table/`). Nothing under
-`vendor/`, `node_modules/`, `assets/lib/`, nor in the generated files listed
-in `AGENTS.md`. Framework or lib changes belong upstream: say so.
-
-**Text and languages** — every user-facing string through `__t()` with the
-key in the default locale; with two or more active languages, the same key
-in each. Legal text only via `LegalDocument::make()`.
-
-**URLs** — `__r('route.name')`; `__u()` only without a named route; no
-hardcoded language prefixes or domains.
+**Placement, text, URLs, models** — apply every item of the
+Non-Negotiable Rules in [`wi-site/SKILL.md`](../wi-site/SKILL.md#non-negotiable-rules)
+and the Coding conventions and Generated files of the site's `AGENTS.md`.
+With two or more active languages in `custom/config/lang.php`, a new key
+must exist in each. Framework or lib changes belong upstream: say so.
 
 **Visitor data, forms, redirects, tracking** — apply
 [`wi-site/references/security-and-deploy.md`](../wi-site/references/security-and-deploy.md)
@@ -53,10 +49,12 @@ in full: escaping with `e()` / `e_br()` in pages and emails, visitor URLs
 through a http/https check, CSRF on hand-written POST forms and `fetch`,
 safe redirects, GTM-only tracking. Any miss is blocking.
 
-**UI** — apply the rules and the Pre-Submit Checklist of
-[`wi-site/references/style-and-lib.md`](../wi-site/references/style-and-lib.md):
-lib classes before new CSS, no hardcoded colors, no prefix-based naming,
-tokens changed in the backend, never in `set-up/`.
+**UI** — for public pages and CSS/JS, apply the rules of
+[`wi-site/references/style-and-lib.md`](../wi-site/references/style-and-lib.md)
+that a diff can show: lib classes before new CSS, no hardcoded colors, no
+prefix-based naming, tokens changed in the backend and never in `set-up/`.
+Screenshots and external audits are the author's job: if the diff touches
+public HTML/CSS and the PR shows no screenshots, say so once.
 
 **Backend** — Resources declare `permissionSchema()` and
 `navigationSchema()`; no parallel user-management pages; permission keys
