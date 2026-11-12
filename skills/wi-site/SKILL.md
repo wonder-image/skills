@@ -175,6 +175,11 @@ Read `references/workflows.md`. From the project root:
 
 Before writing code, run the preflight defined in the site's `AGENTS.md` (§ Before you start: preflight): what you understood, what is missing, whether the change is needed at all (framework component, module, lib class or backend setting that already does it), and a better prompt when the request was ambiguous. One line is enough for a small, unambiguous request.
 
+## Review and tests
+
+- Before opening a pull request, review the diff with the [`wi-review`](../wi-review/SKILL.md) skill.
+- A bug fix or a change to visitor data, escaping, CSRF or routes gets a test in `tests/`: follow the [`wi-testing`](../wi-testing/SKILL.md) skill.
+
 ## Validation
 
 - Run `php -l` on every touched PHP file.

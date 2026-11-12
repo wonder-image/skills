@@ -25,6 +25,9 @@ Clone any of them to inspect real source when writing or reviewing a skill — t
 
 - **`wi-app`** — activates inside `wonder-image/app` itself. Framework work: bootstrap, registries, route generation, module discovery, console commands, default backend/API CRUD.
 - **`wi-site`** — activates inside `wonder-image/new-site` or any project scaffolded from it. Covers project work (pages, models, resources, repeaters, backend-editable content, translations, roles / permissions, component overrides, module integration) **and** UI / styling / design-system work that consumes `wonder-image/lib`.
+- **`wi-review`** — reviews a site diff before a pull request against the site rules; points to `wi-site` references instead of restating them.
+- **`wi-testing`** — writes and runs the plain-PHP tests of a site (`tests/<Name>Test.php`, `tests/bootstrap.php`).
+- **`wi-sync`** — user-invoked (`disable-model-invocation: true`): aligns a boilerplate or site with `wonder-image/new-site` (AI files, CI, PR template, shared hardening).
 
 Each skill lives in `skills/<name>/` with a `SKILL.md` (frontmatter + body) and a `references/` directory of on-demand reference files.
 
@@ -41,9 +44,14 @@ Each skill lives in `skills/<name>/` with a `SKILL.md` (frontmatter + body) and 
     ├── wi-app/
     │   ├── SKILL.md
     │   └── references/
-    └── wi-site/
-        ├── SKILL.md
-        └── references/
+    ├── wi-site/
+    │   ├── SKILL.md
+    │   └── references/
+    ├── wi-review/SKILL.md
+    ├── wi-testing/
+    │   ├── SKILL.md
+    │   └── references/bootstrap.php
+    └── wi-sync/SKILL.md
 ```
 
 ## Working rules for agents
