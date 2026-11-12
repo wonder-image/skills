@@ -8,8 +8,11 @@ These skills can be installed with the [`skills` CLI](https://skills.sh/docs/cli
 
 - [`wi-app`](skills/wi-app/SKILL.md) — work inside the `wonder-image/app` framework package
 - [`wi-site`](skills/wi-site/SKILL.md) — work inside `wonder-image/new-site` or any project scaffolded from it
+- [`wi-review`](skills/wi-review/SKILL.md) — review a site change before a pull request
+- [`wi-testing`](skills/wi-testing/SKILL.md) — write and run the tests of a site (`tests/`)
+- [`wi-sync`](skills/wi-sync/SKILL.md) — align a boilerplate or site with `new-site` (invoked by hand: `/wi-sync`)
 
-The two skills are designed as a pair and cross-reference each other.
+`wi-app` and `wi-site` are designed as a pair and cross-reference each other; `wi-review`, `wi-testing` and `wi-sync` build on `wi-site` and link into its references, so install them together (`--skill '*'`).
 
 ## Install
 
@@ -72,9 +75,12 @@ npx skills add . --skill '*'
     ├── wi-app/
     │   ├── SKILL.md
     │   └── references/
-    └── wi-site/
-        ├── SKILL.md
-        └── references/
+    ├── wi-site/
+    │   ├── SKILL.md
+    │   └── references/
+    ├── wi-review/
+    ├── wi-testing/
+    └── wi-sync/
 ```
 
 Each skill directory follows the open agent-skills layout: a `SKILL.md` with YAML frontmatter (`name`, `description`) and optional `references/` and `scripts/` subdirectories.

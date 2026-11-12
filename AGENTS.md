@@ -25,6 +25,9 @@ Clone any of them to inspect real source when writing or reviewing a skill — t
 
 - **`wi-app`** — activates inside `wonder-image/app` itself. Framework work: bootstrap, registries, route generation, module discovery, console commands, default backend/API CRUD.
 - **`wi-site`** — activates inside `wonder-image/new-site` or any project scaffolded from it. Covers project work (pages, models, resources, repeaters, backend-editable content, translations, roles / permissions, component overrides, module integration) **and** UI / styling / design-system work that consumes `wonder-image/lib`.
+- **`wi-review`** — reviews a site diff before a pull request against the site rules; points to `wi-site` references instead of restating them.
+- **`wi-testing`** — writes and runs the plain-PHP tests of a site (`tests/<Name>Test.php`, `tests/bootstrap.php`).
+- **`wi-sync`** — user-invoked (`disable-model-invocation: true`): aligns a boilerplate or site with `wonder-image/new-site` (AI files, CI, PR template, shared hardening).
 
 Each skill lives in `skills/<name>/` with a `SKILL.md` (frontmatter + body) and a `references/` directory of on-demand reference files.
 
@@ -41,9 +44,14 @@ Each skill lives in `skills/<name>/` with a `SKILL.md` (frontmatter + body) and 
     ├── wi-app/
     │   ├── SKILL.md
     │   └── references/
-    └── wi-site/
-        ├── SKILL.md
-        └── references/
+    ├── wi-site/
+    │   ├── SKILL.md
+    │   └── references/
+    ├── wi-review/SKILL.md
+    ├── wi-testing/
+    │   ├── SKILL.md
+    │   └── references/bootstrap.php
+    └── wi-sync/SKILL.md
 ```
 
 ## Working rules for agents
@@ -78,6 +86,7 @@ If you are unsure whether something belongs in `TODO.md`, add it. A tracked item
 
 - Keep `SKILL.md` focused on triggering, non-negotiable rules, and routing to references. Put detailed material in `references/<topic>.md`.
 - Frontmatter must include `name` and a `description` that states **TRIGGER when** and **SKIP when** with concrete file paths, commands, and library names.
+- A skill meant to run only by hand (today `wi-sync`) also sets `disable-model-invocation: true` (Claude Code). Other agents may ignore that key, so its SKIP when must still exclude every case the user did not ask for explicitly.
 - Do not duplicate the same rule across SKILL.md and references — pick one canonical location.
 - When two skills share a concern, prefer cross-referencing the canonical file over duplicating content.
 - Everything about external skills (taste, redesign, image-to-code, web-design-guidelines, playwright-cli: routing, installation, precedence, reports, readiness check) lives only in `skills/wi-site/references/external-skills.md`. Other files link to it with one line.

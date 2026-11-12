@@ -21,8 +21,9 @@ and `docs/app/concetti/form/csrf.md` in `wonder-image/app`.
   into the template. A URL the visitor supplied is printed only after checking
   it is absolute `http`/`https` with a host and no credentials; anything else
   becomes an empty value or `#`.
-- Reference implementation (site-local, not a framework API):
-  `wonder-image/ecommerce-site` — `custom/view/pages/backend/request/show.php`
+- Reference implementation (site-local, not a framework API), shipped by the
+  scaffold `wonder-image/new-site` and every boilerplate —
+  `custom/view/pages/backend/request/show.php`
   for the page, `RequestResource` (`app/Resources/Site/RequestResource.php`) for
   the email values, `App\Support\SafeUrl::http()` (`app/Support/SafeUrl.php`)
   for the URL check. Copy the pattern into the site's own `app/Support/`; do

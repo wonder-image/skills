@@ -144,6 +144,8 @@ Quando `PRODUCT.md` manca, wi-site lavora comunque — segue solo le convenzioni
 
 Le sezioni opzionali (`Constraints`, `Inspirations`) possono restare vuote — l'utente le aggiungerà quando il progetto le richiede.
 
+**Eccezione: i boilerplate.** Quando `origin` è `wonder-image/new-site`, `wonder-image/ecommerce-site`, `wonder-image/immobili-site` o `wonder-image/rsvp-site`, le sezioni vuote sono volute (sono il modello dei siti futuri): niente intervista, niente compilazione, si procede con il task. Valgono solo le sezioni che il boilerplate compila già (es. `Site type`).
+
 ### Perché un'intervista e non un template a freddo
 
 Il template di [`examples.md` §6](examples.md#6-docsaiproductmd--brand-and-project-context) ha lo scaffolding ma le sezioni sono astratte. Un utente che lo riempie da zero, da solo, in genere scrive frasi vaghe (*"target: utenti interessati"*, *"voce: professionale ma friendly"*) che non producono direzione concreta. L'intervista forza risposte specifiche perché:

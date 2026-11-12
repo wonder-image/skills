@@ -7,7 +7,10 @@
       "description": "Skills for working safely inside the Wonder Image framework and the consumer sites built on top of it.",
       "skills": [
         "wi-app",
-        "wi-site"
+        "wi-site",
+        "wi-review",
+        "wi-testing",
+        "wi-sync"
       ]
     }
   ]
