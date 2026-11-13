@@ -23,33 +23,39 @@ These skills can be installed with the [`skills` CLI](https://skills.sh/docs/cli
 
 Installing only one skill leaves those cross-pointers unresolved on disk — the relative links will 404 locally even though the surface skill works.
 
+Install at project level, never with `--global` (see below). In a Wonder site, from the site root:
+
+```bash
+php forge skills
+```
+
+In `wonder-image/app`, in a module, or any other repo:
+
 ```bash
 # Recommended — install both together
-npx skills add wonder-image/skills --skill '*'
+npx skills add wonder-image/skills --skill '*' --agent claude-code -y
 ```
 
 Single-skill installs (only do this if you genuinely never touch the other side):
 
 ```bash
-npx skills add wonder-image/skills --skill wi-app
-npx skills add wonder-image/skills --skill wi-site
+npx skills add wonder-image/skills --skill wi-app --agent claude-code -y
+npx skills add wonder-image/skills --skill wi-site --agent claude-code -y
 ```
+
+With `--agent claude-code` the skills land in the project's `.claude/skills/` and the CLI writes `skills-lock.json`; there is no `.agents/` folder.
 
 Full schema and `site_type` semantics for `docs/ai/PRODUCT.md`: [`skills/wi-site/references/product-md.md`](skills/wi-site/references/product-md.md). Copy-paste template: [`skills/wi-site/references/examples.md` §6](skills/wi-site/references/examples.md#6-docsaiproductmd--brand-and-project-context).
 
 External design skills (`design-taste-frontend`, `redesign-existing-projects`, `image-to-code` from `Leonxlnx/taste-skill`, `web-design-guidelines` from `vercel-labs/agent-skills`, `playwright-cli`) are not bundled: `wi-site` installs the one a task needs, on demand, with `--global`. Routing, commands and precedence rules: [`skills/wi-site/references/external-skills.md`](skills/wi-site/references/external-skills.md).
 
-Target a specific agent (defaults to interactive selection):
+Other agents: replace `claude-code` with the agent name, e.g. `--agent codex`.
+
+Do not install `wi-app` or `wi-site` with `--global`. Claude Code gives `~/.claude/skills/` precedence over a project skill with the same name, so an old global copy hides the up-to-date one installed in the project. `--global` is only for the external design skills listed in [`external-skills.md`](skills/wi-site/references/external-skills.md). To remove a global copy:
 
 ```bash
-npx skills add wonder-image/skills --skill '*' --agent claude-code
-npx skills add wonder-image/skills --skill '*' --agent codex
-```
-
-Install globally instead of into the current project:
-
-```bash
-npx skills add wonder-image/skills --skill '*' --global
+npx skills remove wi-site -g
+npx skills remove wi-app -g
 ```
 
 List the available skills without installing:
@@ -63,7 +69,7 @@ npx skills add wonder-image/skills --list
 From the root of a local checkout:
 
 ```bash
-npx skills add . --skill '*'
+npx skills add . --skill '*' --agent claude-code -y
 ```
 
 ## Structure

@@ -43,8 +43,7 @@ user which skill you are using and why, in one line, the first time it enters a 
 Before using a skill, look for its `SKILL.md`. Read the one you find; do not assume its flags from
 memory, they change between versions.
 
-- `~/.agents/skills/<name>/SKILL.md` (where `npx skills add --global` installs)
-- `~/.claude/skills/<name>/SKILL.md` (symlink created by the same install)
+- `~/.claude/skills/<name>/SKILL.md` (where `npx skills add ... --global --agent claude-code` installs)
 - taste installed as a plugin: `~/.claude/plugins/cache/taste-skill/*/skills/*/SKILL.md`. Folder
   names are `taste-skill`, `redesign-skill`, `image-to-code-skill`; the `name` in each frontmatter
   is the one in the routing table.
@@ -56,19 +55,29 @@ If the skill is missing, tell the user what you are about to install and run onl
 line:
 
 ```bash
-npx skills add Leonxlnx/taste-skill --skill design-taste-frontend --global
-npx skills add Leonxlnx/taste-skill --skill redesign-existing-projects --global
-npx skills add Leonxlnx/taste-skill --skill image-to-code --global
-npx skills add vercel-labs/agent-skills --skill web-design-guidelines --global
+npx skills add Leonxlnx/taste-skill --skill design-taste-frontend --global --agent claude-code
+npx skills add Leonxlnx/taste-skill --skill redesign-existing-projects --global --agent claude-code
+npx skills add Leonxlnx/taste-skill --skill image-to-code --global --agent claude-code
+npx skills add vercel-labs/agent-skills --skill web-design-guidelines --global --agent claude-code
 npm i -g @playwright/cli@latest && (cd ~ && playwright-cli install --skills)
 ```
 
 - Verify the `--skill` names once per machine with `npx skills add Leonxlnx/taste-skill --list`:
   the name is the frontmatter `name`, not the folder.
 - Install the skill the task needs, not the whole package.
-- `--global`, always. The installation belongs to the developer, not to the site: no `.agents/`,
-  no `skills-lock.json`, no `.claude/skills/` entry inside the site repo. If the site already has
-  such entries from an older setup, leave them and report them.
+- `--global`, always, for these external skills. The installation belongs to the developer, not to
+  the site: no entry for them in the site's `.claude/skills/` or `skills-lock.json`. If the site
+  already has such entries from an older setup, leave them and report them.
+- `--global` is **only** for the external skills above, **never** for `wi-app` or `wi-site`. Claude
+  Code gives `~/.claude/skills/` precedence over a project skill with the same name, so an old
+  global copy silently hides the up-to-date one installed in the project. `wi-app` and `wi-site`
+  are installed per project into `.claude/skills/` (with `skills-lock.json`, no `.agents/`):
+  - sites: `php forge skills` from the site root;
+  - `wonder-image/app` and the modules:
+    `npx skills add wonder-image/skills --skill wi-app --agent claude-code -y`.
+
+  If `~/.claude/skills/wi-app` or `~/.claude/skills/wi-site` exists, tell the user and remove it
+  with `npx skills remove wi-site -g` (or `wi-app`).
 - Taste's scripts need Node 22+ and an installed Chrome or Edge (`lint.mjs` runs on Node 18+,
   `inspect.mjs` needs the browser). Check with `node --version` at first use; if the requirement is
   missing, say so and fall back to `playwright-cli` for screenshots instead of skipping the checks.

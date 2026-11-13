@@ -145,7 +145,7 @@ Steps to add or override a site permission:
 3. Reference the resulting permission key from any project `Resource::permissionSchema()` and from navigation authority gates.
 4. Do not build parallel user-management pages — user CRUD is centralized in the shared framework resources. If a site truly needs a different user flow, that is a framework-level change → switch to wi-app.
 
-If wi-app is not yet installed locally, run `npx skills add wonder-image/skills --skill wi-app` to make the full reference available.
+If wi-app is not yet installed in the site's `.claude/skills/`, run `php forge skills` from the site root to make the full reference available. Never install it with `--global`: see [`references/external-skills.md`](references/external-skills.md#detection-and-installation).
 
 ### Translation, locale URLs, content text
 Read `references/workflows.md`. Sample `lang/it/pages.json` entry in [`references/examples.md`](references/examples.md#3-langitpagesjson).

@@ -5,7 +5,7 @@
 This repository packages agent skills for the open `skills` ecosystem ([skills.sh](https://skills.sh)). Install with:
 
 ```bash
-npx skills add wonder-image/skills --skill '*'
+npx skills add wonder-image/skills --skill '*' --agent claude-code -y   # sites: php forge skills; never --global
 ```
 
 The skills guide AI coding agents (Claude Code, Codex, Cursor, etc.) when working inside the Wonder Image stack.
