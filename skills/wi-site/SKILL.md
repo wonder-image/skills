@@ -58,6 +58,8 @@ Stop and switch to [`wi-app`](../wi-app/SKILL.md) when **any** of these signals 
 - Before writing new CSS classes, JS behavior, or UI structure, inspect `wonder-image/lib` and reuse the existing design system. Full UI rulebook in `references/style-and-lib.md` — read it for any UI / styling / design-system task. The default mode is **USE the lib, do not MODIFY it**.
 - **`<wi-card>` is retired.** Do not write `<wi-card>` in the site's backend pages: use `Card` from `wonder-image/app`. Existing pages that use it keep working until the lib removes it; replace it when you touch them.
 - Never hardcode colors (HEX / RGB / HSL), introduce `.wi-*` (or any other) prefix-based naming, or build a parallel CSS system. Detect `{ASSETS_VERSION}` dynamically — do not assume `0.0/` or any other version.
+- Every image and every non-Bootstrap icon of a public page comes from the backend Media library (named after the title of its section) and is printed through `__ri()`: no image files under `assets/{ASSETS_VERSION}/images/`. Pattern in [`references/implementation-playbook.md` § Images and icons](references/implementation-playbook.md#images-and-icons-always-from-the-backend).
+- Brand colors, fonts, typography and company details live in `shared/sync-data.json`, which every `forge update` imports over the database: never seed them from `custom/build/row/`. See [`references/workflows.md` § Brand data, sync file and seeds](references/workflows.md#brand-data-sync-file-and-seeds).
 - Prefer external Composer modules `wonder-image/<slug>` over project-embedded module code.
 - Place PSR-4 classes under `app/Models` and `app/Resources` with namespace `App\Models` / `App\Resources`. Place project pages, components, layout overrides, routes, config, and helpers under `custom/`.
 - The canonical model / table flow is `Model::tableSchema()` + `Model::dataSchema()`. Do not invent parallel table definition systems alongside it.
@@ -108,6 +110,7 @@ Read `references/style-and-lib.md` **first**. Applies to every task touching but
 - Token files: `assets/{ASSETS_VERSION}/css/set-up/color.css` and `root.css` are generated from the database (backend Set-up → CSS) by `php forge update --local`: read them, never edit them. Custom CSS / JS goes under `assets/{ASSETS_VERSION}/css/` and `assets/{ASSETS_VERSION}/js/` — never inside `set-up/`.
 - Detect `{ASSETS_VERSION}` from the actual `assets/` directory before reading or writing token files.
 - Before closing any task that touched public HTML / CSS: `playwright-cli` screenshots at 375 / 768 / 1280 and console, then `web-design-guidelines` on the touched files, as described in [`references/external-skills.md`](references/external-skills.md#reports). Backend-only tasks skip both.
+- Before writing CSS, check [`references/style-and-lib.md` § Layout gotchas of the lib](references/style-and-lib.md#layout-gotchas-of-the-lib): most "broken layout" bugs are floats, `width: 100%` text presets or `.c-h`.
 - End every UI task with the **Required Final Report** and **Pre-Submit Checklist** in `references/style-and-lib.md`.
 
 ### External skills
@@ -124,6 +127,7 @@ Steps for a new site Model + Resource:
 4. Define `formSchema()` for backend inputs, `permissionSchema()` for route gating, `navigationSchema()` for nav placement.
 5. Use `FormField::repeater(...)` + `RepeaterColumn` for repeatable rows; `CustomPageSchema` only for non-CRUD pages.
 6. Run `composer dump-autoload`, then `php forge update --local` to apply runtime generation.
+7. Go through the [Backend form checklist](references/implementation-playbook.md#backend-form-checklist-site-postilla): explicit Italian labels on every field, side-by-side layout, inline creation of linked lists, image column in the list, destructive schema changes.
 
 The canonical flow is `Model::tableSchema()` + `Model::dataSchema()`. Do not invent parallel table-definition files alongside it.
 

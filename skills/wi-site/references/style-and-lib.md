@@ -54,6 +54,20 @@ Non-negotiable. Apply to every UI task.
 
 Breakpoints: phone ≤768px, tablet ≤992px, desktop >992px. Some legacy resize utilities use 1000px for tablet.
 
+## Layout gotchas of the lib
+
+Measured in the browser on a real site (lib `2.1.2-alpha`). Each one cost a layout bug; check them before adding CSS.
+
+- **`div` floats left with automatic width.** A `d-grid`/`d-flex` container, a box or a card that must span its parent needs `w-100`; otherwise the grid collapses (a 3-column grid 48px wide, cards with width 0).
+- **Text presets force `width: 100%`** (`.text`, `.text-small`, `.subtitle`, `.title`, `.title-big`). On an inline label, a tab, a badge or a `<nav class="text">` inside a flex row add `w-auto`, or the element takes the whole row.
+- **`.c-h` / `.c-w` are not flex alignment**: they are `top: 50%` + `translateY(-50%)` (or the X equivalent) for positioned elements. On an element in normal flow they shift it up by half its height. The lib has no `align-items` / `align-self` utility: one site class (`.self-center { align-self: center; }`) is the documented exception.
+- **`col-N` has two meanings**: on a `.d-grid` container it is the number of columns, on a child it is `grid-column: span N` (same for `col-t-*`, `col-p-*`). Never put both meanings on one element: nest a second grid.
+- **`.btn` floats**: it does not contribute height in a block container (a button "outside" its panel). Put it in a flex column or clear the floats. To right-align it use `d-flex j-content-end` on the parent (`a-r` does nothing to a float).
+- **`img.bg` centers with `translate(-50%, -50%)`** (that is what `fitCover()` emits). When you position the image yourself with `inset: 0`, also set `transform: none`.
+- **`.pc-none` / `.phone-none` set `display`** at their breakpoints and can beat a component's own `display`.
+- **Spacing utilities stop at 12** (`p-12` = `--spacer * 12` = 48px). Larger section padding is a site class with `calc(var(--spacer) * N)`, not a missing utility.
+- **The lib is installed from GitHub Packages** (token required). Without it in an agent session, read `MANIFEST.json`, `src/` and the committed `dist/` from the `wonder-image/lib` repository and verify every class name in `dist/frontend/head.css` before using it.
+
 ## USE vs MODIFY
 
 First step on any UI task is to classify it.

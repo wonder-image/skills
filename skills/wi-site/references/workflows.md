@@ -27,6 +27,17 @@ Use the complete domain with dots replaced by hyphens as the project folder: `wo
 - `php forge start` runs the local server and may fill missing `.env` values during local setup.
 - Updating the lib to a new alpha (the backend save bar needs `wonder-image` `2.1.2-alpha.19`): if `package.json` already allows it (`^2.1.2-alpha.*`), `composer update` is enough because `forge config` runs `npm install`; outside the range (`^2.1.1-alpha.*`, `^2.0.x`, `^2.1.0`) run `npm install wonder-image@^2.1.2-alpha.19` and commit `package.json` and `package-lock.json`, because CI uses `npm ci`.
 
+## Brand data, sync file and seeds
+
+`php forge update --local` runs, in this order: tables, `build/row/` of the framework, `custom/build/row/` of the site, then **imports `shared/sync-data.json`**, then `build/update/`. The import rewrites every table whose Model declares `syncSchema()`: colors (`css_color`), fonts (`css_font`), typography (`css_default`), inputs/modals, SEO and company data (`society_locations`). The same file is imported on every deploy.
+
+- **Brand colors, fonts, typography and company details go in `shared/sync-data.json`**, not in a row seed: a seed in `custom/build/row/` writes them and the import overwrites them a moment later.
+- `php forge export` writes the database **into** the file (`forge import` / `forge update` do the reverse). After changing values in Set-up, run `php forge export` and commit the file, or the next update restores the old values.
+- Edit the file in the format `forge export` produces (PHP `json_encode` with `JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE`, escaped slashes), so the next export has no noise. `css_font` and `society_locations` keep their ids: add a new font with a new id and point the `*_font_id` columns of `css_default` at it.
+- A test that compares the file with the values of the design (one class holding colors, font and company data) keeps it from drifting.
+- `custom/build/row/` is for rows that are not synced: the singleton rows of the site (`sqlInsert('home_content', ['id' => 1])`), lookup lists.
+- **Demo content** (projects, clients from a mock-up) goes in a row file guarded by `Wonder\App\Environment::isLocal()` and by "the table never had rows" (`!sqlSelect($table, null, 1)->exists`, deleted rows included), so it never reaches production and does not come back after the client deletes it. Insert with `Model::create()` (validation and formatting of the backend) and keep the data in a pure class with a test.
+
 ## CRUD and Backend Conventions
 
 - Use `App\\` classes under `app/Models` and `app/Resources` for project models and resources.

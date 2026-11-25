@@ -168,6 +168,8 @@ Mobile:
 - Keep the action item inside the same grid/gap flow; `mobileAsButton` changes presentation, not placement.
 - Toggle `inert`, `aria-hidden`, the menu button label, and scroll locking together.
 - Honor `prefers-reduced-motion`.
+- With a floating header box, the open menu grows **inside the same box** (the header gets taller) instead of opening a separate panel. The lib `#nav-mobile` is `position: fixed` with a backdrop: inside the box reset it to `position: static`, hide its `::before`, and use `header:has(#nav-mobile.show) { height: auto; }`. Its children float: give them `float: none` (and a clearfix), or the box does not grow around them.
+- A `<button id="hamburger">` (keyboard accessible) needs its bars anchored with `top: 0; left: 0`: the lib bars are absolute with only `margin-top`, and inside a button they start from the vertical center.
 
 ## Performance and portability
 

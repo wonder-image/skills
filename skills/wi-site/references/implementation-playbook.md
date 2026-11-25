@@ -87,12 +87,38 @@ For the full Model / Resource API contract see `wi-app/references/model-and-reso
 8. Run `composer dump-autoload`, then `php forge update --local`.
 9. Use `CustomPageSchema` only when the feature is not a normal CRUD resource.
 
+### Backend form checklist (site postilla)
+
+Verified on `wonder-image/app` 2.4. The API contract stays in `wi-app/references/model-and-resource.md`; these are the traps a site hits.
+
+- **Declare `->label()` on every `FormField`.** `labelSchema()` is applied only to fields that pass through `static::getInput()` in `formLayoutSchema()`. A Resource without a layout (or a field left out of it) falls back to `ucwords($column)`: the client sees "Logo Id", "Name", "Visible". Read the text from `static::labelSchema()` so table headers and form stay aligned.
+- **Lay out short fields side by side** in `formLayoutSchema()` (`Card` + `columnSpan()`, `SectionTitle::make()` for a heading — `Card::title()` is the HTML `title` attribute, not a heading). Name, visibility and logo/image usually share one row.
+- **Lists the client edits** (types, tags, categories) are a Resource of their own, linked with `selectSearch($options, true)` and `->quickCreate(TargetResource::class, ['name'], label: 'name', button: 'Aggiungi …')` so a value is created without leaving the form. The target must expose `apiSchema()->fields('store', [...])`; default missing required fields (e.g. `visible`) in its `mutateRequestValues()`.
+- **A multiple select stored as JSON** comes back from the DB as a string: decode it in `mutateFormValues()` or the edit form shows nothing selected.
+- **Do not use `sanitizeFirst()` on names and titles**: it capitalizes every word ("Villa A Cap-Martin"). Keep it for people's names only.
+- **Years** are `->number()->decimal(0)->groupSeparator('')` in the form; normalize to digits in `mutateRequestValues()`.
+- **Italian addresses**: province with the ready input `->states('IT')` (codes `BG` => `Bergamo`), municipality as a separate text field; print "Comune (BG)".
+- **Show the image in the list**: `TableColumn::key('cover')->image()->formatter(fn (array $row): string => MediaFile::find($id)?->thumbnailUrl() ?? '')` (the formatter returns the `src`).
+- **Order the client controls**: `$orderColumn = 'position'` + `->reorderable()` in `tableLayoutSchema()`; read the frontend with the same order.
+- **Schema changes reach the DB destructively**: `forge update` drops a column removed from `tableSchema()` and runs `MODIFY COLUMN` on a type change (it fails on rows that do not convert). Migrate the data in the same change or keep the old type.
+
 ## Backend-Editable Gallery Pattern
 
 - Use a real resource-backed content model, not static arrays or loose files.
 - Store the editable entity in project `Model` and `Resource` classes.
 - Reuse existing media/resource patterns where possible for image selection and upload behavior.
 - Keep frontend rendering separate from backend editing: backend through `Resource`, frontend through `custom/view/pages/frontend/*` and components.
+
+## Images and icons: always from the backend
+
+Every image of a public page — gallery photos, but also the hero, the service cards, the "about" photo — is a media of the library chosen or uploaded from the backend. No image files in `assets/{ASSETS_VERSION}/images/` and no `<img src>` written by hand: the client must be able to replace each one.
+
+- **Page images** (one per section) live in a singleton Resource per page (`extends SingletonResource`, `singletonRecordId() = 1`, menu "Contenuti → Home"), one `int()->null()` column per image, seeded with `sqlInsert(..., ['id' => 1])` in `custom/build/row/`.
+- **Upload field**: `FormField::key('hero_image_id')->fileDragDrop('image')->mediaLibrary()->mediaSlug('<section title>')->mediaAlt('<section title>')`. Name each file and alt text after the title of the section where the image appears (for a record: `mediaSlug('{slug}')`, `mediaAlt('{name}')`); the library name keeps the uploaded file name. Write the titles as plain strings in the Resource: `__t()` is not initialized everywhere the framework builds the schema (`forge update`).
+- **Galleries**: `->fileDragDrop('image')->maxFile(40)->mediaLibrary()`; the column holds the JSON list of ids, the first one is the cover, the alt text doubles as caption. Responsive sizes come from the resize queue (scheduler cron, or immediately when the scheduler is down); nothing to configure.
+- **Icons**: Bootstrap Icons stay `<i class="bi ...">`. Any other icon (brand pictograms from the design) is an svg media uploaded from the backend: `->fileDragDrop('svg')->mediaLibrary()`.
+- **Render through `__ri()`**: read the ids in batch with `MediaFile::many()`, then `__ri($media->path())->attr('alt', $media->alt)` (`attr`, not `alt()`: the text is plain and the renderer escapes it once). Wrap it in one site helper (e.g. `App\Support\SiteMedia::image(?MediaFile): ?Image`) that returns null for a missing media, and print nothing — no placeholder text — when a record has no image.
+- **Logos** come from Media → Logo (`$SOCIETY->logo`); if the brand lettering is part of the logo file, do not repeat it as text next to it.
 
 ## Component Override Rule
 

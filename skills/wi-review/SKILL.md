@@ -58,7 +58,14 @@ public HTML/CSS and the PR shows no screenshots, say so once.
 
 **Backend** — Resources declare `permissionSchema()` and
 `navigationSchema()`; no parallel user-management pages; permission keys
-added in `custom/config/permissions.php` (or `access.php`) are used.
+added in `custom/config/permissions.php` (or `access.php`) are used. Every
+`FormField` declares its `->label()`, images and non-Bootstrap icons are
+backend media printed through `__ri()`, and a column removed or retyped in
+`tableSchema()` has its data migrated: see the
+[Backend form checklist](../wi-site/references/implementation-playbook.md#backend-form-checklist-site-postilla)
+and [Images and icons](../wi-site/references/implementation-playbook.md#images-and-icons-always-from-the-backend).
+Brand values seeded in `custom/build/row/` instead of `shared/sync-data.json`
+are overwritten on every update: blocking.
 
 **Tests** — a bug fix or a change to visitor data, escaping, CSRF or routes
 comes with a test in `tests/` (see the `wi-testing` skill).
