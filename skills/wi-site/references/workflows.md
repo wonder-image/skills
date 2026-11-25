@@ -71,7 +71,7 @@ Use the complete domain with dots replaced by hyphens as the project folder: `wo
   - **Prefer `__r(string $name, array $parameters = [])`** — URL from a named route (e.g. `__r('resource.projects.list')`). Survives slug / path renames; resolves the active locale automatically.
   - Fallback to `__u(string $path)` only when no named route exists and you need a locale-aware URL from a free path (`__u('contact')`).
 - Do not hardcode language prefixes or visible text in PHP when the text belongs in translation files.
-- SEO titles and descriptions (`*.seo.title`, `*.seo.description`) are plain sentences: no `-`, `–`, `—` or `|` as separators ("Progetti realizzati da {{society_name}}", "{{name}}, un progetto di {{society_name}}"). A test over `lang/{locale}/*.json` keeps them that way.
+- SEO titles and descriptions (`*.seo.title`, `*.seo.description`) separate their parts with a plain ` - ` or ` | `, never an em/en dash (`—`, `–`) or a double dash (`--`): "Progetti realizzati - {{society_name}}". A test over `lang/{locale}/*.json` keeps them that way.
 
 ## Validation
 
