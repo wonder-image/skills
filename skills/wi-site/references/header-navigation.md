@@ -169,6 +169,7 @@ Mobile:
 - Toggle `inert`, `aria-hidden`, the menu button label, and scroll locking together.
 - Honor `prefers-reduced-motion`.
 - With a floating header box, the open menu grows **inside the same box** (the header gets taller) instead of opening a separate panel. The lib `#nav-mobile` is `position: fixed` with a backdrop: inside the box reset it to `position: static`, hide its `::before`, and use `header:has(#nav-mobile.show) { height: auto; }`. Its children float: give them `float: none` (and a clearfix), or the box does not grow around them.
+- Show the hamburger from tablet down: the lib's `.pc-none` is visible up to 1000px and `.tablet-none` hidden up to 1000px, so the hamburger gets only `pc-none` and the desktop links `tablet-none` (combining `pc-none tablet-none` hides the hamburger on tablet).
 - An anchor link in the mobile menu (`#chi-siamo`, a CTA to `#contatti`) does not reload the page, so the menu stays open over the target: call `menuMobile()` on tap to close it.
 - A `<button id="hamburger">` (keyboard accessible) needs its bars anchored with `top: 0; left: 0`: the lib bars are absolute with only `margin-top`, and inside a button they start from the vertical center.
 
