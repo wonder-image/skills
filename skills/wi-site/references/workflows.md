@@ -35,7 +35,8 @@ Use the complete domain with dots replaced by hyphens as the project folder: `wo
 - `php forge export` writes the database **into** the file (`forge import` / `forge update` do the reverse). After changing values in Set-up, run `php forge export` and commit the file, or the next update restores the old values.
 - Edit the file in the format `forge export` produces (PHP `json_encode` with `JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE`, escaped slashes), so the next export has no noise. `css_font` and `society_locations` keep their ids: add a new font with a new id and point the `*_font_id` columns of `css_default` at it.
 - A test that compares the file with the values of the design (one class holding colors, font and company data) keeps it from drifting.
-- `custom/build/row/` is for rows that are not synced: the singleton rows of the site (`sqlInsert('home_content', ['id' => 1])`), lookup lists.
+- `custom/build/row/` is for rows that are not synced: the single row of a site settings table (`sqlInsert($table, ['id' => 1])`), lookup lists.
+- Company details on the page come from `$SOCIETY` (default location): the address links to `$SOCIETY->gmaps`, which the client fills in Set-up (map link or Google Place ID). Never build a maps URL by hand; when the field is empty print the address as plain text.
 - **Demo content** (projects, clients from a mock-up) goes in a row file guarded by `Wonder\App\Environment::isLocal()` and by "the table never had rows" (`!sqlSelect($table, null, 1)->exists`, deleted rows included), so it never reaches production and does not come back after the client deletes it. Insert with `Model::create()` (validation and formatting of the backend) and keep the data in a pure class with a test.
 
 ## CRUD and Backend Conventions
