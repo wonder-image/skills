@@ -65,6 +65,7 @@ Measured in the browser on a real site (lib `2.1.2-alpha`). Each one cost a layo
 - **`.btn` floats**: it does not contribute height in a block container (a button "outside" its panel). Put it in a flex column or clear the floats. To right-align it use `d-flex j-content-end` on the parent (`a-r` does nothing to a float).
 - **`img.bg` centers with `translate(-50%, -50%)`** (that is what `fitCover()` emits). When you position the image yourself with `inset: 0`, also set `transform: none`.
 - **`.pc-none` / `.phone-none` set `display`** at their breakpoints and can beat a component's own `display`.
+- **Grid and flex children keep their content width.** A long unbreakable text (an email address in a card) sets the minimum width of its grid cell and pushes the card off screen on mobile: give the child `min-width: 0` and `overflow-wrap: anywhere`. A fixed-size circle in a flex row next to a `w-100` element gets squeezed into an oval: give it `flex: 0 0 <size>`.
 - **Spacing utilities stop at 12** (`p-12` = `--spacer * 12` = 48px). Larger section padding is a site class with `calc(var(--spacer) * N)`, not a missing utility.
 - **The lib is installed from GitHub Packages** (token required). Without it in an agent session, read `MANIFEST.json`, `src/` and the committed `dist/` from the `wonder-image/lib` repository and verify every class name in `dist/frontend/head.css` before using it.
 
